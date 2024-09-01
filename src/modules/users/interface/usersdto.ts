@@ -1,6 +1,11 @@
-import { IsString, IsEmail, IsOptional, MinLength } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsOptional,
+  MinLength,
+  IsStrongPassword,
+} from 'class-validator';
 import { Address } from '../schemas/address.schema';
-
 
 export class CreateUserDto {
   @IsString()
@@ -8,27 +13,27 @@ export class CreateUserDto {
   readonly name: string;
 
   @IsEmail()
-    readonly email: string;
-  
+  readonly email: string;
+
   @IsString()
+  @IsStrongPassword()
   @MinLength(6)
-    readonly password: string;
-    
-    @IsString()
-    readonly gender: string;
+  password: string;
+
+  @IsString()
+  readonly gender: string;
 
   @IsOptional()
   @IsString()
-    readonly phone?: string;
-    
-    @IsOptional()
-    readonly date_of_birth?: Date;
+  readonly phone?: string;
 
-    @IsOptional()
-        @IsString()
-    readonly occupation: string;
+  @IsOptional()
+  readonly date_of_birth?: Date;
 
-    @IsOptional()
-    readonly address: Address;
+  @IsOptional()
+  @IsString()
+  readonly occupation: string;
 
+  @IsOptional()
+  readonly address: Address;
 }

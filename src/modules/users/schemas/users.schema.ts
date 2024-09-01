@@ -32,6 +32,9 @@ export class User {
 
   @Prop()
   rating: number;
+
+  @Prop()
+  refresh_token: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
