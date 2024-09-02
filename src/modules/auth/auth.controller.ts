@@ -10,7 +10,6 @@ import { AuthService } from './auth.service';
 
 import { CreateUserDto } from '../users/interface/usersdto';
 import { AuthGuard } from '@nestjs/passport';
-import { get } from 'https';
 import { CreateDoctorDto } from '../doctors/interface/doctorsdto';
 
 @Controller('auth')
@@ -60,6 +59,11 @@ export class AuthController {
   @Post('doctor/login')
   async docLogin(@Body() body) {
     return this.authService.doctorLogin(body.email, body.password);
+  }
+
+  @Post('admin/login')
+  async adminLogin(@Body() body) {
+    return this.authService.adminLogin(body.email, body.password);
   }
 
   //this is a test endpoint

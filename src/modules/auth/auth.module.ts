@@ -11,14 +11,16 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Otp, OtpSchema } from '../users/schemas/otp.schema';
 import { JwtStrategy } from './jwt.strategy';
 import { DoctorsModule } from '../doctors/doctors.module';
+import { AdminModule } from '../admin/admin.module';
 
 @Module({
   imports: [
     UsersModule,
+    AdminModule,
     DoctorsModule,
     PassportModule,
     MailModule,
-    MongooseModule.forFeature([{name:Otp.name, schema: OtpSchema}]),
+    MongooseModule.forFeature([{ name: Otp.name, schema: OtpSchema }]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -29,6 +31,6 @@ import { DoctorsModule } from '../doctors/doctors.module';
     }),
   ],
   providers: [AuthService, JwtStrategy],
-  controllers: [AuthController]
+  controllers: [AuthController],
 })
 export class AuthModule {}

@@ -15,6 +15,7 @@ import { deleteModel, Model } from 'mongoose';
 import { userInfo } from 'os';
 import { CreateDoctorDto } from '../doctors/interface/doctorsdto';
 import { DoctorsService } from '../doctors/doctors.service';
+import { AdminService } from '../admin/admin.service';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +25,7 @@ export class AuthService {
     private jwtService: JwtService,
     private mailService: MailService,
     private doctorService: DoctorsService,
+    private adminService: AdminService,
   ) {}
 
   async validateUser(
@@ -227,7 +229,36 @@ export class AuthService {
     };
     return {
       docData,
-      access_token: this.jwtService.sign(payload),
+      access_token_doc: this.jwtService.sign(payload),
+    };
+  }
+
+  async validateAdmin(
+    email: string,
+    pass: string,
+  ): Promise<{ name: string; email: string } | null> {
+    const admin = await this.adminService.getUser(email);
+    if (admin && admin.password == pass) {
+      const adminObj = admin.toObject();
+      delete adminObj.password;
+      return adminObj;
+    }
+    return null;
+  }
+
+  async adminLogin(email: string, password: string) {
+    const adminData = await this.validateAdmin(email, password);
+    if (!adminData) {
+      throw new UnauthorizedException('Email or password is wrong');
+    }
+    const payload = {
+      name: adminData.name,
+      email: adminData.email,
+      role: 'admin',
+    };
+    return {
+      adminData,
+      access_token_admin: this.jwtService.sign(payload),
     };
   }
 
