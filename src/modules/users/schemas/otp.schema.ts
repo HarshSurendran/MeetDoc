@@ -9,7 +9,10 @@ export class Otp {
   email: string;
 
   @Prop({ required: true })
-    otp: string;
+  otp: string;
+  
+  @Prop({ required: true })
+  role: string;
 
 }
 

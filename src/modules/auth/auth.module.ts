@@ -10,10 +10,12 @@ import { MailModule } from '../mail/mail.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Otp, OtpSchema } from '../users/schemas/otp.schema';
 import { JwtStrategy } from './jwt.strategy';
+import { DoctorsModule } from '../doctors/doctors.module';
 
 @Module({
   imports: [
     UsersModule,
+    DoctorsModule,
     PassportModule,
     MailModule,
     MongooseModule.forFeature([{name:Otp.name, schema: OtpSchema}]),
