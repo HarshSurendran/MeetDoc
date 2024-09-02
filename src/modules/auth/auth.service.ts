@@ -23,7 +23,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private mailService: MailService,
-    private doctorService: DoctorsService
+    private doctorService: DoctorsService,
   ) {}
 
   async validateUser(
@@ -86,7 +86,7 @@ export class AuthService {
     const storeOtp = new this.OtpModel({
       email: userDto.email,
       otp,
-      role: "user"
+      role: 'user',
     });
     await storeOtp.save();
 
@@ -149,29 +149,32 @@ export class AuthService {
   }
 
   async doctorRegister(doctorDto: CreateDoctorDto): Promise<object> {
-
     const checkDoc = await this.doctorService.getUser(doctorDto.email);
     if (checkDoc) {
-      throw new UnauthorizedException("This email already exist.");
+      throw new UnauthorizedException('This email already exist.');
     }
 
     const otp: string = this.generateOtp();
 
-    const mailInfo = await this.mailService.sendMail(doctorDto.email, "OTP for meetdoc", `Your otp for registering in MeetDoc is ${otp}`);
+    const mailInfo = await this.mailService.sendMail(
+      doctorDto.email,
+      'OTP for meetdoc',
+      `Your otp for registering in MeetDoc is ${otp}`,
+    );
 
     if (mailInfo.rejected.length > 0) {
-      throw new InternalServerErrorException("Some error while sending mail.");
+      throw new InternalServerErrorException('Some error while sending mail.');
     }
 
     const storeOtp = new this.OtpModel({
       email: doctorDto.email,
       otp,
-      role: "doctor"
+      role: 'doctor',
     });
     await storeOtp.save();
 
     return {
-      mailSent: true
+      mailSent: true,
     };
   }
 
@@ -196,6 +199,35 @@ export class AuthService {
     return {
       doctor: doctorInfo,
       access_token_doc: this.jwtService.sign(payload),
+    };
+  }
+
+  async validateDoctor(
+    email: string,
+    pass: string,
+  ): Promise<Omit<CreateDoctorDto, 'password'> | null> {
+    const doc = await this.doctorService.getUser(email);
+    if (doc && (await bcrypt.compare(pass, doc.password))) {
+      const docObj = doc.toObject();
+      delete docObj.password;
+      return docObj;
+    }
+    return null;
+  }
+
+  async doctorLogin(email: string, password: string) {
+    const docData = await this.validateDoctor(email, password);
+    if (!docData) {
+      throw new UnauthorizedException('Email or password is wrong');
+    }
+    const payload = {
+      name: docData.name,
+      email: docData.email,
+      role: 'doctor',
+    };
+    return {
+      docData,
+      access_token: this.jwtService.sign(payload),
     };
   }
 

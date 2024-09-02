@@ -57,6 +57,11 @@ export class AuthController {
     return this.authService.doctorVerifyOtp(doctor, otp);
   }
 
+  @Post('doctor/login')
+  async docLogin(@Body() body) {
+    return this.authService.doctorLogin(body.email, body.password);
+  }
+
   //this is a test endpoint
   @Post('find')
   async find(@Body() body: { email: string }) {

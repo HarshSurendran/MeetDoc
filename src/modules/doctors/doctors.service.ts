@@ -19,7 +19,7 @@ export class DoctorsService {
     return this.DoctorModel.find().exec();
   }
 
-  async getUser(email: string): Promise<Doctor> {
+  async getUser(email: string): Promise<any> {
     return await this.DoctorModel.findOne({ email });
   }
 }
