@@ -1,13 +1,11 @@
 import {
   Controller,
-  Request,
   Post,
   UseGuards,
   Body,
   Get,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-
 import { CreateUserDto } from '../users/interface/usersdto';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateDoctorDto } from '../doctors/interface/doctorsdto';
@@ -27,15 +25,14 @@ export class AuthController {
   }
 
   @Post('verify_otp')
-  async verify(@Body() body) {
-    console.log('This is the body of verifyotp endpoint', body);
-    const { otp, ...user } = body;
+  async verify(@Body() body) {    const { otp, ...user } = body;
+    
     return this.authService.verifyOtp(user, otp);
   }
 
   @Post('resend_otp')
   async resend(@Body() body) {
-    return this.authService.resendOtp(body.email);
+    return this.authService.resendOtp(body.email, body.role);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -64,12 +61,5 @@ export class AuthController {
   @Post('admin/login')
   async adminLogin(@Body() body) {
     return this.authService.adminLogin(body.email, body.password);
-  }
-
-  //this is a test endpoint
-  @Post('find')
-  async find(@Body() body: { email: string }) {
-    console.log('reached endpoint ', body.email);
-    return this.authService.getUser(body.email);
   }
 }

@@ -5,7 +5,7 @@ import { Address, AddressSchema } from 'src/modules/users/schemas/address.schema
 
 export type DoctorDocument = Doctor & Document;
 
-@Schema()
+@Schema({ timestamps: true})
 export class Doctor {
   @Prop({ required: true })
   name: string;
