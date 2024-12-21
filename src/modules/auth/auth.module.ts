@@ -9,9 +9,10 @@ import { UsersService } from '../users/users.service';
 import { MailModule } from '../mail/mail.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Otp, OtpSchema } from '../users/schemas/otp.schema';
-import { JwtStrategy } from './jwt.strategy';
 import { DoctorsModule } from '../doctors/doctors.module';
 import { AdminModule } from '../admin/admin.module';
+import { JwtAccessStrategy } from './jwt.access.strategy';
+import { JwtRefreshStrategy } from './jwt.refresh.stratergy';
 
 @Module({
   imports: [
@@ -21,16 +22,17 @@ import { AdminModule } from '../admin/admin.module';
     PassportModule,
     MailModule,
     MongooseModule.forFeature([{ name: Otp.name, schema: OtpSchema }]),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '60m' },
-      }),
-      inject: [ConfigService],
-    }),
+    // JwtModule.registerAsync({
+    //   imports: [ConfigModule],
+    //   useFactory: async (configService: ConfigService) => ({
+    //     secret: configService.get<string>('JWT_SECRET'),
+    //     signOptions: { expiresIn: '60m' },
+    //   }),
+    //   inject: [ConfigService],
+    // }),
+    JwtModule.register({})
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtAccessStrategy, JwtRefreshStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}

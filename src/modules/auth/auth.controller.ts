@@ -4,6 +4,7 @@ import {
   UseGuards,
   Body,
   Get,
+  Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/interface/usersdto';
@@ -25,9 +26,12 @@ export class AuthController {
   }
 
   @Post('verify_otp')
-  async verify(@Body() body) {    const { otp, ...user } = body;
-    
-    return this.authService.verifyOtp(user, otp);
+  async verify(@Body() body, @Res() res) {
+    const { otp, ...user } = body; 
+    const { refresh_token, ...data } = await this.authService.verifyOtp(user, otp);
+    console.log("recieved tokens ", refresh_token, data)
+    res.cookie('refreshToken', refresh_token, { httpOnly: true , path: '/auth/refresh'});
+    res.json(data) ;
   }
 
   @Post('resend_otp')

@@ -36,4 +36,9 @@ export class CreateUserDto {
 
   @IsOptional()
   readonly address: Address;
+
+  @IsOptional()
+  @IsString()
+  readonly refresh_token: string;
+
 }

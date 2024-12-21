@@ -24,8 +24,34 @@ export class AuthService {
     private mailService: MailService,
     private doctorService: DoctorsService,
     private adminService: AdminService,
-  ) {}
- 
+  ) { }
+  
+   
+  generateAccessToken(user: { id: string, name: string, email: string, role: string }) {
+    const payload = {
+      userId: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    }
+    return this.jwtService.sign(
+      payload,
+      {
+        secret: process.env.JWT_ACCESS_SECRET,
+        expiresIn: '15m'
+      }
+    );
+  }
+
+  generateRefreshToken(userId: string) {
+    return this.jwtService.sign(
+      { sub: userId },
+      {
+        secret: process.env.JWT_REFRESH_SECRET,
+        expiresIn: '7d', 
+      },
+    );
+  }
 
   generateOtp(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -43,14 +69,17 @@ export class AuthService {
     // const user = await this.usersService.create(userDto);
 
     const otp: string = this.generateOtp();
+    console.log(otp)
 
     const mailInfo = await this.mailService.sendMail(
       userDto.email,
       'OTP for meetdoc',
       `Your otp for registering in MeetDoc is ${otp}`,
     );   
+    console.log(mailInfo)
 
     if (mailInfo.rejected.length > 0) {
+      console.log("entered mail error", mailInfo)
       throw new InternalServerErrorException('Some error while sending mail.');
     }    
 
@@ -62,19 +91,20 @@ export class AuthService {
 
     await storeOtp.save();
 
+    console.log(storeOtp,"otp saved")
+
     return {
       mailSent: true,
     };
   }
 
   async verifyOtp(body: CreateUserDto, otp: string) {
-
-    const validOtp = await this.OtpModel.findOne({ email: body.email });    
-
+    const validOtp = await this.OtpModel.findOne({ email: body.email });   
+    
     if (!validOtp) {
       throw new UnauthorizedException('Otp expired, click resend.');
     }
-
+    
     if (validOtp.role !== 'user' || validOtp.otp !== otp) {
       throw new UnauthorizedException('Wrong Otp');
     }
@@ -84,11 +114,19 @@ export class AuthService {
 
     const user = await this.usersService.create(body);
     const { password, ...userInfo } = body;
-    const payload = { name: user.name, email: user.email, role: 'user' };
 
+    const payload = { id: user.id, name: user.name, email: user.email, role: 'user' };    
+    const accessToken = await this.generateAccessToken(payload);
+    const refreshToken = await this.generateRefreshToken(user.id);
+    const update = { refresh_token : refreshToken}
+  
+    console.log("created tokens", accessToken, refreshToken);
+    await this.usersService.updateUser(user.id, update);
+    
     return {
       user: userInfo,
-      access_token: this.jwtService.sign(payload),
+      access_token: accessToken,
+      refresh_token: refreshToken
     };
   }
 

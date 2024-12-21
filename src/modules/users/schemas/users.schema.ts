@@ -35,6 +35,9 @@ export class User {
 
   @Prop()
   refresh_token: string;
+
+  @Prop()
+  id: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

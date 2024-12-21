@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { User, UserDocument } from './schemas/users.schema';
 import { CreateUserDto } from './interface/usersdto';
 
@@ -14,6 +14,18 @@ export class UsersService {
     return await createdUser.save();
   }
 
+  async updateUser(id: string, userDetails: any) {
+    
+    const user = await this.UserModel.find({ _id: id });
+    console.log(user, userDetails);
+    if (!user) {
+      throw new UnauthorizedException('User not found.');
+    }
+
+    const update = userDetails;
+    return  await this.UserModel.updateOne({_id: id}, update);
+  }
+
   async findAll(): Promise<User[]> {
     return this.UserModel.find().exec();
   }
@@ -21,4 +33,13 @@ export class UsersService {
   async getUser(email: string) : Promise<any> {
     return await this.UserModel.findOne({email});
   }
+
+  async allUsers() {
+    return await this.UserModel.find();
+  }
+
+  async deleteUser(id: string) {
+    return await this.UserModel.deleteOne({ _id: id })
+  }
+
 }
