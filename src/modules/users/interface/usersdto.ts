@@ -9,6 +9,9 @@ import { Address } from '../schemas/address.schema';
 
 export class CreateUserDto {
   @IsString()
+  readonly _id: string;    
+    
+  @IsString()
   @MinLength(3)
   readonly name: string;
 

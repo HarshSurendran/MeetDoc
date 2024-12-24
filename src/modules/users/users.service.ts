@@ -30,8 +30,10 @@ export class UsersService {
     return this.UserModel.find().exec();
   }
 
-  async getUser(email: string) : Promise<any> {
-    return await this.UserModel.findOne({email});
+  async getUser(email: string): Promise<any> {
+    const user = await this.UserModel.findOne({ email });
+    console.log(user);
+    return user
   }
 
   async allUsers() {

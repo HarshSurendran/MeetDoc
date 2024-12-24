@@ -10,14 +10,20 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/interface/usersdto';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateDoctorDto } from '../doctors/interface/doctorsdto';
+import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
-  async login(@Body() req) {
-    return this.authService.login(req.email, req.password);
+  async login(@Body() req, @Res({passthrough :true}) res: Response) {
+    const response = await this.authService.login(req.email, req.password);
+    res.cookie("refreshToken", response.refreshToken, { httpOnly: true, secure: true });
+    return {
+      user: response.userData,
+      accessToken: response.accessToken
+    }
   }
 
   @Post('register')

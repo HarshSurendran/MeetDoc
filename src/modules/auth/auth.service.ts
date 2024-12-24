@@ -1,4 +1,5 @@
 import {
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -165,8 +166,9 @@ export class AuthService {
   async validateUser(
     email: string,
     pass: string,
-  ): Promise<Omit<CreateUserDto, 'password'> | null> {
-    const user = await this.usersService.getUser(email);
+  ): Promise<Omit<CreateUserDto, 'password'> | null> {    
+    const user = await this.usersService.getUser(email);   
+    console.log("This is the user in validate function", user);
     if (user && (await bcrypt.compare(pass, user.password))) {
       const userObj = user.toObject();
       delete userObj.password;
@@ -177,17 +179,24 @@ export class AuthService {
 
   async login(email: string, password: string) {
     const userData = await this.validateUser(email, password);
+    console.log(userData);
     if (!userData) {
       throw new UnauthorizedException('Email or password is wrong');
     }
     const payload = {
+      id: userData._id,
       name: userData.name,
       email: userData.email,
       role: 'user',
     };
+
+    const accessToken = await this.generateAccessToken(payload);
+    const refreshToken = await this.generateRefreshToken(userData._id);    
+
     return {
       userData,
-      access_token: this.jwtService.sign(payload),
+      accessToken, 
+      refreshToken  
     };
   }
 
@@ -200,15 +209,15 @@ export class AuthService {
 
     const otp: string = this.generateOtp();
 
-    const mailInfo = await this.mailService.sendMail(
-      doctorDto.email,
-      'OTP for meetdoc',
-      `Your otp for registering in MeetDoc is ${otp}`,
-    );
+    // const mailInfo = await this.mailService.sendMail(
+    //   doctorDto.email,
+    //   'OTP for meetdoc',
+    //   `Your otp for registering in MeetDoc is ${otp}`,
+    // );
 
-    if (mailInfo.rejected.length > 0) {
-      throw new InternalServerErrorException('Some error while sending mail.');
-    }
+    // if (mailInfo.rejected.length > 0) {
+    //   throw new InternalServerErrorException('Some error while sending mail.');
+    // }
 
     const storeOtp = new this.OtpModel({
       email: doctorDto.email,
