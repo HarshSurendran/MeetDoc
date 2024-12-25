@@ -45,6 +45,11 @@ export class AuthController {
     return this.authService.resendOtp(body.email, body.role);
   }
 
+  @Post("logout")
+  async logout(@Body() body, @Res({ passthrough: true}) res: Response) {
+    return this.authService.logout(body._id, res);
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Get('profile')
   async profile() {

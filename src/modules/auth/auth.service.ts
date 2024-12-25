@@ -2,6 +2,7 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  RequestTimeoutException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -15,6 +16,7 @@ import { Model } from 'mongoose';
 import { CreateDoctorDto } from '../doctors/interface/doctorsdto';
 import { DoctorsService } from '../doctors/doctors.service';
 import { AdminService } from '../admin/admin.service';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -198,6 +200,19 @@ export class AuthService {
       accessToken, 
       refreshToken  
     };
+  }
+
+  async logout(_id: string, res : Response) {
+    const user = this.usersService.getUser(_id);
+    if (!user) {
+      throw new RequestTimeoutException("Database not responding. Please try again");
+    }
+    res.cookie('refreshToken', '', {
+      httpOnly: true,
+      secure: true
+    });
+    await this.usersService.updateUser(_id, { refreshToken: "" });
+    return "Successfully logged out"
   }
 
   //Doctor Registeration
