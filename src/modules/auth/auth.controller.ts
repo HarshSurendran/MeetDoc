@@ -75,7 +75,7 @@ export class AuthController {
   }
 
   @Post('admin/login')
-  async adminLogin(@Body() body) {
-    return this.authService.adminLogin(body.email, body.password);
+  async adminLogin(@Body() body, @Res({passthrough: true}) res : Response) {
+    return this.authService.adminLogin(body.email, body.password, res);
   }
 }

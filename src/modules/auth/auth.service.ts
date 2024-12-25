@@ -29,6 +29,28 @@ export class AuthService {
     private adminService: AdminService,
   ) { }
   
+  generateAdminTokens(payload: { _id: string, name: string, email: string, role: string }) {
+    const accessToken = this.jwtService.sign(
+      payload,
+      {
+        secret: process.env.JWT_ADMIN_ACCESS_SECRET,
+        expiresIn: "15m"
+      }
+    );
+    
+    const refreshToken = this.jwtService.sign(
+      { sub: payload._id },
+      {
+        secret: process.env.JWT_ADMIN_REFRESH_SECRET,
+        expiresIn: '7d'
+      }
+    );
+
+    return {
+      accessToken,
+      refreshToken
+    };
+  }
    
   generateAccessToken(user: { id: string, name: string, email: string, role: string }) {
     const payload = {
@@ -306,7 +328,7 @@ export class AuthService {
   async validateAdmin(
     email: string,
     pass: string,
-  ): Promise<{ name: string; email: string } | null> {
+  ): Promise<{ _id: string, name: string; email: string } | null> {
     const admin = await this.adminService.getAdmin(email);
     if (admin && admin.password == pass) {
       const adminObj = admin.toObject();
@@ -316,19 +338,25 @@ export class AuthService {
     return null;
   }
 
-  async adminLogin(email: string, password: string) {
-    const adminData = await this.validateAdmin(email, password);
-    if (!adminData) {
+  async adminLogin(email: string, password: string, res : Response) {
+    const admin = await this.validateAdmin(email, password);
+    if (!admin) {
       throw new UnauthorizedException('Email or password is wrong');
     }
     const payload = {
-      name: adminData.name,
-      email: adminData.email,
+      _id: admin._id,
+      name: admin.name,
+      email: admin.email,
       role: 'admin',
     };
+    
+    const { accessToken, refreshToken } = await this.generateAdminTokens(payload); 
+
+    res.cookie("adminRefreshToken", refreshToken, { httpOnly: true, secure: true });
+
     return {
-      adminData,
-      access_token_admin: this.jwtService.sign(payload),
+      admin,
+      adminAccessToken: accessToken,
     };
   }
 }
