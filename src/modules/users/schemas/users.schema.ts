@@ -6,6 +6,9 @@ export type UserDocument = User & Document;
 
 @Schema()
 export class User {
+  @Prop()
+  id: string;
+
   @Prop({ required: true })
   name: string;
 
@@ -24,20 +27,26 @@ export class User {
   @Prop()
   date_of_birth: Date;
 
-  @Prop()
+  @Prop({default: "Not mentioned"})
   occupation: string;
 
   @Prop({ type: AddressSchema })
   address: Address;
 
-  @Prop()
+  @Prop({ required: true, default: 0})
   rating: number;
 
-  @Prop()
-  refresh_token: string;
+  @Prop({required: true, default: false})
+  isBlocked: Boolean;
 
   @Prop()
-  id: string;
+  refresh_token: string;  
 }
 
+
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.pre('save', function (next) {
+  console.log(this,"This is presave document to database"); 
+  next();
+});

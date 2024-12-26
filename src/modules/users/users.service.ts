@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { User, UserDocument } from './schemas/users.schema';
@@ -44,4 +44,17 @@ export class UsersService {
     return await this.UserModel.deleteOne({ _id: id })
   }
 
+  async toggleBlock(id: string) {
+    const updatedUser = await this.UserModel.findByIdAndUpdate(
+      id,
+      [
+        { $set: { isBlocked: { $not: "$isBlocked" } } }
+      ],
+      { new: true }
+    );
+    if (!updatedUser) {
+      throw new NotFoundException;
+    }    
+    return updatedUser;
+  }
 }

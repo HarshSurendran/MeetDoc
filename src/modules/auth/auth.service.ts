@@ -94,19 +94,17 @@ export class AuthService {
     // const user = await this.usersService.create(userDto);
 
     const otp: string = this.generateOtp();
-    console.log(otp)
+    
+    // const mailInfo = await this.mailService.sendMail(
+    //   userDto.email,
+    //   'OTP for meetdoc',
+    //   `Your otp for registering in MeetDoc is ${otp}`,
+    // );
 
-    const mailInfo = await this.mailService.sendMail(
-      userDto.email,
-      'OTP for meetdoc',
-      `Your otp for registering in MeetDoc is ${otp}`,
-    );   
-    console.log(mailInfo)
-
-    if (mailInfo.rejected.length > 0) {
-      console.log("entered mail error", mailInfo)
-      throw new InternalServerErrorException('Some error while sending mail.');
-    }    
+    // if (mailInfo.rejected.length > 0) {
+    //   console.log("entered mail error", mailInfo)
+    //   throw new InternalServerErrorException('Some error while sending mail.');
+    // }    
 
     const storeOtp = new this.OtpModel({
       email: userDto.email,
@@ -115,7 +113,6 @@ export class AuthService {
     });
 
     await storeOtp.save();
-
     console.log(storeOtp,"otp saved")
 
     return {
@@ -145,7 +142,6 @@ export class AuthService {
     const refreshToken = await this.generateRefreshToken(user.id);
     const update = { refresh_token : refreshToken}
   
-    console.log("created tokens", accessToken, refreshToken);
     await this.usersService.updateUser(user.id, update);
     
     return {
@@ -192,7 +188,6 @@ export class AuthService {
     pass: string,
   ): Promise<Omit<CreateUserDto, 'password'> | null> {    
     const user = await this.usersService.getUser(email);   
-    console.log("This is the user in validate function", user);
     if (user && (await bcrypt.compare(pass, user.password))) {
       const userObj = user.toObject();
       delete userObj.password;
@@ -203,7 +198,7 @@ export class AuthService {
 
   async login(email: string, password: string) {
     const userData = await this.validateUser(email, password);
-    console.log(userData);
+   
     if (!userData) {
       throw new UnauthorizedException('Email or password is wrong');
     }

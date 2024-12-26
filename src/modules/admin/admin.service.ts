@@ -41,4 +41,8 @@ export class AdminService {
     return await this.usersService.allUsers();
   }
 
+  async toggleBlock(id: string) {
+    return await this.usersService.toggleBlock(id);
+  }
+
 }

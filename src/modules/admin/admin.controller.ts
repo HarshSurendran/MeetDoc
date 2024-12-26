@@ -32,5 +32,10 @@ export class AdminController {
         return await this.userService.updateUser(id, body);      
     }
 
+    @Patch('users/toggleblock/:id')
+    async toggleBlock(@Param('id') id: string) {
+        return await this.adminService.toggleBlock(id);
+    }
+
 
 }
