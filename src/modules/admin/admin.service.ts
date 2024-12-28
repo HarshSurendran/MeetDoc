@@ -45,4 +45,8 @@ export class AdminService {
     return await this.usersService.toggleBlock(id);
   }
 
+  async updateAdmin(_id: string, data: {}) {
+    return await this.AdminModel.updateOne({ _id: _id }, { $set: data} )
+  }
+
 }

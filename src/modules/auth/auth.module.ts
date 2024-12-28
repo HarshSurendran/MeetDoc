@@ -11,8 +11,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Otp, OtpSchema } from '../users/schemas/otp.schema';
 import { DoctorsModule } from '../doctors/doctors.module';
 import { AdminModule } from '../admin/admin.module';
-import { JwtAccessStrategy } from './jwt.access.strategy';
-import { JwtRefreshStrategy } from './jwt.refresh.stratergy';
+import { JwtAccessStrategy } from './jwt stratergy/jwt.access.strategy';
+import { JwtRefreshStrategy } from './jwt stratergy/jwt.refresh.stratergy';
+import { JwtAdminAccessStrategy } from './jwt stratergy/jwt.adminAccess.stratergy';
+import { JwtAdminRefreshStrategy } from './jwt stratergy/jwt.adminRefresh.stratergy';
 
 @Module({
   imports: [
@@ -32,7 +34,7 @@ import { JwtRefreshStrategy } from './jwt.refresh.stratergy';
     // }),
     JwtModule.register({})
   ],
-  providers: [AuthService, JwtAccessStrategy, JwtRefreshStrategy],
+  providers: [AuthService, JwtAccessStrategy, JwtRefreshStrategy, JwtAdminAccessStrategy, JwtAdminRefreshStrategy ],
   controllers: [AuthController],
 })
 export class AuthModule {}

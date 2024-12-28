@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
@@ -39,7 +40,7 @@ export class AuthService {
     );
     
     const refreshToken = this.jwtService.sign(
-      { sub: payload._id },
+      { sub: payload._id, email: payload.email },
       {
         secret: process.env.JWT_ADMIN_REFRESH_SECRET,
         expiresIn: '7d'
@@ -68,15 +69,17 @@ export class AuthService {
     );
   }
 
-  generateRefreshToken(userId: string) {
+  generateRefreshToken(userId: string, email: string) {
+    const payload = {sub: userId, email}
     return this.jwtService.sign(
-      { sub: userId },
+      payload,
       {
         secret: process.env.JWT_REFRESH_SECRET,
         expiresIn: '7d', 
       },
     );
   }
+  
 
   generateOtp(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -95,16 +98,16 @@ export class AuthService {
 
     const otp: string = this.generateOtp();
     
-    // const mailInfo = await this.mailService.sendMail(
-    //   userDto.email,
-    //   'OTP for meetdoc',
-    //   `Your otp for registering in MeetDoc is ${otp}`,
-    // );
+    const mailInfo = await this.mailService.sendMail(
+      userDto.email,
+      'OTP for meetdoc',
+      `Your otp for registering in MeetDoc is ${otp}`,
+    );
 
-    // if (mailInfo.rejected.length > 0) {
-    //   console.log("entered mail error", mailInfo)
-    //   throw new InternalServerErrorException('Some error while sending mail.');
-    // }    
+    if (mailInfo.rejected.length > 0) {
+      console.log("entered mail error", mailInfo)
+      throw new InternalServerErrorException('Some error while sending mail.');
+    }    
 
     const storeOtp = new this.OtpModel({
       email: userDto.email,
@@ -139,15 +142,15 @@ export class AuthService {
 
     const payload = { id: user.id, name: user.name, email: user.email, role: 'user' };    
     const accessToken = await this.generateAccessToken(payload);
-    const refreshToken = await this.generateRefreshToken(user.id);
+    const refreshToken = await this.generateRefreshToken(user.id, user.email);
     const update = { refresh_token : refreshToken}
   
     await this.usersService.updateUser(user.id, update);
     
     return {
       user: userInfo,
-      access_token: accessToken,
-      refresh_token: refreshToken
+      accessToken: accessToken,
+      refreshToken: refreshToken
     };
   }
 
@@ -200,7 +203,7 @@ export class AuthService {
     const userData = await this.validateUser(email, password);
    
     if (!userData) {
-      throw new UnauthorizedException('Email or password is wrong');
+      throw new BadRequestException('Email or password is wrong');
     }
     const payload = {
       id: userData._id,
@@ -210,7 +213,10 @@ export class AuthService {
     };
 
     const accessToken = await this.generateAccessToken(payload);
-    const refreshToken = await this.generateRefreshToken(userData._id);    
+    const refreshToken = await this.generateRefreshToken(userData._id, userData.email);
+    const update = { refresh_token : refreshToken}
+  
+    await this.usersService.updateUser(userData._id, update);
 
     return {
       userData,
@@ -220,17 +226,45 @@ export class AuthService {
   }
 
   async logout(_id: string, res : Response) {
-    const user = this.usersService.getUser(_id);
-    if (!user) {
-      throw new RequestTimeoutException("Database not responding. Please try again");
-    }
-    res.cookie('refreshToken', '', {
-      httpOnly: true,
-      secure: true
-    });
-    await this.usersService.updateUser(_id, { refreshToken: "" });
-    return "Successfully logged out"
+    // const user = this.usersService.getUser(_id);
+    // if (!user) {
+    //   throw new RequestTimeoutException("Database not responding. Please try again");
+    // }
+   try {
+     res.cookie('refreshToken', '', {
+       httpOnly: true,
+       secure: true
+     });
+     await this.usersService.updateUser(_id, { refreshToken: "" });
+     return "Successfully logged out"
+   } catch (error) {
+     throw new RequestTimeoutException("Database not responding. Please try again later.");
+   }
   }
+
+  async updateToken(data : {userId: string, email: string}) {
+    const user = await this.usersService.getUser(data.email);
+
+    if (user) {
+      const payload = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: "user"
+      };
+      
+      const accessToken = this.generateAccessToken(payload);
+      const refreshToken = this.generateRefreshToken(user.id, user.email);
+
+      const update = { refresh_token: refreshToken };  
+      await this.usersService.updateUser(user.id, update);
+
+      return {
+        accessToken,
+        refreshToken,
+      };
+    };
+  };
 
   //Doctor Registeration
   async doctorRegister(doctorDto: CreateDoctorDto): Promise<object> {
@@ -353,5 +387,18 @@ export class AuthService {
       admin,
       adminAccessToken: accessToken,
     };
+  }
+
+  async adminLogout(_id: string, res: Response) {
+    try {
+      res.cookie('refreshToken', '', {
+        httpOnly: true,
+        secure: true
+      });
+      await this.adminService.updateAdmin(_id, { refreshToken: "" });
+      return "Successfully logged out";
+    } catch (error) {
+      throw new RequestTimeoutException("Database not responding. Please try again later.");
+    }
   }
 }

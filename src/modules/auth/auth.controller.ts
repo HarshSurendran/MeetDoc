@@ -5,6 +5,7 @@ import {
   Body,
   Get,
   Res,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/interface/usersdto';
@@ -33,10 +34,12 @@ export class AuthController {
 
   @Post('verify_otp')
   async verify(@Body() body, @Res() res) {
+    console.log(body)
     const { otp, ...user } = body; 
-    const { refresh_token, ...data } = await this.authService.verifyOtp(user, otp);
-    console.log("recieved tokens ", refresh_token, data)
-    res.cookie('refreshToken', refresh_token, { httpOnly: true , path: '/auth/refresh'});
+    console.log(user,"This is user");
+    const { refreshToken, ...data } = await this.authService.verifyOtp(user.data, otp);
+    console.log("recieved tokens ", refreshToken, data)
+    res.cookie('refreshToken', refreshToken, { httpOnly: true , path: '/auth/refresh'});
     res.json(data) ;
   }
 
@@ -58,6 +61,17 @@ export class AuthController {
     return { message: 'hello reached profile endpoint' };
   }
 
+  @UseGuards(AuthGuard("jwt-refresh"))
+  @Get("refreshtoken")
+  async renewTokens(@Req() req, @Res({passthrough:true}) res) {
+    const user = req.user;    
+    const { accessToken, refreshToken } = await this.authService.updateToken(user);
+    console.log("reached refreshtoken endpoint",accessToken)
+    
+    res.cookie("refreshToken", refreshToken);
+    return { accessToken };
+  }
+
   @Post('doctor/register')
   async doctorRegister(@Body() body: CreateDoctorDto) {
     return this.authService.doctorRegister(body);
@@ -77,5 +91,11 @@ export class AuthController {
   @Post('admin/login')
   async adminLogin(@Body() body, @Res({passthrough: true}) res : Response) {
     return this.authService.adminLogin(body.email, body.password, res);
+  }
+
+  @UseGuards(AuthGuard("admin-access-jwt"))
+  @Post('admin/logout')
+  async adminLogout(@Req() req , @Res({ passthrough: true }) res) {
+    return this.authService.adminLogout(req.user.id, res);    
   }
 }

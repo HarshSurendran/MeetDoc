@@ -4,16 +4,18 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class JwtRefreshStrategy extends PassportStrategy(Strategy, "jwt-refresh") {
+export class JwtAdminAccessStrategy extends PassportStrategy(Strategy, "admin-access-jwt") {
   constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_REFRESH_SECRET'),
+      secretOrKey: configService.get<string>('JWT_ADMIN_ACCESS_SECRET'),
     });
   }
 
   async validate(payload: any) {
-    return { userId: payload.sub };
+    console.log(payload,"payload from interceptor")
+    return { id: payload._id, name: payload.name, email: payload.email, role: payload.role };
   }
 }
+

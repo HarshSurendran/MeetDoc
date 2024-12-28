@@ -18,4 +18,4 @@ export class Otp {
 
 export const OtpSchema = SchemaFactory.createForClass(Otp);
 
-OtpSchema.index({ "createdAt": 1 }, { expires: 1 , expireAfterSeconds: 0 });
+OtpSchema.index({ "createdAt": 1 }, { expires: 1 , expireAfterSeconds: 60 });

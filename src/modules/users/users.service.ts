@@ -20,10 +20,8 @@ export class UsersService {
     console.log(user, userDetails);
     if (!user) {
       throw new UnauthorizedException('User not found.');
-    }
-
-    const update = userDetails;
-    return  await this.UserModel.updateOne({_id: id}, update);
+    }    
+    return  await this.UserModel.updateOne({_id: id}, userDetails);
   }
 
   async findAll(): Promise<User[]> {
@@ -32,9 +30,15 @@ export class UsersService {
 
   async getUser(email: string): Promise<any> {
     const user = await this.UserModel.findOne({ email });
-    console.log(user);
+    console.log(user, "From get user");;
     return user
   }
+
+  // async getUserById(id: string): Promise<UserDocument | null> {
+  //   const user = await this.UserModel.findById(id);
+  //   console.log("This is get user method by id", user);
+  //   return user;
+  // }
 
   async allUsers() {
     return await this.UserModel.find();
