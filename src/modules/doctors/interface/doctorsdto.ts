@@ -8,6 +8,10 @@ import {
 import { Address } from 'src/modules/users/schemas/address.schema';
 
 export class CreateDoctorDto {
+
+  @IsString()
+  id: string;
+
   @IsString()
   @MinLength(3)
   readonly name: string;

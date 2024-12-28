@@ -6,6 +6,7 @@ import {
   Get,
   Res,
   Req,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/interface/usersdto';
@@ -68,24 +69,28 @@ export class AuthController {
     const { accessToken, refreshToken } = await this.authService.updateToken(user);
     console.log("reached refreshtoken endpoint",accessToken)
     
-    res.cookie("refreshToken", refreshToken);
+    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
     return { accessToken };
   }
 
+  //Doctor Auth
   @Post('doctor/register')
   async doctorRegister(@Body() body: CreateDoctorDto) {
     return this.authService.doctorRegister(body);
   }
 
   @Post('doctor/verify_otp')
-  async verifyOtp(@Body() body) {
+  async verifyOtp(@Body() body, @Res({passthrough:true}) res) {
     const { otp, ...doctor } = body;
-    return this.authService.doctorVerifyOtp(doctor, otp);
+    console.log(body);
+    return this.authService.doctorVerifyOtp(doctor, otp, res);
   }
 
   @Post('doctor/login')
-  async docLogin(@Body() body) {
-    return this.authService.doctorLogin(body.email, body.password);
+  
+  async docLogin(@Body() body, @Res({ passthrough: true }) res) {
+    console.log(body,"from login endpoint");
+    return this.authService.doctorLogin(body.email, body.password, res);
   }
 
   @Post('admin/login')

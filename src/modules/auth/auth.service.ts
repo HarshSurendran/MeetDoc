@@ -30,6 +30,26 @@ export class AuthService {
     private adminService: AdminService,
   ) { }
   
+  generateDoctorTokens(payload: { _id: string, name: string, email: string, role: string }) {
+    const doctorAccessToken = this.jwtService.sign(
+      payload,
+      {
+        secret: process.env.JWT_DOCTOR_ACCESS_SECRET,
+        expiresIn: "15m"
+      }
+    );
+    const doctorRefreshToken = this.jwtService.sign(
+      { sub: payload._id, email: payload.email },
+      {
+        secret: process.env.JWT_DOCTOR_REFRESH_SECRET,
+        expiresIn: "7d"
+      }
+    );
+    return { doctorAccessToken, doctorRefreshToken };
+  }
+
+
+
   generateAdminTokens(payload: { _id: string, name: string, email: string, role: string }) {
     const accessToken = this.jwtService.sign(
       payload,
@@ -43,7 +63,7 @@ export class AuthService {
       { sub: payload._id, email: payload.email },
       {
         secret: process.env.JWT_ADMIN_REFRESH_SECRET,
-        expiresIn: '7d'
+        expiresIn: "7d"
       }
     );
 
@@ -290,6 +310,8 @@ export class AuthService {
       otp,
       role: 'doctor',
     });
+
+    console.log("Doctor Otp sent", storeOtp);
     await storeOtp.save();
 
     return {
@@ -297,8 +319,9 @@ export class AuthService {
     };
   }
 
-  async doctorVerifyOtp(body: CreateDoctorDto, otp: string) {
+  async doctorVerifyOtp(body: CreateDoctorDto, otp: string, res: Response) {
     const validOtp = await this.OtpModel.findOne({ email: body.email });
+    console.log(validOtp, "Got otp from database");
 
     if (!validOtp) {
       throw new UnauthorizedException('otp expired, click resend.');
@@ -311,14 +334,20 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(body.password, 10);
     body.password = hashedPassword;
 
-
     const doctor = await this.doctorService.create(body);
     const { password, ...doctorInfo } = body;
-    const payload = { name: doctor.name, email: doctor.email, role: 'doctor' };
+    const payload = { _id: doctorInfo.id, name: doctor.name, email: doctor.email, role: 'doctor' };
+
+    const { doctorAccessToken, doctorRefreshToken } = this.generateDoctorTokens(payload);
+
+    res.cookie("doctorRefreshToken", doctorRefreshToken, {
+      httpOnly:true,
+      secure:true
+    })
 
     return {
       doctor: doctorInfo,
-      access_token_doc: this.jwtService.sign(payload),
+      doctorAccessToken
     };
   }
 
@@ -337,19 +366,30 @@ export class AuthService {
     return null;
   }
 
-  async doctorLogin(email: string, password: string) {
+  async doctorLogin(email: string, password: string, res: Response) {
     const docData = await this.validateDoctor(email, password);
+
     if (!docData) {
-      throw new UnauthorizedException('Email or password is wrong');
+      throw new BadRequestException('Email or password is wrong');
     }
     const payload = {
+      _id: docData.id,
       name: docData.name,
       email: docData.email,
       role: 'doctor',
     };
+
+    const { doctorAccessToken, doctorRefreshToken } = await this.generateDoctorTokens(payload);
+    console.log("Login page - access and refresh ", doctorAccessToken)
+    
+    res.cookie("doctorRefreshToken", doctorRefreshToken, {
+      httpOnly: true,
+      secure: true
+    });
+
     return {
       docData,
-      access_token_doc: this.jwtService.sign(payload),
+      doctorAccessToken 
     };
   }
 
