@@ -48,8 +48,6 @@ export class AuthService {
     return { doctorAccessToken, doctorRefreshToken };
   }
 
-
-
   generateAdminTokens(payload: { _id: string, name: string, email: string, role: string }) {
     const accessToken = this.jwtService.sign(
       payload,
@@ -98,8 +96,7 @@ export class AuthService {
         expiresIn: '7d', 
       },
     );
-  }
-  
+  }  
 
   generateOtp(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -290,7 +287,7 @@ export class AuthService {
   async doctorRegister(doctorDto: CreateDoctorDto): Promise<object> {
     const checkDoc = await this.doctorService.getUser(doctorDto.email);
     if (checkDoc) {
-      throw new UnauthorizedException('This email already exist.');
+      throw new BadRequestException('This email already exist.');
     }
 
     const otp: string = this.generateOtp();
@@ -311,8 +308,8 @@ export class AuthService {
       role: 'doctor',
     });
 
-    console.log("Doctor Otp sent", storeOtp);
     await storeOtp.save();
+    console.log("Doctor Otp sent", storeOtp);
 
     return {
       mailSent: true,
@@ -324,11 +321,11 @@ export class AuthService {
     console.log(validOtp, "Got otp from database");
 
     if (!validOtp) {
-      throw new UnauthorizedException('otp expired, click resend.');
+      throw new BadRequestException('otp expired, Please request new otp.');
     }
 
     if (validOtp.role !== 'doctor' || validOtp.otp !== otp) {
-      throw new UnauthorizedException('wrong Otp');
+      throw new BadRequestException('wrong Otp');
     }
 
     const hashedPassword = await bcrypt.hash(body.password, 10);
@@ -391,6 +388,19 @@ export class AuthService {
       docData,
       doctorAccessToken 
     };
+  }
+
+  async doctorLogout(email: string, res: Response) {
+    try {
+      res.cookie('doctorRefreshToken', '', {
+        httpOnly: true,
+        secure: true
+      });
+      await this.doctorService.updateDoctor(email, { refreshToken: "" });
+      return "Successfully logged out"
+    } catch (error) {
+      throw new RequestTimeoutException("Database not responding. Please try again later.");
+    }
   }
 
   // Admin Authentication

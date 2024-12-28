@@ -81,17 +81,22 @@ export class AuthController {
 
   @Post('doctor/verify_otp')
   async verifyOtp(@Body() body, @Res({passthrough:true}) res) {
-    const { otp, ...doctor } = body;
-    console.log(body);
-    return this.authService.doctorVerifyOtp(doctor, otp, res);
+    const { otp, ...doctor } = body;    
+    console.log(otp,doctor)
+    return this.authService.doctorVerifyOtp(doctor.data, otp, res);
   }
 
-  @Post('doctor/login')
-  
+  @Post('doctor/login')  
   async docLogin(@Body() body, @Res({ passthrough: true }) res) {
     console.log(body,"from login endpoint");
     return this.authService.doctorLogin(body.email, body.password, res);
   }
+
+  @Post('doctor/logout')
+  async docLogout(@Body() Body, @Res({ passthrough: true }) res) {
+    console.log("reached logout endpoint ");
+    return this.authService.doctorLogout(Body.email, res);
+  };
 
   @Post('admin/login')
   async adminLogin(@Body() body, @Res({passthrough: true}) res : Response) {

@@ -13,7 +13,7 @@ export class Otp {
   
   @Prop({ required: true })
   role: string;
-
+  
 }
 
 export const OtpSchema = SchemaFactory.createForClass(Otp);

@@ -22,4 +22,8 @@ export class DoctorsService {
   async getUser(email: string): Promise<any> {
     return await this.DoctorModel.findOne({ email });
   }
+
+  async updateDoctor(email: string, data: {}) {
+    return await this.DoctorModel.updateOne({ email }, { $set: data });
+  }
 }
