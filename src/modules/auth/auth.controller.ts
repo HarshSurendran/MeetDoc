@@ -98,6 +98,7 @@ export class AuthController {
     return this.authService.doctorLogout(Body.email, res);
   };
 
+  // Admin Auth
   @Post('admin/login')
   async adminLogin(@Body() body, @Res({passthrough: true}) res : Response) {
     return this.authService.adminLogin(body.email, body.password, res);
@@ -106,6 +107,14 @@ export class AuthController {
   @UseGuards(AuthGuard("admin-access-jwt"))
   @Post('admin/logout')
   async adminLogout(@Req() req , @Res({ passthrough: true }) res) {
-    return this.authService.adminLogout(req.user.id, res);    
+    return this.authService.adminLogout(req.user._id, res);    
+  }
+
+  @UseGuards(AuthGuard("admin-refresh-jwt"))
+  @Get("admin/refreshtoken")
+  async adminRenewTokens(@Req() req, @Res({ passthrough: true }) res) {
+    const admin = req.user;
+    console.log("FRom renewToken admin, ", req.user);
+    return this.authService.adminRenewTokens(admin, res);
   }
 }

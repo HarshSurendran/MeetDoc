@@ -9,8 +9,8 @@ export class JwtAdminRefreshStrategy extends PassportStrategy(Strategy, 'admin-r
   constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (req: Request) => {          
-          return req?.cookies?.refreshToken; 
+        (req: Request) => { 
+          return req?.cookies?.adminRefreshToken; 
         },
       ]),
       ignoreExpiration: false,
@@ -18,8 +18,7 @@ export class JwtAdminRefreshStrategy extends PassportStrategy(Strategy, 'admin-r
     });
   }
 
-    async validate(payload: any) { 
-      console.log(payload,"payload for refreshtoken ")
+    async validate(payload: any) {       
     return { id: payload.sub, email: payload.email }; 
   }
 }

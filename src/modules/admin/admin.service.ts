@@ -5,7 +5,7 @@ import { Model, ObjectId } from 'mongoose';
 import { CreateUserDto } from '../users/interface/usersdto';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcryptjs';
-import { UserDocument } from '../users/schemas/users.schema';
+import { CreateAdminDto } from './interface/admindto';
 
 @Injectable()
 export class AdminService {

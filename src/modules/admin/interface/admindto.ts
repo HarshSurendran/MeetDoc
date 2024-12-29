@@ -5,9 +5,8 @@ import {
   MinLength,
   IsStrongPassword,
 } from 'class-validator';
-import { Address } from '../schemas/address.schema';
 
-export class CreateUserDto {
+export class CreateAdminDto {
   @IsString()
   readonly _id: string;    
     
@@ -25,21 +24,7 @@ export class CreateUserDto {
 
   @IsString()
   readonly gender: string;
-
-  @IsOptional()
-  @IsString()
-  readonly phone?: string;
-
-  @IsOptional()
-  readonly date_of_birth?: Date;
-
-  @IsOptional()
-  @IsString()
-  readonly occupation: string;
-
-  @IsOptional()
-  readonly address: Address;
-
+  
   @IsOptional()
   @IsString()
   readonly refresh_token: string;

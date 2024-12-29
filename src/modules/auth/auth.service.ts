@@ -49,7 +49,7 @@ export class AuthService {
   }
 
   generateAdminTokens(payload: { _id: string, name: string, email: string, role: string }) {
-    const accessToken = this.jwtService.sign(
+    const adminAccessToken = this.jwtService.sign(
       payload,
       {
         secret: process.env.JWT_ADMIN_ACCESS_SECRET,
@@ -57,7 +57,7 @@ export class AuthService {
       }
     );
     
-    const refreshToken = this.jwtService.sign(
+    const adminRefreshToken = this.jwtService.sign(
       { sub: payload._id, email: payload.email },
       {
         secret: process.env.JWT_ADMIN_REFRESH_SECRET,
@@ -66,8 +66,8 @@ export class AuthService {
     );
 
     return {
-      accessToken,
-      refreshToken
+      adminAccessToken,
+      adminRefreshToken
     };
   }
    
@@ -420,7 +420,7 @@ export class AuthService {
   async adminLogin(email: string, password: string, res : Response) {
     const admin = await this.validateAdmin(email, password);
     if (!admin) {
-      throw new UnauthorizedException('Email or password is wrong');
+      throw new BadRequestException('Email or password is wrong');
     }
     const payload = {
       _id: admin._id,
@@ -429,19 +429,19 @@ export class AuthService {
       role: 'admin',
     };
     
-    const { accessToken, refreshToken } = await this.generateAdminTokens(payload); 
+    const { adminAccessToken, adminRefreshToken } = await this.generateAdminTokens(payload); 
 
-    res.cookie("adminRefreshToken", refreshToken, { httpOnly: true, secure: true });
+    res.cookie("adminRefreshToken", adminRefreshToken, { httpOnly: true, secure: true });
 
     return {
       admin,
-      adminAccessToken: accessToken,
+      adminAccessToken: adminAccessToken,
     };
   }
 
   async adminLogout(_id: string, res: Response) {
     try {
-      res.cookie('refreshToken', '', {
+      res.cookie('adminRefreshToken', '', {
         httpOnly: true,
         secure: true
       });
@@ -449,6 +449,26 @@ export class AuthService {
       return "Successfully logged out";
     } catch (error) {
       throw new RequestTimeoutException("Database not responding. Please try again later.");
+    }
+  }
+
+  async adminRenewTokens(admin, res: Response) {
+    const adminData = await this.adminService.getAdmin(admin.email);
+    if (adminData) {
+      const payload = {
+        _id: adminData._id,
+        email: adminData.email,
+        name: adminData.name,
+        role: "admin"
+      }
+      
+      const { adminAccessToken, adminRefreshToken } = this.generateAdminTokens(payload);
+      console.log("Reached renew admin refresh token and created refresha nd accesstoken");
+      res.cookie("adminRefreshToken", adminRefreshToken, { httpOnly: true, secure: true });
+      return {
+        adminAccessToken
+      }
+      
     }
   }
 }

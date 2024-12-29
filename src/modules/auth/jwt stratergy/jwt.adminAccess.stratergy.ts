@@ -14,7 +14,7 @@ export class JwtAdminAccessStrategy extends PassportStrategy(Strategy, "admin-ac
   }
 
   async validate(payload: any) {
-    console.log(payload,"payload from interceptor")
+    console.log(payload,"payload from admin interceptor")
     return { id: payload._id, name: payload.name, email: payload.email, role: payload.role };
   }
 }
