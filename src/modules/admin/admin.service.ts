@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Admin, AdminDocument } from './schemas/admin.schema';
 import { Model, ObjectId } from 'mongoose';
@@ -24,11 +24,6 @@ export class AdminService {
 
   async getUserBlockStatus(email: string) {
     return await this.cache.get(`user:${email}:isBlocked`);
-  }
-
-  async getAllKeys() {
-    const client = await this.cache.store.keys(); // Works for ioredis
-    console.log("all keys", client);
   }
 
   async getAdmin(email: string): Promise<any> {
@@ -69,6 +64,17 @@ export class AdminService {
     } catch (error) {
       throw new InternalServerErrorException;
     }
+  }
+
+  async fetchUser(id: string) {
+    const user = await this.usersService.getUserById(id);
+    if (!user) {
+      throw new BadRequestException("Id is not valid.");
+    }
+    const userObj = user.toObject();
+    delete userObj.password;
+    delete userObj.refresh_token;
+    return userObj;
   }
 
   async updateAdmin(_id: string, data: {}) {

@@ -31,7 +31,12 @@ export class UsersService {
 
   async getUser(email: string): Promise<any> {
     const user = await this.UserModel.findOne({ email });
-    return user
+    return user;
+  }
+
+  async getUserById(id: string) {
+    const user = await this.UserModel.findOne({ _id: id });
+    return user;
   }
 
   // async getUserById(id: string): Promise<UserDocument | null> {

@@ -25,6 +25,11 @@ export class AdminController {
         return await this.adminService.getUsers();
     }
 
+    @Get('users/:id')
+    async fetchUser(@Param() id: { id: string}) {
+        return await this.adminService.fetchUser(id.id);
+    }
+
     @Delete('users/:id')
     async deleteUser(@Param('id') id: string) {
         return await this.userService.deleteUser(id);
