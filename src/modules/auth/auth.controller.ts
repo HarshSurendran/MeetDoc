@@ -16,7 +16,24 @@ import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {} 
+  constructor(private authService: AuthService) { } 
+
+  //Google sign-in  
+  @Post('google/callback')
+  async googleAuthRedirect(@Body() body, @Res({passthrough:true}) res) {
+    console.log("reached google endpoint ", body);
+    const payload = await  this.authService.verifyGoogleToken(body.token);
+
+    const { user, accessToken, refreshToken } = await this.authService.googleAuthentication(payload);
+    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
+    console.log(user,"from google auth")
+
+    return {
+      user,
+      accessToken
+    }
+  }
+
 
   @Post('login')
   async login(@Body() req, @Res({passthrough :true}) res: Response) {
@@ -51,7 +68,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post("logout")
-  async logout(@Body() body, @Res({ passthrough: true}) res: Response) {
+  async logout(@Body() body, @Res({ passthrough: true}) res) {
     return this.authService.logout(body._id, res);
   }
 
@@ -100,7 +117,7 @@ export class AuthController {
 
   // Admin Auth
   @Post('admin/login')
-  async adminLogin(@Body() body, @Res({passthrough: true}) res : Response) {
+  async adminLogin(@Body() body, @Res({passthrough: true}) res ) {
     return this.authService.adminLogin(body.email, body.password, res);
   }
 

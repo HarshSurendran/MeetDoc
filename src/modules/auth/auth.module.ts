@@ -15,6 +15,7 @@ import { JwtAccessStrategy } from './jwt stratergy/jwt.access.strategy';
 import { JwtRefreshStrategy } from './jwt stratergy/jwt.refresh.stratergy';
 import { JwtAdminAccessStrategy } from './jwt stratergy/jwt.adminAccess.stratergy';
 import { JwtAdminRefreshStrategy } from './jwt stratergy/jwt.adminRefresh.stratergy';
+import { GoogleStrategy } from './google.stratergy';
 
 @Module({
   imports: [
@@ -34,7 +35,7 @@ import { JwtAdminRefreshStrategy } from './jwt stratergy/jwt.adminRefresh.strate
     // }),
     JwtModule.register({})
   ],
-  providers: [AuthService, JwtAccessStrategy, JwtRefreshStrategy, JwtAdminAccessStrategy, JwtAdminRefreshStrategy ],
+  providers: [AuthService, JwtAccessStrategy, JwtRefreshStrategy, JwtAdminAccessStrategy, JwtAdminRefreshStrategy, GoogleStrategy ],
   controllers: [AuthController],
 })
 export class AuthModule {}

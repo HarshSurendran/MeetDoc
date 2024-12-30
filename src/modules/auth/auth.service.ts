@@ -18,7 +18,8 @@ import { Model } from 'mongoose';
 import { CreateDoctorDto } from '../doctors/interface/doctorsdto';
 import { DoctorsService } from '../doctors/doctors.service';
 import { AdminService } from '../admin/admin.service';
-import { Response } from 'express';
+import { OAuth2Client } from 'google-auth-library';
+
 
 
 @Injectable()
@@ -32,6 +33,73 @@ export class AuthService {
     private adminService: AdminService,
     
   ) { }
+
+
+  client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+  
+  async verifyGoogleToken(token: { credential: string, clientId: string, select_by: string}) {
+  const ticket = await this.client.verifyIdToken({
+    idToken: token?.credential,
+    audience: process.env.GOOGLE_CLIENT_ID,
+  });
+    const payload = ticket.getPayload();
+    console.log(payload, "this is the payload from verifyToken");
+    const data = {
+      name: payload.name,
+      email: payload.email
+    } as CreateUserDto;
+    return data;
+  };
+
+  async googleAuthentication(payload :Partial<CreateDoctorDto>) {
+    const { email, name } = payload; 
+    const user = await this.usersService.getUser(email);
+    //If user already exists
+    if (user) {
+      const blockStatus = await this.adminService.getUserBlockStatus(email);    
+      if (blockStatus === "true") {
+        console.log("entered blck")
+        throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+      }
+
+      const payload = {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: 'user',
+      };
+  
+      const accessToken = await this.generateAccessToken(payload);
+      const refreshToken = await this.generateRefreshToken(user._id, user.email);
+      const update = { refresh_token: refreshToken }    
+      delete user.refresh_token;
+      delete user.password;
+    
+      await this.usersService.updateUser(user._id, update);
+  
+      return {
+        user,
+        accessToken, 
+        refreshToken  
+      };  
+    }
+
+    //Registering new user
+    const newUser = await this.usersService.create(payload);
+
+    const data = { id: newUser.id, name: newUser.name, email: newUser.email, role: 'newUser' };    
+    const accessToken = await this.generateAccessToken(data);
+    const refreshToken = await this.generateRefreshToken(newUser.id, newUser.email);
+    const update = { refresh_token : refreshToken}
+  
+    await this.usersService.updateUser(newUser.id, update);
+    
+    return {
+      user: newUser,
+      accessToken,
+      refreshToken
+    };
+  }
 
   
   generateDoctorTokens(payload: { _id: string, name: string, email: string, role: string }) {
@@ -258,7 +326,7 @@ export class AuthService {
     };
   }
 
-  async logout(_id: string, res : Response) {
+  async logout(_id: string, res ) {
     // const user = this.usersService.getUser(_id);
     // if (!user) {
     //   throw new RequestTimeoutException("Database not responding. Please try again");
@@ -336,7 +404,7 @@ export class AuthService {
     };
   }
 
-  async doctorVerifyOtp(body: CreateDoctorDto, otp: string, res: Response) {
+  async doctorVerifyOtp(body: CreateDoctorDto, otp: string, res) {
     const validOtp = await this.OtpModel.findOne({ email: body.email });
     console.log(validOtp, "Got otp from database");
 
@@ -383,7 +451,7 @@ export class AuthService {
     return null;
   }
 
-  async doctorLogin(email: string, password: string, res: Response) {
+  async doctorLogin(email: string, password: string, res) {
     const docData = await this.validateDoctor(email, password);
 
     if (!docData) {
@@ -410,7 +478,7 @@ export class AuthService {
     };
   }
 
-  async doctorLogout(email: string, res: Response) {
+  async doctorLogout(email: string, res) {
     try {
       res.cookie('doctorRefreshToken', '', {
         httpOnly: true,
@@ -437,7 +505,7 @@ export class AuthService {
     return null;
   }
 
-  async adminLogin(email: string, password: string, res : Response) {
+  async adminLogin(email: string, password: string, res ) {
     const admin = await this.validateAdmin(email, password);
     if (!admin) {
       throw new BadRequestException('Email or password is wrong');
@@ -459,7 +527,7 @@ export class AuthService {
     };
   }
 
-  async adminLogout(_id: string, res: Response) {
+  async adminLogout(_id: string, res) {
     try {
       res.cookie('adminRefreshToken', '', {
         httpOnly: true,
@@ -472,7 +540,7 @@ export class AuthService {
     }
   }
 
-  async adminRenewTokens(admin, res: Response) {
+  async adminRenewTokens(admin, res) {
     const adminData = await this.adminService.getAdmin(admin.email);
     if (adminData) {
       const payload = {

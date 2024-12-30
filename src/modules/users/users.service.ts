@@ -9,7 +9,7 @@ import { CreateUserDto } from './interface/usersdto';
 export class UsersService {
     constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: Partial<CreateUserDto>): Promise<User> {
     const createdUser = new this.UserModel(createUserDto);
     return await createdUser.save();
   }
