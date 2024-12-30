@@ -4,6 +4,7 @@ import {
   IsOptional,
   MinLength,
   IsStrongPassword,
+  IsBoolean,
 } from 'class-validator';
 import { Address } from '../schemas/address.schema';
 
@@ -40,7 +41,10 @@ export class CreateUserDto {
   @IsOptional()
   readonly address: Address;
 
+  @IsBoolean()
+  isBlocked: Boolean;
+
   @IsOptional()
   @IsString()
-  readonly refresh_token: string;
+  refresh_token: string;
 }

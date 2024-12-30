@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  HttpException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
@@ -19,6 +20,7 @@ import { DoctorsService } from '../doctors/doctors.service';
 import { AdminService } from '../admin/admin.service';
 import { Response } from 'express';
 
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -28,7 +30,9 @@ export class AuthService {
     private mailService: MailService,
     private doctorService: DoctorsService,
     private adminService: AdminService,
+    
   ) { }
+
   
   generateDoctorTokens(payload: { _id: string, name: string, email: string, role: string }) {
     const doctorAccessToken = this.jwtService.sign(
@@ -217,11 +221,22 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
+    const blockStatus = await this.adminService.getUserBlockStatus(email);
+    
+    if (blockStatus === "true") {
+      console.log("entered blck")
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+
     const userData = await this.validateUser(email, password);
    
     if (!userData) {
       throw new BadRequestException('Email or password is wrong');
     }
+    if (userData.isBlocked) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }    
+
     const payload = {
       id: userData._id,
       name: userData.name,
@@ -231,7 +246,8 @@ export class AuthService {
 
     const accessToken = await this.generateAccessToken(payload);
     const refreshToken = await this.generateRefreshToken(userData._id, userData.email);
-    const update = { refresh_token : refreshToken}
+    const update = { refresh_token: refreshToken }    
+    delete userData.refresh_token;
   
     await this.usersService.updateUser(userData._id, update);
 
@@ -261,6 +277,10 @@ export class AuthService {
 
   async updateToken(data : {userId: string, email: string}) {
     const user = await this.usersService.getUser(data.email);
+
+    if (user.isBlocked) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
 
     if (user) {
       const payload = {

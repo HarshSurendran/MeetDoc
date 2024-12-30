@@ -8,6 +8,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MailModule } from './modules/mail/mail.module';
 import { MongooseConfigModule } from './dbconfig/mongoose.config';
 import { LoggerMiddleware } from './logger/logger.middleware';
+import { GlobalCacheModule } from './modules/redis/GlobalCache.module';
+
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { LoggerMiddleware } from './logger/logger.middleware';
     UsersModule,
     AuthModule,
     MailModule,
-    
+    GlobalCacheModule,
   ],
   controllers: [AppController],
   providers: [AppService],

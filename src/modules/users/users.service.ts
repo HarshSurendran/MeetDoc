@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { User, UserDocument } from './schemas/users.schema';
@@ -17,10 +17,11 @@ export class UsersService {
   async updateUser(id: string, userDetails: any) {
     
     const user = await this.UserModel.find({ _id: id });
-    console.log(user, userDetails);
+
     if (!user) {
-      throw new UnauthorizedException('User not found.');
-    }    
+      throw new BadRequestException('User not found.');
+    }
+
     return  await this.UserModel.updateOne({_id: id}, userDetails);
   }
 
@@ -30,7 +31,6 @@ export class UsersService {
 
   async getUser(email: string): Promise<any> {
     const user = await this.UserModel.findOne({ email });
-    console.log(user, "From get user");;
     return user
   }
 
@@ -58,7 +58,7 @@ export class UsersService {
     );
     if (!updatedUser) {
       throw new NotFoundException;
-    }    
+    }
     return updatedUser;
   }
 }

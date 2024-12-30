@@ -6,7 +6,7 @@ import { Admin, AdminSchema } from './schemas/admin.schema';
 import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [
+  imports: [   
     UsersModule,
     MongooseModule.forFeature([{ name: Admin.name, schema: AdminSchema }])
   ],

@@ -1,11 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
+import { Cache } from '@nestjs/cache-manager';
+
+
 
 @Injectable()
 export class JwtAccessStrategy extends PassportStrategy(Strategy, "jwt") {
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ConfigService,  @Inject('CACHE_MANAGER') private cacheManager: Cache) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -14,6 +17,13 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, "jwt") {
   }
 
   async validate(payload: any) {
+    const isBlocked = await this.cacheManager.get<string>(`user:${payload.email}:isBlocked`);
+    console.log(`Block status for ${payload.email}: ${isBlocked}`);
+
+    if (isBlocked === 'true') {
+      throw new HttpException("User is blocked by admin", HttpStatus.FORBIDDEN);
+    }
+    
     return { userId: payload.sub, email: payload.email };
   }
 }

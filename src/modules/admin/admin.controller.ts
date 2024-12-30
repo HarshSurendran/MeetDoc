@@ -17,7 +17,7 @@ export class AdminController {
     async createUser(@Body() body: CreateUserDto): Promise<{ status: Boolean}> {
         return await this.adminService.createUser(body);
     }
-
+    
     
     @Get('users')
     async getUser() {
