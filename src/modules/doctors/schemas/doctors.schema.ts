@@ -37,8 +37,8 @@ export class Doctor {
   @Prop()
   specialisation: string;
 
-  @Prop()
-  verified: Boolean;
+  @Prop({ required: true, default: false })
+  isVerified: Boolean;
 
   @Prop()
   about: string;

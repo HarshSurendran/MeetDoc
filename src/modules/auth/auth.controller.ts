@@ -115,6 +115,16 @@ export class AuthController {
     return this.authService.doctorLogout(Body.email, res);
   };
 
+  @Post('doctor/verify')
+  async docVerify(@Body() body,) {
+    console.log("Verification data from doctor", body);
+    //should integrate s3 bucket to store the files
+    body.educationDetails.certificateFile = "";
+    body.postGraduationDetails.certificateFile = "";
+    body.doctorId = "fasdfhka"
+    return this.authService.verifyDoc(body);
+    }
+
   // Admin Auth
   @Post('admin/login')
   async adminLogin(@Body() body, @Res({passthrough: true}) res ) {

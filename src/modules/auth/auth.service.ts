@@ -19,6 +19,7 @@ import { CreateDoctorDto } from '../doctors/interface/doctorsdto';
 import { DoctorsService } from '../doctors/doctors.service';
 import { AdminService } from '../admin/admin.service';
 import { OAuth2Client } from 'google-auth-library';
+import { DocVerificationDto } from '../doctors/interface/docverificationdto';
 
 
 
@@ -406,7 +407,7 @@ export class AuthService {
 
   async doctorVerifyOtp(body: CreateDoctorDto, otp: string, res) {
     const validOtp = await this.OtpModel.findOne({ email: body.email });
-    console.log(validOtp, "Got otp from database");
+    console.log(validOtp, "Got otp from database", body);
 
     if (!validOtp) {
       throw new BadRequestException('otp expired, Please request new otp.');
@@ -420,6 +421,7 @@ export class AuthService {
     body.password = hashedPassword;
 
     const doctor = await this.doctorService.create(body);
+    console.log("THis is the data after creating a document in database -", doctor)
     const { password, ...doctorInfo } = body;
     const payload = { _id: doctorInfo.id, name: doctor.name, email: doctor.email, role: 'doctor' };
 
@@ -488,6 +490,17 @@ export class AuthService {
       return "Successfully logged out"
     } catch (error) {
       throw new RequestTimeoutException("Database not responding. Please try again later.");
+    }
+  }
+
+  async verifyDoc(data: DocVerificationDto) {
+    const savedData = await this.doctorService.createDocVerification(data);
+    console.log(savedData, "This is sved data")
+    if (!savedData) {
+      throw new InternalServerErrorException();
+    }
+    return {
+      success: true
     }
   }
 
