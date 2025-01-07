@@ -119,9 +119,7 @@ export class AuthController {
   @Post('doctor/verify')
   async docVerify(@Body() body,) {
     console.log("Verification data from doctor", body);
-    //should integrate s3 bucket to store the files
-    body.educationDetails.certificateFile = "";
-    body.postGraduationDetails.certificateFile = "";    
+    //should integrate s3 bucket to store the files    
     return this.authService.createVerificationDoc(body);
   }
   

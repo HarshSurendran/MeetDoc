@@ -9,6 +9,8 @@ import { MailModule } from './modules/mail/mail.module';
 import { MongooseConfigModule } from './dbconfig/mongoose.config';
 import { LoggerMiddleware } from './logger/logger.middleware';
 import { GlobalCacheModule } from './modules/redis/GlobalCache.module';
+import { S3Module } from './modules/s3/s3.module';
+import { S3Service } from './modules/s3/s3.service'; 
 
 
 @Module({
@@ -21,9 +23,10 @@ import { GlobalCacheModule } from './modules/redis/GlobalCache.module';
     AuthModule,
     MailModule,
     GlobalCacheModule,
+    S3Module,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, S3Service],
 })
   
 export class AppModule {

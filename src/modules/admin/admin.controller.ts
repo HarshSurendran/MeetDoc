@@ -2,15 +2,14 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@n
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/interface/usersdto';
 import { AdminService } from './admin.service';
-import { addAbortSignal } from 'stream';
-import { ObjectId } from 'mongoose';
 import { AuthGuard } from '@nestjs/passport';
 
 @UseGuards(AuthGuard("admin-access-jwt"))
 @Controller('admin')
 export class AdminController {
-    constructor(private adminService: AdminService,
-        private userService: UsersService
+    constructor(
+        private adminService: AdminService,
+        private userService: UsersService,
     ) {}
 
     @Post('users')
@@ -50,4 +49,6 @@ export class AdminController {
     async getVerificationRequests() {
         return await this.adminService.getVerificationRequests();
     }
+
+    
 }

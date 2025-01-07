@@ -16,9 +16,11 @@ import { JwtRefreshStrategy } from './jwt stratergy/jwt.refresh.stratergy';
 import { JwtAdminAccessStrategy } from './jwt stratergy/jwt.adminAccess.stratergy';
 import { JwtAdminRefreshStrategy } from './jwt stratergy/jwt.adminRefresh.stratergy';
 import { GoogleStrategy } from './google.stratergy';
+import { S3Module } from '../s3/s3.module';
 
 @Module({
   imports: [
+    S3Module,
     UsersModule,
     AdminModule,
     DoctorsModule,
