@@ -181,10 +181,7 @@ export class AuthService {
     if (checkUser) {
       throw new UnauthorizedException('This email already exist.');
     }
-    // storing the data of user in redux
-    // const hashedPassword = await bcrypt.hash(userDto.password, 10);
-    // userDto.password = hashedPassword;
-    // const user = await this.usersService.create(userDto);
+   
 
     const otp: string = this.generateOtp();
     
@@ -421,10 +418,13 @@ export class AuthService {
     body.password = hashedPassword;
 
     const doctor = await this.doctorService.create(body);
-    console.log("THis is the data after creating a document in database -", doctor)
-    const { password, ...doctorInfo } = body;
-    const payload = { _id: doctorInfo.id, name: doctor.name, email: doctor.email, role: 'doctor' };
-
+   
+    //  const { password, ...doctorInfo } = doctor;
+    const payload = { _id: doctor._id as string, name: doctor.name, email: doctor.email, role: 'doctor' };
+    // console.log("for doctor", doctorInfo);
+    const doctorObject = doctor.toObject();
+    
+    console.log("for doctor", doctorObject); 
     const { doctorAccessToken, doctorRefreshToken } = this.generateDoctorTokens(payload);
 
     res.cookie("doctorRefreshToken", doctorRefreshToken, {
@@ -433,7 +433,7 @@ export class AuthService {
     })
 
     return {
-      doctor: doctorInfo,
+      doctor: doctorObject,
       doctorAccessToken
     };
   }
@@ -493,7 +493,7 @@ export class AuthService {
     }
   }
 
-  async verifyDoc(data: DocVerificationDto) {
+  async createVerificationDoc(data: DocVerificationDto) {
     const savedData = await this.doctorService.createDocVerification(data);
     console.log(savedData, "This is sved data")
     if (!savedData) {
@@ -502,6 +502,30 @@ export class AuthService {
     return {
       success: true
     }
+  }
+
+  async checkVerification(id: string) {
+    const data = await this.doctorService.getDocVerification(id);
+    if (!data) {
+      throw new InternalServerErrorException();
+    }
+    return {
+      success: true
+    };
+  }
+
+  async verifyDoctor(id: string) {
+    const doctor = await this.doctorService.getDoctorById(id);
+    console.log(doctor, "Doctor data from database");
+    if (!doctor) {
+      throw new BadRequestException("Id is not valid.");
+    }
+    const update = { isVerified: true };
+    await this.doctorService.updateDoctor(doctor.email, update);
+    await this.doctorService.updateDoctorDocuments(id, update);
+    return {
+      success: true
+    };
   }
 
   // Admin Authentication

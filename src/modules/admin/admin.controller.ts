@@ -46,5 +46,8 @@ export class AdminController {
         return await this.adminService.toggleBlock(id);
     }
 
-
+    @Get('verification-requests')
+    async getVerificationRequests() {
+        return await this.adminService.getVerificationRequests();
+    }
 }

@@ -54,6 +54,7 @@ export class Doctor {
 
   @Prop()
   refresh_token: string;
+
 }
 
 export const DoctorSchema = SchemaFactory.createForClass(Doctor);

@@ -13,7 +13,7 @@ export class DoctorsService {
     @InjectModel(DocVerification.name) private DoctorVerificationModel: Model<DocVerificationDocument>
   ) {}
 
-  async create(body: CreateDoctorDto): Promise<Doctor> {
+  async create(body: CreateDoctorDto) {
     const createdDoctor = new this.DoctorModel(body);
     return await createdDoctor.save();
   }
@@ -25,6 +25,9 @@ export class DoctorsService {
   async getUser(email: string): Promise<any> {
     return await this.DoctorModel.findOne({ email });
   }
+  async getDoctorById(id: string): Promise<any> {
+    return await this.DoctorModel.findOne({ _id: id });
+  }
 
   async updateDoctor(email: string, data: {}) {
     return await this.DoctorModel.updateOne({ email }, { $set: data });
@@ -33,5 +36,17 @@ export class DoctorsService {
   async createDocVerification(body: DocVerificationDto): Promise<DocVerification> {
     const createdVerification = new this.DoctorVerificationModel(body);
     return await createdVerification.save();
+  }
+
+  async getDocVerification(id: string): Promise<any> {
+    return await this.DoctorVerificationModel.findOne({ doctorId: id });
+  }
+
+  async getVerficationsRequests(): Promise<DocVerification[]> {
+    return this.DoctorVerificationModel.find().exec();
+  }
+
+  async updateDoctorDocuments(id: string, data: {}) {
+    return await this.DoctorVerificationModel.updateOne({ doctorId: id }, { $set: data });
   }
 }

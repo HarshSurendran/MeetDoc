@@ -9,6 +9,7 @@ import { Address } from 'src/modules/users/schemas/address.schema';
 
 export class CreateDoctorDto {
 
+  @IsOptional()
   @IsString()
   id: string;
 

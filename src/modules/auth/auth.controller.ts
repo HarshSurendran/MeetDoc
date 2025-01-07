@@ -7,6 +7,8 @@ import {
   Res,
   Req,
   HttpStatus,
+  Param,
+  Patch,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/interface/usersdto';
@@ -33,8 +35,7 @@ export class AuthController {
       accessToken
     }
   }
-
-
+  
   @Post('login')
   async login(@Body() req, @Res({passthrough :true}) res: Response) {
     const response = await this.authService.login(req.email, req.password);
@@ -120,10 +121,21 @@ export class AuthController {
     console.log("Verification data from doctor", body);
     //should integrate s3 bucket to store the files
     body.educationDetails.certificateFile = "";
-    body.postGraduationDetails.certificateFile = "";
-    body.doctorId = "fasdfhka"
-    return this.authService.verifyDoc(body);
-    }
+    body.postGraduationDetails.certificateFile = "";    
+    return this.authService.createVerificationDoc(body);
+  }
+  
+  @Get('doctor/checkVerification/:id')
+  async checkVerification(@Param('id') id: string) {
+    console.log("reached check verification endpoint", id);
+    return this.authService.checkVerification(id);
+  }
+
+  @Patch('doctor/verify/:id')
+  async verifyDoctor(@Param('id') id: string) {
+    console.log("reached verify doctor endpoint", id);
+    return this.authService.verifyDoctor(id);
+  }
 
   // Admin Auth
   @Post('admin/login')

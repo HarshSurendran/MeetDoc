@@ -6,14 +6,17 @@ import { CreateUserDto } from '../users/interface/usersdto';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { Cache } from '@nestjs/cache-manager';
+import { DoctorsService } from '../doctors/doctors.service';
 
 
 @Injectable()
 export class AdminService {
   constructor(
     @InjectModel(Admin.name) private AdminModel: Model<AdminDocument>,
+    @Inject('CACHE_MANAGER') private cache: Cache,    
     private usersService: UsersService,
-    @Inject('CACHE_MANAGER') private cache: Cache    
+    private doctorService: DoctorsService
+    
   ) { }
 
   
@@ -79,6 +82,10 @@ export class AdminService {
 
   async updateAdmin(_id: string, data: {}) {
     return await this.AdminModel.updateOne({ _id: _id }, { $set: data} )
+  }
+
+  async getVerificationRequests() {
+    return await this.doctorService.getVerficationsRequests();
   }
 
 }
