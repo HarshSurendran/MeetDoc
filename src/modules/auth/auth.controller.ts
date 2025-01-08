@@ -9,6 +9,7 @@ import {
   HttpStatus,
   Param,
   Patch,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/interface/usersdto';
@@ -125,7 +126,7 @@ export class AuthController {
   
   @Get('doctor/checkVerification/:id')
   async checkVerification(@Param('id') id: string) {
-    console.log("reached check verification endpoint", id);
+    console.log("reached check verification endpoint", id);    
     return this.authService.checkVerification(id);
   }
 

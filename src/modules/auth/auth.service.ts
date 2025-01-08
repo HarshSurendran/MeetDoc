@@ -179,11 +179,11 @@ export class AuthService {
   //User Registeration 
   async register(userDto: CreateUserDto): Promise<object> {
     const checkUser = await this.usersService.getUser(userDto.email);
+    console.log("entered register", checkUser, userDto.email)
     if (checkUser) {
-      throw new UnauthorizedException('This email already exist.');
+      throw new BadRequestException('This email already exist.');
     }
    
-
     const otp: string = this.generateOtp();
     
     const mailInfo = await this.mailService.sendMail(

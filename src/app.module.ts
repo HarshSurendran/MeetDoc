@@ -7,7 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MailModule } from './modules/mail/mail.module';
 import { MongooseConfigModule } from './dbconfig/mongoose.config';
-import { LoggerMiddleware } from './logger/logger.middleware';
+import { LoggerMiddleware } from './common/middlewares/logger/logger.middleware';
 import { GlobalCacheModule } from './modules/redis/GlobalCache.module';
 import { S3Module } from './modules/s3/s3.module';
 import { S3Service } from './modules/s3/s3.service'; 
