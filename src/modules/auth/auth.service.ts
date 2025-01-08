@@ -510,17 +510,17 @@ export class AuthService {
       throw new InternalServerErrorException();
     }
     return {
-      success: true
+      data
     };
   }
 
-  async verifyDoctor(id: string) {
+  async verifyDoctor(id: string, status: Boolean) {
     const doctor = await this.doctorService.getDoctorById(id);
     console.log(doctor, "Doctor data from database");
     if (!doctor) {
       throw new BadRequestException("Id is not valid.");
     }
-    const update = { isVerified: true };
+    const update = { isVerified: status };
     await this.doctorService.updateDoctor(doctor.email, update);
     await this.doctorService.updateDoctorDocuments(id, update);
     return {

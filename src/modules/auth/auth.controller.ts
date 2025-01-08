@@ -130,9 +130,9 @@ export class AuthController {
   }
 
   @Patch('doctor/verify/:id')
-  async verifyDoctor(@Param('id') id: string) {
-    console.log("reached verify doctor endpoint", id);
-    return this.authService.verifyDoctor(id);
+  async verifyDoctor(@Param('id') id: string, @Body() body) {
+    console.log("reached verify doctor endpoint", id, body);
+    return this.authService.verifyDoctor(id, body.status);
   }
 
   // Admin Auth

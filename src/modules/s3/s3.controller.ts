@@ -1,4 +1,4 @@
-import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { S3Service } from './s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -11,5 +11,10 @@ export class S3Controller {
     async uploadFile(@UploadedFile() file: Express.Multer.File) {
         console.log("reached upload file endpoint", file);
         return this.s3Service.uploadSingleFile({ file, isPublic: false });
+    }
+
+    @Get('certificate/:key')
+    async getCertificate(@Param('key') key: string) {
+        return this.s3Service.getPresignedSignedUrl(key);
     }
 }
