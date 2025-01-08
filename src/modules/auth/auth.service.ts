@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   RequestTimeoutException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -277,7 +278,13 @@ export class AuthService {
     email: string,
     pass: string,
   ): Promise<Omit<CreateUserDto, 'password'> | null> {    
-    const user = await this.usersService.getUser(email);   
+    const user = await this.usersService.getUser(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (!user.password) {
+      throw new BadRequestException('Please use google sign in');
+    }
     if (user && (await bcrypt.compare(pass, user.password))) {
       const userObj = user.toObject();
       delete userObj.password;
@@ -288,13 +295,14 @@ export class AuthService {
 
   async login(email: string, password: string) {
     const blockStatus = await this.adminService.getUserBlockStatus(email);
-    
+
     if (blockStatus === "true") {
       console.log("entered blck")
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
 
     const userData = await this.validateUser(email, password);
+    console.log(userData, "user data from database")
    
     if (!userData) {
       throw new BadRequestException('Email or password is wrong');
