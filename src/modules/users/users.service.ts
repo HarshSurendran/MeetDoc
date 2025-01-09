@@ -14,15 +14,14 @@ export class UsersService {
     return await createdUser.save();
   }
 
-  async updateUser(id: string, userDetails: any) {
-    
+  async updateUser(id: string, userDetails: any) {    
     const user = await this.UserModel.find({ _id: id });
-
     if (!user) {
-      throw new BadRequestException('User not found.');
+      throw new NotFoundException('User not found.');
     }
-
-    return  await this.UserModel.updateOne({_id: id}, userDetails);
+    const updatedUser = await this.UserModel.updateOne({ _id: id }, userDetails);
+    console.log("Response from update user", updatedUser);
+    return updatedUser;
   }
 
   async findAll(): Promise<User[]> {
@@ -34,16 +33,17 @@ export class UsersService {
     return user;
   }
 
-  async getUserById(id: string) {
+  async getUserById(id: string): Promise<Partial<UserDocument> | null> {
     const user = await this.UserModel.findOne({ _id: id });
-    return user;
+    if (!user) {
+      throw new NotFoundException('User not found. Invalid ID');
+    }
+    const userData = user.toObject();
+    delete userData.password;
+    delete userData.refresh_token;
+    return userData;
   }
-
-  // async getUserById(id: string): Promise<UserDocument | null> {
-  //   const user = await this.UserModel.findById(id);
-  //   console.log("This is get user method by id", user);
-  //   return user;
-  // }
+ 
 
   async allUsers() {
     return await this.UserModel.find();
