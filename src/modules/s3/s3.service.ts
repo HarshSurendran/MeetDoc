@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { Express } from 'express';
@@ -58,4 +58,18 @@ export class S3Service {
 
         return { url };
     }
+
+    async deleteFile(key: string): Promise<void> {
+        try {
+          const command = new DeleteObjectCommand({
+            Bucket: this.bucketName,
+            Key: key,
+          });
+    
+          await this.client.send(command);
+          console.log(`File deleted successfully: ${key}`);
+        } catch (error) {
+          throw new Error(`Failed to delete file: ${error.message}`);
+        }
+      }
 }

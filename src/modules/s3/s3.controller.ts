@@ -13,7 +13,7 @@ export class S3Controller {
         return this.s3Service.uploadSingleFile({ file, isPublic: false });
     }
 
-    @Get('certificate/:key')
+    @Get('file/:key')
     async getCertificate(@Param('key') key: string) {
         return this.s3Service.getPresignedSignedUrl(key);
     }
