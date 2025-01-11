@@ -11,6 +11,8 @@ import { LoggerMiddleware } from './common/middlewares/logger/logger.middleware'
 import { GlobalCacheModule } from './modules/redis/GlobalCache.module';
 import { S3Module } from './modules/s3/s3.module';
 import { S3Service } from './modules/s3/s3.service'; 
+import { BookingsModule } from './modules/bookings/bookings.module';
+import { SlotsModule } from './modules/slots/slots.module';
 
 
 @Module({
@@ -24,6 +26,8 @@ import { S3Service } from './modules/s3/s3.service';
     MailModule,
     GlobalCacheModule,
     S3Module,
+    BookingsModule,
+    SlotsModule,
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],
