@@ -119,7 +119,6 @@ export class AuthController {
   @Post('doctor/verify')
   async docVerify(@Body() body,) {
     console.log("Verification data from doctor", body);
-    //should integrate s3 bucket to store the files    
     return this.authService.createVerificationDoc(body);
   }
   
@@ -130,9 +129,9 @@ export class AuthController {
   }
 
   @Patch('doctor/verify/:id')
-  async verifyDoctor(@Param('id') id: string, @Body() body) {
+  async verifyDoctor(@Param('id') id: string, @Body() body : Partial<CreateDoctorDto> ) {
     console.log("reached verify doctor endpoint", id, body);
-    return this.authService.verifyDoctor(id, body.status);
+    return this.authService.verifyDoctor(id, body);
   }
 
   // Admin Auth

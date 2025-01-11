@@ -28,7 +28,7 @@ export class DoctorsService {
     return await this.DoctorModel.findOne({ email });
   }
 
-  async getDoctorById(id: string): Promise<any> {
+  async getDoctorById(id: string): Promise<Partial<CreateDoctorDto>> {
     return await this.DoctorModel.findOne({ _id: id });
   }
 

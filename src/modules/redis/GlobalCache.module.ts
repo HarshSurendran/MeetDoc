@@ -9,7 +9,7 @@ import * as redisStore from 'cache-manager-ioredis';
       store: redisStore,
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT) || 6379,
-      ttl: 900, // Time-to-live for cache entries in seconds
+      ttl: 900, 
     }),
   ],
   exports: [CacheModule],

@@ -524,15 +524,21 @@ export class AuthService {
     };
   }
 
-  async verifyDoctor(id: string, status: Boolean) {
+  async verifyDoctor(id: string, data: Partial<CreateDoctorDto>) {
     const doctor = await this.doctorService.getDoctorById(id);
-    console.log(doctor, "Doctor data from database");
     if (!doctor) {
       throw new BadRequestException("Id is not valid.");
     }
-    const update = { isVerified: status };
+    const update = {occupation: '', specialisation: '', isVerified: false as Boolean }
+    if (data.masterDegree.length != 0) {
+      update.occupation = `${data.masterDegree}, ${data.degree}`
+    } else {
+      update.occupation = data.degree;
+    }
+    update.specialisation = data.specialisation;
+    update.isVerified = data.isVerified;
     await this.doctorService.updateDoctor(doctor.email, update);
-    await this.doctorService.updateDoctorDocuments(id, update);
+    await this.doctorService.updateDoctorDocuments(id, {isVerified: data.isVerified});
     return {
       success: true
     };

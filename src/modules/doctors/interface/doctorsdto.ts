@@ -4,6 +4,7 @@ import {
   IsOptional,
   MinLength,
   IsStrongPassword,
+  IsBoolean,
 } from 'class-validator';
 import { Address } from 'src/modules/users/schemas/address.schema';
 
@@ -37,11 +38,22 @@ export class CreateDoctorDto {
 
   @IsOptional()
   @IsString()
-  readonly occupation: string;
+  readonly qualification: string;
+
+  @IsOptional()
+  @IsString()
+  degree: string;
+
+  @IsOptional()
+  @IsString()
+  masterDegree: string;
 
   @IsOptional()
   readonly address: Address;
 
   @IsOptional()
   readonly specialisation: string;
+
+  @IsBoolean()
+  isVerified: Boolean;
 }
