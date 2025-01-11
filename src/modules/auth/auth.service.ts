@@ -226,7 +226,9 @@ export class AuthService {
     body.password = hashedPassword;
 
     const user = await this.usersService.create(body);
-    const { password, ...userInfo } = body;
+    
+    const { password, ...userInfo } = user.toObject();
+    console.log("This is the userInfo after saving in database", userInfo, "------", user);
 
     const payload = { id: user.id, name: user.name, email: user.email, role: 'user' };    
     const accessToken = await this.generateAccessToken(payload);
@@ -515,7 +517,7 @@ export class AuthService {
   async checkVerification(id: string) {
     const data = await this.doctorService.getDocVerification(id);
     if (!data) {
-      throw new InternalServerErrorException();
+      throw new NotFoundException("User is not verified.");
     }
     return {
       data

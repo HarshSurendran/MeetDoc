@@ -11,7 +11,7 @@ export class UsersService {
   constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>,
   private s3Service: S3Service) { }
 
-  async create(createUserDto: Partial<CreateUserDto>): Promise<User> {
+  async create(createUserDto: Partial<CreateUserDto>): Promise<UserDocument> {
     const createdUser = new this.UserModel(createUserDto);
     return await createdUser.save();
   }

@@ -42,9 +42,9 @@ export class S3Service {
         };
     }
 
-    async getFileUrl(key: string) {
-        return { url: `https://${this.bucketName}.s3.amazonaws.com/${key}` };
-    }
+    // async getFileUrl(key: string) {
+    //     return { url: `https://${this.bucketName}.s3.amazonaws.com/${key}` };
+    // }
 
     async getPresignedSignedUrl(key: string) {
         const command = new GetObjectCommand({
@@ -55,6 +55,8 @@ export class S3Service {
         const url = await getSignedUrl(this.client, command, {
             expiresIn: 60 * 60 * 24, // 24 hours
         });
+
+        console.log("This is the presigned url", url);
 
         return { url };
     }

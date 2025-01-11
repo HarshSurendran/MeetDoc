@@ -15,6 +15,7 @@ export class S3Controller {
 
     @Get('file/:key')
     async getCertificate(@Param('key') key: string) {
+        console.log("reached get file url endpoint")
         return this.s3Service.getPresignedSignedUrl(key);
     }
 }

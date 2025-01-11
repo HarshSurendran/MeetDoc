@@ -53,8 +53,7 @@ export class AuthController {
   }
 
   @Post('verify_otp')
-  async verify(@Body() body, @Res() res) {
-    console.log(body)
+  async verify(@Body() body, @Res() res) {    
     const { otp, ...user } = body; 
     console.log(user,"This is user");
     const { refreshToken, ...data } = await this.authService.verifyOtp(user.data, otp);
