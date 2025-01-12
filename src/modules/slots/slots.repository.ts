@@ -40,7 +40,7 @@ export class SlotsRepository {
                 console.log("There is no slots for this doctor");
                 throw new NotFoundException("No slots for this doctor right now");
             }
-            return slots            
+            return slots;           
         } catch (error) {
             if (!(error instanceof NotFoundException)) {                
                 console.log(`Unexpected error during fetching slots of doctor ${doctorId}`);
@@ -49,6 +49,21 @@ export class SlotsRepository {
             }
             throw error
         }
+    }
+
+    async deleteSlot(slotId: string) {
+        const deleteStatus = await this.SlotModel.deleteOne({ _id: slotId });
+        if (!deleteStatus.deletedCount) {
+            throw new NotFoundException("Deletion failed. Try again later.");
+        }
+    }
+
+    async getSingleSlot(slotId: string): Promise<SlotDocument | null> {
+        const slot = await this.SlotModel.findById({ _id: slotId }).exec();
+        if (!slot) {
+            throw new NotFoundException("Slot not found.");
+        }
+        return slot;
     }
 
     async deleteAllSlots() {

@@ -27,8 +27,18 @@ export class DoctorsController {
     @Post('generateslots')
     async generateSlots(@Body() generateSlotDto: GenerateSlotDto) {        
         return await this.doctorService.generateSlots(generateSlotDto)
-    }
+    };
 
+    @Get('slots/:doctorId')
+    async fetchSlots(@Param('doctorId') doctorId: string) {
+        return await this.doctorService.getSlots(doctorId);
+    };
+
+
+
+
+
+//for testing
     @Get('deleteslots')
     async deleteAll() {
         return await this.doctorService.deleteAllSlots();

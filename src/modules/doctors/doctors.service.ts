@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Doctor, DoctorDocument } from './schemas/doctors.schema';
 import { Model } from 'mongoose';
@@ -121,6 +121,24 @@ export class DoctorsService {
     
   }
 
+  async getSlots(doctorId: string) {
+    const slots = await this.slotsRepo.getSlotsByDoctorId(doctorId);
+    console.log("Fetched slots", slots);
+    return {slots};
+  }
+
+  async deleteSlot(slotId: string) {
+    const slot = await this.slotsRepo.getSingleSlot(slotId);
+    if (slot.status == "Pending" || slot.status == "Booked") {
+      throw new BadRequestException("Slot is already booked or in pendig stage.");
+    }
+    return await this.slotsRepo.deleteSlot(slotId);
+  }
+
+
+
+
+  //testing purpose
   async deleteAllSlots() {
     await this.slotsRepo.deleteAllSlots();
   }
