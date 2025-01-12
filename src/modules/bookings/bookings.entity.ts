@@ -20,4 +20,4 @@ export class Bookings {
     bookingTime: Date;
 };
 
-export const BookingSchema = SchemaFactory.createForClass(Bookings)
+export const BookingsSchema = SchemaFactory.createForClass(Bookings)

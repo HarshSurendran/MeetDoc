@@ -28,7 +28,7 @@ export class Slot {
     status: 'Available' | 'Pending' | 'Booked';
 
     @Prop()
-    pendingBookingExpiry: Date;
+    pendingBookingExpiry: Date | null;
 }
 
 export const SlotSchema = SchemaFactory.createForClass(Slot);

@@ -1,5 +1,6 @@
-import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 import { SlotStatus } from "../slots.entity";
+import { Transform } from "class-transformer";
 
 export class CreateSlotDto {
     @IsString()
@@ -11,11 +12,34 @@ export class CreateSlotDto {
 
     @IsDate()
     endTime: Date;
-  
-    @IsEnum(SlotStatus, { message: 'Status must be one of Pending, Confirmed, or Cancelled' })
-    status: SlotStatus;
     
-    @IsOptional()
-    @IsDate()
-    pendingBookingExpiry: Date;
-  }
+    // @IsOptional()
+    // @IsEnum(SlotStatus, { message: 'Status must be Available, Pending or Booked' })
+    // status: SlotStatus;
+   
+}
+  
+export class GenerateSlotDto {
+    @IsString()
+    @IsNotEmpty()
+    doctorId: string;
+    
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+    startDate: Date;
+
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+    endDate: Date;
+
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+    startTime: Date;
+
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+    stopTime: Date;
+
+  @IsNumber() 
+    duration: number;
+};

@@ -6,13 +6,16 @@ import { CreateDoctorDto } from './interface/doctorsdto';
 import { DocVerification, DocVerificationDocument } from './schemas/docdocuments.schema';
 import { DocVerificationDto } from './interface/docverificationdto';
 import { S3Service } from '../s3/s3.service';
+import { SlotsRepository } from '../slots/slots.repository';
+import { GenerateSlotDto } from '../slots/dto/create-slot.dto';
 
 @Injectable()
 export class DoctorsService {
   constructor(
     @InjectModel(Doctor.name) private DoctorModel: Model<DoctorDocument>,
     @InjectModel(DocVerification.name) private DoctorVerificationModel: Model<DocVerificationDocument>,
-    private s3Service: S3Service
+    private s3Service: S3Service,
+    private slotsRepo: SlotsRepository
   ) {}
 
   async create(body: CreateDoctorDto) {
@@ -77,6 +80,49 @@ export class DoctorsService {
     console.log(error, "This is the error during changing profile photo of doctor");
     throw new InternalServerErrorException();
   }
+  }
+
+  getDatesBetween(startDate: Date, endDate: Date): Date[] {
+    const dates = [];
+    let currentDate = new Date(startDate.getTime());
+    while (currentDate <= endDate) {
+        dates.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return dates;
+  }
+
+  mixDateAndTime(date: Date, time: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), time.getHours(), time.getMinutes());
+  }
+
+  async generateSlots(generateSlotDto: GenerateSlotDto) {
+    generateSlotDto.endDate = new Date(generateSlotDto.endDate);
+    generateSlotDto.startDate = new Date(generateSlotDto.startDate);
+    generateSlotDto.startTime = new Date(generateSlotDto.startTime);
+    generateSlotDto.stopTime = new Date(generateSlotDto.stopTime);
+    const dates = this.getDatesBetween(generateSlotDto.startDate, generateSlotDto.endDate);
+    
+    dates.forEach(async (day) => {
+      let current = this.mixDateAndTime(day, generateSlotDto.startTime);
+      let stoping = this.mixDateAndTime(day, generateSlotDto.stopTime);
+      while (current < stoping) {
+        const endTime = new Date(current.getTime() + generateSlotDto.duration * 60000);
+        const slot = {
+          doctorId : generateSlotDto.doctorId,
+          StartTime: current,
+          EndTime: endTime,
+        }
+
+        await this.slotsRepo.addSlot(slot);
+        current = new Date(endTime);
+      }
+    });
+    
+  }
+
+  async deleteAllSlots() {
+    await this.slotsRepo.deleteAllSlots();
   }
 }
 

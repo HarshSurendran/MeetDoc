@@ -9,7 +9,7 @@ import { UpdateSlotDto } from "./dto/update-slot.dto";
 export class SlotsRepository {
     constructor(@InjectModel(Slot.name) private SlotModel: Model<SlotDocument>) { }
     
-    async addSlot(slotData: CreateSlotDto): Promise<SlotDocument>  {
+    async addSlot(slotData: Partial<CreateSlotDto>): Promise<SlotDocument>  {
         try {
             const slot = new this.SlotModel(slotData);
             return await slot.save();                        
@@ -49,5 +49,9 @@ export class SlotsRepository {
             }
             throw error
         }
+    }
+
+    async deleteAllSlots() {
+        await this.SlotModel.deleteMany();
     }
 }
