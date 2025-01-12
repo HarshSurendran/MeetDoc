@@ -2,12 +2,13 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { InjectModel } from '@nestjs/mongoose';
 import { Bookings, BookingsDocument } from './bookings.entity';
 import { Model } from 'mongoose';
+import { CreateBookingDto } from './dto/create-booking.dto';
 
 @Injectable()
 export class BookingsRepository {
     constructor(@InjectModel(Bookings.name) private BookingModel: Model<BookingsDocument>) { }
     
-    async addBookings(bookingData: BookingsDocument) {
+    async addBookings(bookingData: CreateBookingDto): Promise<BookingsDocument>  {
         try {
             const booking = new this.BookingModel(bookingData);
             return await booking.save();            

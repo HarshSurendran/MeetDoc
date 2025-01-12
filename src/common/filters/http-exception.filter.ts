@@ -24,6 +24,7 @@ import {
           : exception.message;
   
       response.status(status).json({
+        statusCode: status,
         status: false,
         message: typeof message === 'string' ? message : message['message'],
         error: {

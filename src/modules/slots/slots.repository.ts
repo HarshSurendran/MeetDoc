@@ -1,0 +1,53 @@
+import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Slot, SlotDocument } from "./slots.entity";
+import { Model } from "mongoose";
+import { CreateSlotDto } from "./dto/create-slot.dto";
+import { UpdateSlotDto } from "./dto/update-slot.dto";
+
+@Injectable()
+export class SlotsRepository {
+    constructor(@InjectModel(Slot.name) private SlotModel: Model<SlotDocument>) { }
+    
+    async addSlot(slotData: CreateSlotDto): Promise<SlotDocument>  {
+        try {
+            const slot = new this.SlotModel(slotData);
+            return await slot.save();                        
+        } catch (error) {
+            console.log("Error while creating slot document", error);
+            throw new InternalServerErrorException("Can't create slots now. Please try again later.")            
+        }
+    }
+
+    async updateSlot(slotId: string, slotData: UpdateSlotDto) {
+        try {
+            const updateStatus = await this.SlotModel.updateOne({ _id: slotId }, { $set: slotData }).exec();
+            if (!updateStatus.acknowledged) {
+                console.log(`Slot not found - ${slotId}`);
+                throw new NotFoundException(`Didnt match any slots with this Id ${slotId}`);
+            }
+            return updateStatus;            
+        } catch (error) {
+            console.log(`Error while updating the slot document- ${slotId}`);
+            throw new InternalServerErrorException("Error while updating slot, try again later.");            
+        }
+    }
+
+    async getSlotsByDoctorId(doctorId: string): Promise<SlotDocument[] | null> {
+        try {
+            const slots = await this.SlotModel.find({ doctorId }).exec();
+            if (!slots.length) {
+                console.log("There is no slots for this doctor");
+                throw new NotFoundException("No slots for this doctor right now");
+            }
+            return slots            
+        } catch (error) {
+            if (!(error instanceof NotFoundException)) {                
+                console.log(`Unexpected error during fetching slots of doctor ${doctorId}`);
+
+                throw new InternalServerErrorException("Can't fetch slots of this doctor now. Please try later.")
+            }
+            throw error
+        }
+    }
+}
