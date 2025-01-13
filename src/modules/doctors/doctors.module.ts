@@ -6,6 +6,7 @@ import { Doctor, DoctorSchema } from './schemas/doctors.schema';
 import { DocVerification, DocDocumentSchema } from './schemas/docdocuments.schema';
 import { S3Module } from '../s3/s3.module';
 import { SlotsModule } from '../slots/slots.module';
+import { DoctorRepository } from './doctor.repository';
 
 @Module({
   imports: [
@@ -14,8 +15,8 @@ import { SlotsModule } from '../slots/slots.module';
     S3Module,
     SlotsModule
   ],
-  providers: [DoctorsService],
+  providers: [DoctorsService, DoctorRepository],
   controllers: [DoctorsController],
-  exports: [DoctorsService],
+  exports: [DoctorsService, DoctorRepository],
 })
 export class DoctorsModule {}

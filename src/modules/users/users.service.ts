@@ -4,12 +4,18 @@ import { Model, ObjectId } from 'mongoose';
 import { User, UserDocument } from './schemas/users.schema';
 import { CreateUserDto } from './interface/usersdto';
 import { S3Service } from '../s3/s3.service';
+import { DoctorRepository } from '../doctors/doctor.repository';
+import { SlotsRepository } from '../slots/slots.repository';
 
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>,
-  private s3Service: S3Service) { }
+  constructor(
+    @InjectModel(User.name) private UserModel: Model<UserDocument>,
+    private s3Service: S3Service,
+    private DoctorRepo: DoctorRepository,
+    private SlotsRepo: SlotsRepository
+  ) { }
 
   async create(createUserDto: Partial<CreateUserDto>): Promise<UserDocument> {
     const createdUser = new this.UserModel(createUserDto);
@@ -87,5 +93,19 @@ export class UsersService {
      console.log("Error occured in updateProfilePhoto", error);
      throw new InternalServerErrorException();
    }
+  }
+
+  async getDoctor(id: string) {
+    const doctor = await this.DoctorRepo.getSingleDoctor(id);
+    return {
+      doctor
+    }
+  }
+
+  async getSlots(doctorId: string) {
+    const slots = await this.SlotsRepo.getSlotsByDoctorId(doctorId);
+    return {
+      slots
+    }
   }
 }

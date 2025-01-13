@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './interface/usersdto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AuthGuard } from '@nestjs/passport';
 
-@Controller('users')
+// @UseGuards(AuthGuard("jwt"))
+@Controller('users')    
 export class UsersController {
     constructor(private userService: UsersService) { }
     
@@ -23,6 +25,17 @@ export class UsersController {
     @UseInterceptors(FileInterceptor('photo'))
     async updateProfilePic(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
         return await this.userService.updateProfilePhoto(id, file);        
+    }
+
+    @Get("doctordetails/:doctorId")
+    async getDoctorDetails(@Param('doctorId') doctorId: string) {
+        console.log("Reached doctordetail", doctorId)
+        return await this.userService.getDoctor(doctorId);
+    }
+
+    @Get("doctorslots/:doctorId")
+    async getDoctorSlots(@Param('doctorId') doctorId: string) {
+        return await this.userService.getSlots(doctorId);
     }
     
 }
