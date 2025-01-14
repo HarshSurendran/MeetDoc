@@ -15,6 +15,7 @@ import { BookingsModule } from './modules/bookings/bookings.module';
 import { SlotsModule } from './modules/slots/slots.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { WebhookModule } from './modules/webhook/webhook.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 
 @Module({
@@ -32,6 +33,7 @@ import { WebhookModule } from './modules/webhook/webhook.module';
     SlotsModule,
     PaymentModule,
     WebhookModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],

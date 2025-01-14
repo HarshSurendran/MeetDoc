@@ -74,4 +74,17 @@ export class SlotsRepository {
     async deleteAllSlots() {
         await this.SlotModel.deleteMany();
     }
+
+    async cronJobFunction() {
+        console.log("Cronjob function called.")
+        try {
+            const result = await this.SlotModel.updateMany(
+                { status: 'Pending', pendingBookingExpiry: { $lt: new Date() } },
+                { status: 'Available', $unset: { pendingBookingExpiry: 1 } }
+            );
+            return result
+        } catch (error) {
+            console.log("ERror occured while doing cronjob fucntion", error);
+        }
+    }
 }
