@@ -1,5 +1,11 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
+export enum PaymentStatus {
+    Completed = 'Completed',
+    Failed = 'Failed',
+    Pending = 'Pending',
+}
+
 export type BookingsDocument = Bookings & Document;
 
 @Schema()
@@ -14,10 +20,20 @@ export class Bookings {
     slotId: string;
 
     @Prop()
-    transactionId: string;
+    bookingTime: Date;
+    
+    @Prop(({
+            type: String,
+            enum: PaymentStatus,
+            default: PaymentStatus.Completed,
+        }))
+    paymentStatus: string;
 
     @Prop()
-    bookingTime: Date;
+    amount: number;
+
+    @Prop()
+    paymentId : string
 };
 
 export const BookingsSchema = SchemaFactory.createForClass(Bookings)

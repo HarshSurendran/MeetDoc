@@ -8,7 +8,7 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 export class BookingsRepository {
     constructor(@InjectModel(Bookings.name) private BookingModel: Model<BookingsDocument>) { }
     
-    async addBookings(bookingData: CreateBookingDto): Promise<BookingsDocument>  {
+    async addBookings(bookingData: CreateBookingDto ): Promise<BookingsDocument>  {
         try {
             const booking = new this.BookingModel(bookingData);
             return await booking.save();            

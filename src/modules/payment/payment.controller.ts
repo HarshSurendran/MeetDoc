@@ -6,7 +6,8 @@ export class PaymentController {
     constructor(private paymentService: PaymentService) { }
     
     @Post('paymentintent')
-    async createPaymentIntent(@Body() body: { slotId: string, userId: string, fee: number, date: Date }) {
+    async createPaymentIntent(@Body() body: { slotId: string, userId: string, doctorId: string, fee: number, date: Date }) {
+        body.date = new Date(body.date);
         return await this.paymentService.createPaymentIntent(body);      
     }
     

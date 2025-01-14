@@ -14,7 +14,7 @@ export class PaymentService {
         });
     }
 
-    async createPaymentIntent(body: { slotId: string, userId: string, fee: number, date: Date }) {
+    async createPaymentIntent(body: { slotId: string, userId: string, doctorId: string , fee: number, date: Date }) {
         console.log(body.fee);
         
         console.log("created payment Intent ")
@@ -23,7 +23,13 @@ export class PaymentService {
             currency: "usd",
             automatic_payment_methods: {
                 enabled: true
-            }
+            },
+            metadata: {
+                slotId: body.slotId,
+                userId: body.userId,
+                doctorId: body.doctorId,
+                appointmentDate: body.date.toISOString()
+              }
         });
         return {
             clientSecret: paymentIntent.client_secret,

@@ -19,18 +19,23 @@ export class SlotsRepository {
         }
     }
 
-    async updateSlot(slotId: string, slotData: UpdateSlotDto) {
-        try {
+    async findSlotAndUpdateWithSession(slotId: string, slotData: Partial<UpdateSlotDto>, session) {
+        return await this.SlotModel.findByIdAndUpdate({ _id: slotId }, slotData,
+            { new: true, session }); 
+    }
+
+    async updateSlot(slotId: string, slotData: Partial<UpdateSlotDto>) {
+        // try {
             const updateStatus = await this.SlotModel.updateOne({ _id: slotId }, { $set: slotData }).exec();
             if (!updateStatus.acknowledged) {
                 console.log(`Slot not found - ${slotId}`);
                 throw new NotFoundException(`Didnt match any slots with this Id ${slotId}`);
             }
             return updateStatus;            
-        } catch (error) {
-            console.log(`Error while updating the slot document- ${slotId}`);
-            throw new InternalServerErrorException("Error while updating slot, try again later.");            
-        }
+        // } catch (error) {
+        //     console.log(`Error while updating the slot document- ${slotId}`);
+        //     throw new InternalServerErrorException("Error while updating slot, try again later.");            
+        // }
     }
 
     async getSlotsByDoctorId(doctorId: string): Promise<SlotDocument[] | null> {

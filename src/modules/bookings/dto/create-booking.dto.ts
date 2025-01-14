@@ -1,4 +1,5 @@
-import { IsDate, IsNotEmpty, IsString } from "class-validator";
+import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { PaymentStatus } from "../bookings.entity";
 
 
 
@@ -17,8 +18,16 @@ export class CreateBookingDto {
 
     @IsString()
     @IsNotEmpty()
-    transactionId: string;
+    paymentId: string;
     
     @IsDate()
-    bookingTime: Date;
+  bookingTime: Date;
+  
+  @IsNumber()
+  amount: number;
+  
+    @IsEnum(PaymentStatus, { message: 'Status must be one of Completed, Failed, or Pending' })
+    paymentStatus: string;
+
+     
   }
