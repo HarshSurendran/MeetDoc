@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Body, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { User, UserDocument } from './schemas/users.schema';
@@ -6,6 +6,7 @@ import { CreateUserDto } from './interface/usersdto';
 import { S3Service } from '../s3/s3.service';
 import { DoctorRepository } from '../doctors/doctor.repository';
 import { SlotsRepository } from '../slots/slots.repository';
+import { UpdateSlotDto } from '../slots/dto/update-slot.dto';
 
 
 @Injectable()
@@ -106,6 +107,13 @@ export class UsersService {
     const slots = await this.SlotsRepo.getSlotsByDoctorId(doctorId);
     return {
       slots
+    }
+  }
+
+  async updateSlots(slotId: string, body: UpdateSlotDto) {
+    const updateDetails = await this.SlotsRepo.updateSlot(slotId, body);
+    return {
+      updateDetails
     }
   }
 }

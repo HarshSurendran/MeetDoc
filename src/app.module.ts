@@ -13,6 +13,8 @@ import { S3Module } from './modules/s3/s3.module';
 import { S3Service } from './modules/s3/s3.service'; 
 import { BookingsModule } from './modules/bookings/bookings.module';
 import { SlotsModule } from './modules/slots/slots.module';
+import { PaymentModule } from './modules/payment/payment.module';
+import { WebhookModule } from './modules/webhook/webhook.module';
 
 
 @Module({
@@ -28,6 +30,8 @@ import { SlotsModule } from './modules/slots/slots.module';
     S3Module,
     BookingsModule,
     SlotsModule,
+    PaymentModule,
+    WebhookModule,
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],

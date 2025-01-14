@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './interface/usersdto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
+import { UpdateSlotDto } from '../slots/dto/update-slot.dto';
 
 // @UseGuards(AuthGuard("jwt"))
 @Controller('users')    
@@ -36,6 +37,12 @@ export class UsersController {
     @Get("doctorslots/:doctorId")
     async getDoctorSlots(@Param('doctorId') doctorId: string) {
         return await this.userService.getSlots(doctorId);
+    }
+
+    @Patch("slots/:slotId")
+    async updateSlot(@Param('slotId') slotId: string, @Body() body: UpdateSlotDto) {
+        console.log(body,"update slot")
+        return await this.userService.updateSlots(slotId, body);
     }
     
 }

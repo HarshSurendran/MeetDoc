@@ -18,6 +18,5 @@ export class UpdateSlotDto extends PartialType(CreateSlotDto) {
     status: SlotStatus;
     
     @IsOptional()
-    @IsDate()
-    pendingBookingExpiry: Date;
+    pendingBookingExpiry: Date | null;
 }
