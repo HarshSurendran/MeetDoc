@@ -44,5 +44,11 @@ export class UsersController {
         console.log(body,"update slot")
         return await this.userService.updateSlots(slotId, body);
     }
+
+    @Get("payment/:bookingId")
+    async getPaymentDetails(@Param('bookingId') bookingId: string) {
+        return await this.userService.getBookingDetails(bookingId);
+    }
+
     
 }

@@ -7,9 +7,16 @@ import { S3Service } from '../s3/s3.service';
 import { S3Module } from '../s3/s3.module';
 import { DoctorsModule } from '../doctors/doctors.module';
 import { SlotsModule } from '../slots/slots.module';
+import { BookingsModule } from '../bookings/bookings.module';
 
 @Module({
-  imports: [S3Module, DoctorsModule, SlotsModule, MongooseModule.forFeature([{name:User.name, schema: UserSchema}])],
+  imports: [
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    S3Module,
+    DoctorsModule,
+    SlotsModule,
+    BookingsModule
+  ],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService]

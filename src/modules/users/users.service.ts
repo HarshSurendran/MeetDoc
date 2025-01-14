@@ -7,6 +7,7 @@ import { S3Service } from '../s3/s3.service';
 import { DoctorRepository } from '../doctors/doctor.repository';
 import { SlotsRepository } from '../slots/slots.repository';
 import { UpdateSlotDto } from '../slots/dto/update-slot.dto';
+import { BookingsRepository } from '../bookings/bookings.repository';
 
 
 @Injectable()
@@ -15,7 +16,8 @@ export class UsersService {
     @InjectModel(User.name) private UserModel: Model<UserDocument>,
     private s3Service: S3Service,
     private DoctorRepo: DoctorRepository,
-    private SlotsRepo: SlotsRepository
+    private SlotsRepo: SlotsRepository,
+    private BookingsRepo: BookingsRepository,
   ) { }
 
   async create(createUserDto: Partial<CreateUserDto>): Promise<UserDocument> {
@@ -116,4 +118,34 @@ export class UsersService {
       updateDetails
     }
   }
+
+  async getBookingDetails(paymentId: string) {
+    let bookingDetails = {
+      doctorName: "",
+      specialisation: "",
+      appointmentDate: new Date(),
+      startTime: new Date(),
+      endTime: new Date(),
+      
+      appointmentId: "",
+      fee: 0,
+    }
+    const details = await this.BookingsRepo.getBookingByPaymentId(paymentId);
+    if (details) {
+      const doctor = await this.DoctorRepo.getSingleDoctor(details.doctorId);
+      bookingDetails.doctorName = doctor.name;
+      bookingDetails.specialisation = doctor.specialisation;
+      const slot = await this.SlotsRepo.getSingleSlot(details.slotId);
+      bookingDetails.appointmentDate = slot.StartTime;
+      bookingDetails.startTime = slot.StartTime;
+      bookingDetails.endTime = slot.EndTime;
+      bookingDetails.fee = details.amount;
+      bookingDetails.appointmentId = details._id.toString();
+      return {
+        bookingDetails
+      }
+    }
+    throw new NotFoundException("No appointment found")
+  }
+  
 }

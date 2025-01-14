@@ -57,4 +57,12 @@ export class BookingsRepository {
             throw new InternalServerErrorException("Error while deleting document, Please try again later.");            
         }
     }
+
+    async getBookingByPaymentId(paymentId: string) {
+        const booking = await this.BookingModel.findOne({ paymentId }).exec();
+        if (!booking) {
+            throw new NotFoundException("Booking details not found.");
+        }
+        return booking;
+    }
 }
