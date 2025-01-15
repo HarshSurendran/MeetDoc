@@ -147,5 +147,14 @@ export class UsersService {
     }
     throw new NotFoundException("No appointment found")
   }
+
+  async getDoctorsForLandingPage() {
+    const doctors = await this.DoctorRepo.getTop5VerifiedDoctors();
+    if (doctors) {
+      return {
+        doctors
+      }
+    }
+  }
   
 }

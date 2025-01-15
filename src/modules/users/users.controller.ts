@@ -50,5 +50,10 @@ export class UsersController {
         return await this.userService.getBookingDetails(bookingId);
     }
 
+    @Get("doctors/landingpage")
+    async getDoctorsForLanding() {
+        return await this.userService.getDoctorsForLandingPage();
+    }
+
     
 }

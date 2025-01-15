@@ -15,5 +15,12 @@ export class DoctorRepository {
         }
         return doctor;
     }
-    
+
+    async getTop5VerifiedDoctors() : Promise<DoctorDocument[]> {
+        const doctors = await this.DoctorModel.find({ isVerified: true }).sort({rating: -1}).limit(5);
+        if (doctors.length == 0) {
+            throw new NotFoundException("No doctors available.")
+        }
+        return doctors;
+    }
 }

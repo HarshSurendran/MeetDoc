@@ -57,6 +57,9 @@ export class Doctor {
 
   @Prop()
   photo: string;
+
+  @Prop({default: 0})
+  consultations: number;
 }
 
 export const DoctorSchema = SchemaFactory.createForClass(Doctor);
