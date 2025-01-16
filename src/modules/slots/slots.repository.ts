@@ -84,7 +84,15 @@ export class SlotsRepository {
             );
             return result
         } catch (error) {
-            console.log("ERror occured while doing cronjob fucntion", error);
+            console.log("Error occured while doing cronjob fucntion", error);
+        }
+    }
+
+    async deleteSlotsOlderThan3Months(currentTime: Date) {
+        try {
+            return await this.SlotModel.deleteMany({ StartTime: { $lt: currentTime } });            
+        } catch (error) {
+            console.log("Unexpected error occured while fetching slots older than 3 months")
         }
     }
 }
