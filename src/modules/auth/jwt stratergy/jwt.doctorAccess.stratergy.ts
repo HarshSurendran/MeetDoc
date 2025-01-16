@@ -25,7 +25,7 @@ export class JwtDoctorAccessStrategy extends PassportStrategy(Strategy, "doctor-
     }
     console.log("Passed doctor jwt token verification", payload.email, payload);
     
-    return { doctoId: payload._id, name: payload.name, email: payload.email, role: payload.role};
+    return { doctorId: payload._id, name: payload.name, email: payload.email, role: payload.role};
   }
 }
 

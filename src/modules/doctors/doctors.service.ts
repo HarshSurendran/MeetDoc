@@ -40,7 +40,11 @@ export class DoctorsService {
   }
 
   async updateDoctorById(id: string, data: Partial<UpdateDoctorDto>) {
-    return await this.DoctorModel.updateOne({ _id: id }, { $set: data });
+    const updateStat = await this.DoctorModel.updateOne({ _id: id }, { $set: data });
+    if (updateStat.matchedCount == 0) {
+      throw new NotFoundException("Doctor Id is invalid.");
+    }
+    return updateStat;
   }
 
   async createDocVerification(body: DocVerificationDto): Promise<DocVerification> {
@@ -61,7 +65,8 @@ export class DoctorsService {
   }
 
   async changeProfilePhoto(id: string, photo: Express.Multer.File) {
-  try {
+    try {
+    console.log(id)
       const doctor = await this.DoctorModel.findById(id);
       if (!doctor) {
         throw new NotFoundException("Doctor Id is invalid.");

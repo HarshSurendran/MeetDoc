@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Param, Patch, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { CreateDoctorDto } from './interface/doctorsdto';
+import { Body, Controller, Get, Param, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { CreateDoctorDto, UpdateDoctorDto } from './interface/doctorsdto';
 import { DoctorsService } from './doctors.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GenerateSlotDto } from '../slots/dto/create-slot.dto';
@@ -12,18 +12,21 @@ export class DoctorsController {
         private doctorService: DoctorsService,
     ){}
 
-    @Patch('/:id')
-    async updateDoctorProfile(@Param('id') id: string, @Body() data: Partial<CreateDoctorDto>) {
-        console.log("update doctor", id);
-        const response = await this.doctorService.updateDoctorById(id, data); 
+    @Patch('/')
+    async updateDoctorProfile(@Req() req, @Body() data: Partial<UpdateDoctorDto>) {
+        const doctor = req.user;
+        console.log(doctor)
+        const response = await this.doctorService.updateDoctorById(doctor.doctorId, data); 
         console.log("REached update doctor resposne", response);
         return response;
     }
 
-    @Patch(`profilephoto/:id`)
+    @Patch(`profilephoto`)
     @UseInterceptors(FileInterceptor('photo'))
-    async changeProfile(@Param("id") id: string, @UploadedFile() photo: Express.Multer.File) {
-        return await this.doctorService.changeProfilePhoto(id, photo);
+    async changeProfile(@Req() req, @UploadedFile() photo: Express.Multer.File) {
+        const doctor = req.user;
+        console.log(doctor)
+        return await this.doctorService.changeProfilePhoto(doctor.doctorId, photo);
     }
 
     @Post('generateslots')
@@ -32,8 +35,9 @@ export class DoctorsController {
     };
 
     @Get('slots/:doctorId')
-    async fetchSlots(@Param('doctorId') doctorId: string) {
-        return await this.doctorService.getSlots(doctorId);
+    async fetchSlots(@Req() req) {
+        const doctor = req.user;
+        return await this.doctorService.getSlots(doctor.doctorId);
     };
 
 
