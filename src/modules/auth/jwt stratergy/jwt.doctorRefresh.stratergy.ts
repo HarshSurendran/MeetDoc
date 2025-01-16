@@ -5,21 +5,21 @@ import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
+export class JwtDoctorRefreshStrategy extends PassportStrategy(Strategy, 'doctor-refresh-jwt') {
   constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => {          
-          return req?.cookies?.refreshToken; 
+          return req?.cookies?.doctorRefreshToken; 
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_REFRESH_SECRET'),
+      secretOrKey: configService.get<string>('JWT_DOCTOR_REFRESH_SECRET'),
     });
   }
 
   async validate(payload: any) {
     console.log('Refresh Token Payload:', payload);
-    return { userId: payload.sub, email: payload.email }; 
+    return { doctorId: payload.sub, email: payload.email }; 
   }
 }

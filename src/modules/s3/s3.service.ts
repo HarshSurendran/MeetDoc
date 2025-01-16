@@ -56,8 +56,6 @@ export class S3Service {
             expiresIn: 60 * 60 * 24, // 24 hours
         });
 
-        console.log("This is the presigned url", url);
-
         return { url };
     }
 

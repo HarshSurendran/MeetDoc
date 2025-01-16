@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CreateDoctorDto } from './interface/doctorsdto';
 import { DoctorsService } from './doctors.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GenerateSlotDto } from '../slots/dto/create-slot.dto';
+import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('doctor-access-jwt'))
 @Controller('doctors')
 export class DoctorsController {
     constructor(

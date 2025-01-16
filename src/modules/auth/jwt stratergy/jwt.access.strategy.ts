@@ -19,12 +19,12 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, "jwt") {
   async validate(payload: any) {
     const isBlocked = await this.cacheManager.get<string>(`user:${payload.email}:isBlocked`);
     console.log(`Block status for ${payload.email}: ${isBlocked}`);
-
+    
     if (isBlocked === 'true') {
       throw new HttpException("User is blocked by admin", HttpStatus.FORBIDDEN);
     }
     
-    return { userId: payload.sub, email: payload.email };
+    return { userId: payload.userId, email: payload.email };
   }
 }
 

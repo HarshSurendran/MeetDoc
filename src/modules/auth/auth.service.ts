@@ -16,11 +16,12 @@ import { MailService } from '../mail/mail.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Otp, OtpDocument } from '../users/schemas/otp.schema';
 import { Model } from 'mongoose';
-import { CreateDoctorDto } from '../doctors/interface/doctorsdto';
+import { CreateDoctorDto, DoctorDto, UpdateDoctorDto } from '../doctors/interface/doctorsdto';
 import { DoctorsService } from '../doctors/doctors.service';
 import { AdminService } from '../admin/admin.service';
 import { OAuth2Client } from 'google-auth-library';
 import { DocVerificationDto } from '../doctors/interface/docverificationdto';
+import { DoctorDocument } from '../doctors/schemas/doctors.schema';
 
 
 
@@ -105,6 +106,7 @@ export class AuthService {
 
   
   generateDoctorTokens(payload: { _id: string, name: string, email: string, role: string }) {
+    console.log("This is the payload", payload);
     const doctorAccessToken = this.jwtService.sign(
       payload,
       {
@@ -429,9 +431,8 @@ export class AuthService {
 
     const doctor = await this.doctorService.create(body);
    
-    //  const { password, ...doctorInfo } = doctor;
     const payload = { _id: doctor._id as string, name: doctor.name, email: doctor.email, role: 'doctor' };
-    // console.log("for doctor", doctorInfo);
+    
     const doctorObject = doctor.toObject();
     
     console.log("for doctor", doctorObject); 
@@ -451,7 +452,7 @@ export class AuthService {
   async validateDoctor(
     email: string,
     pass: string,
-  ): Promise<Omit<CreateDoctorDto, 'password'> | null> {
+  ): Promise<Omit<DoctorDto, 'password'> | null> {
 
     const doc = await this.doctorService.getUser(email);
     
@@ -466,18 +467,19 @@ export class AuthService {
   async doctorLogin(email: string, password: string, res) {
     const docData = await this.validateDoctor(email, password);
 
+    console.log(docData,"This is docData from login")
+
     if (!docData) {
       throw new BadRequestException('Email or password is wrong');
     }
     const payload = {
-      _id: docData.id,
+      _id: docData._id.toString(),
       name: docData.name,
       email: docData.email,
       role: 'doctor',
     };
 
     const { doctorAccessToken, doctorRefreshToken } = await this.generateDoctorTokens(payload);
-    console.log("Login page - access and refresh ", doctorAccessToken)
     
     res.cookie("doctorRefreshToken", doctorRefreshToken, {
       httpOnly: true,
@@ -524,7 +526,7 @@ export class AuthService {
     };
   }
 
-  async verifyDoctor(id: string, data: Partial<CreateDoctorDto>) {
+  async verifyDoctor(id: string, data: Partial<UpdateDoctorDto>) {
     const doctor = await this.doctorService.getDoctorById(id);
     if (!doctor) {
       throw new BadRequestException("Id is not valid.");
@@ -541,6 +543,27 @@ export class AuthService {
     await this.doctorService.updateDoctorDocuments(id, {isVerified: data.isVerified});
     return {
       success: true
+    };
+  }
+
+  async doctorRenewTokens(id:string, res) {
+    const docData = await this.doctorService.getDoctorById(id);
+    const payload = {
+      _id: docData.id,
+      name: docData.name,
+      email: docData.email,
+      role: 'doctor',
+    };
+
+    const { doctorAccessToken, doctorRefreshToken } = await this.generateDoctorTokens(payload);
+
+    res.cookie("doctorRefreshToken", doctorRefreshToken, {
+      httpOnly: true,
+      secure: true
+    });
+
+    return {
+      doctorAccessToken 
     };
   }
 

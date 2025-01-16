@@ -35,7 +35,7 @@ export class DoctorsService {
     return await this.DoctorModel.findOne({ _id: id }) as Partial<DoctorDocument>;
   }
 
-  async updateDoctor(email: string, data: UpdateDoctorDto) {
+  async updateDoctor(email: string, data: Partial<UpdateDoctorDto>) {
     return await this.DoctorModel.updateOne({ email }, { $set: data });
   }
 

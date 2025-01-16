@@ -110,12 +110,13 @@ export class AuthController {
     return this.authService.doctorLogin(body.email, body.password, res);
   }
 
+  @UseGuards(AuthGuard('doctor-access-jwt'))
   @Post('doctor/logout')
   async docLogout(@Body() Body, @Res({ passthrough: true }) res) {
-    console.log("reached logout endpoint ");
     return this.authService.doctorLogout(Body.email, res);
   };
 
+  @UseGuards(AuthGuard("doctor-access-jwt"))
   @Post('doctor/verify')
   async docVerify(@Body() body,) {
     console.log("Verification data from doctor", body);
@@ -132,6 +133,14 @@ export class AuthController {
   async verifyDoctor(@Param('id') id: string, @Body() body : Partial<UpdateDoctorDto> ) {
     console.log("reached verify doctor endpoint", id, body);
     return this.authService.verifyDoctor(id, body);
+  }
+
+  @UseGuards(AuthGuard("doctor-refresh-jwt"))
+  @Get("doctor/refreshtoken")
+  async doctorRenewToken(@Req() req, @Res({ passthrough: true }) res) {
+    const doctor = req.user;
+    console.log("FRom renewToken admin, ", req.user);
+    return this.authService.doctorRenewTokens(doctor.doctorId, res);
   }
 
   // Admin Auth

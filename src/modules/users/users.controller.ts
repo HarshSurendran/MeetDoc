@@ -5,7 +5,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateSlotDto } from '../slots/dto/update-slot.dto';
 
-// @UseGuards(AuthGuard("jwt"))
+@UseGuards(AuthGuard("jwt"))
 @Controller('users')    
 export class UsersController {
     constructor(private userService: UsersService) { }
@@ -18,7 +18,7 @@ export class UsersController {
 
     @Patch("/:id")
     async updateUser(@Param('id') id: string, @Body() body: Partial<CreateUserDto>) {
-        console.log("reached updateUser end point", body)
+        console.log("reached updateUser end point")
         return await this.userService.updateUser(id, body);
     }
 

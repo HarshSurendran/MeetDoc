@@ -17,6 +17,8 @@ import { JwtAdminAccessStrategy } from './jwt stratergy/jwt.adminAccess.straterg
 import { JwtAdminRefreshStrategy } from './jwt stratergy/jwt.adminRefresh.stratergy';
 import { GoogleStrategy } from './google.stratergy';
 import { S3Module } from '../s3/s3.module';
+import { JwtDoctorAccessStrategy } from './jwt stratergy/jwt.doctorAccess.stratergy';
+import { JwtDoctorRefreshStrategy } from './jwt stratergy/jwt.doctorRefresh.stratergy';
 
 @Module({
   imports: [
@@ -37,7 +39,7 @@ import { S3Module } from '../s3/s3.module';
     // }),
     JwtModule.register({})
   ],
-  providers: [AuthService, JwtAccessStrategy, JwtRefreshStrategy, JwtAdminAccessStrategy, JwtAdminRefreshStrategy, GoogleStrategy ],
+  providers: [AuthService, JwtAccessStrategy, JwtRefreshStrategy, JwtAdminAccessStrategy, JwtAdminRefreshStrategy, JwtDoctorAccessStrategy, JwtDoctorRefreshStrategy, GoogleStrategy ],
   controllers: [AuthController],
 })
 export class AuthModule {}
