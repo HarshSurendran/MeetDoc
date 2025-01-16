@@ -531,7 +531,7 @@ export class AuthService {
     if (!doctor) {
       throw new BadRequestException("Id is not valid.");
     }
-    const update = {occupation: '', specialisation: '', isVerified: false as Boolean }
+    const update = {languages: [], occupation: '', specialisation: '', isVerified: false as Boolean }
     if (data.masterDegree.length != 0) {
       update.occupation = `${data.masterDegree}, ${data.degree}`
     } else {
@@ -539,6 +539,7 @@ export class AuthService {
     }
     update.specialisation = data.specialisation;
     update.isVerified = data.isVerified;
+    update.languages = data.languages;
     await this.doctorService.updateDoctor(doctor.email, update);
     await this.doctorService.updateDoctorDocuments(id, {isVerified: data.isVerified});
     return {

@@ -5,6 +5,7 @@ import {
   MinLength,
   IsStrongPassword,
   IsBoolean,
+  IsArray,
 } from 'class-validator';
 import { Address } from 'src/modules/users/schemas/address.schema';
 
@@ -80,6 +81,11 @@ export class UpdateDoctorDto {
   readonly specialisation: string;
 
   @IsOptional()
+  @IsArray()
+  @IsString({each: true})
+  languages: string[];
+
+  @IsOptional()
   @IsBoolean()
   isVerified: Boolean;
 
@@ -111,6 +117,11 @@ export class DoctorDto {
   @IsOptional()
   @IsString()
   readonly gender: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({each: true})
+  languages: string[];
 
   @IsOptional()
   @IsString()
