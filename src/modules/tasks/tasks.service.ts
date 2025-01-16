@@ -26,7 +26,7 @@ export class TasksService {
             const now = new Date();
             const threeMonthsAgo = new Date();
             threeMonthsAgo.setMonth(now.getMonth() - 3);
-            const result = await this.SlotsRepo.deleteSlotsOlderThan3Months(threeMonthsAgo);
+            await this.SlotsRepo.deleteSlotsOlderThan3Months(threeMonthsAgo);
             console.log('Deleted slots older than 3 months.');
         } catch (error) {
             console.error('Error releasing expired slots:', error);
