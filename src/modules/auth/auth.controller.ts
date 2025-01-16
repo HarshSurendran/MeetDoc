@@ -14,7 +14,7 @@ import {
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/interface/usersdto';
 import { AuthGuard } from '@nestjs/passport';
-import { CreateDoctorDto } from '../doctors/interface/doctorsdto';
+import { CreateDoctorDto, UpdateDoctorDto } from '../doctors/interface/doctorsdto';
 import { Request, Response } from 'express';
 
 @Controller('auth')
@@ -129,7 +129,7 @@ export class AuthController {
   }
 
   @Patch('doctor/verify/:id')
-  async verifyDoctor(@Param('id') id: string, @Body() body : Partial<CreateDoctorDto> ) {
+  async verifyDoctor(@Param('id') id: string, @Body() body : Partial<UpdateDoctorDto> ) {
     console.log("reached verify doctor endpoint", id, body);
     return this.authService.verifyDoctor(id, body);
   }

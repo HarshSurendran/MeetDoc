@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { InjectModel } from '@nestjs/mongoose';
 import { Doctor, DoctorDocument } from './schemas/doctors.schema';
 import { Model } from 'mongoose';
-import { CreateDoctorDto } from './interface/doctorsdto';
+import { CreateDoctorDto, UpdateDoctorDto } from './interface/doctorsdto';
 import { DocVerification, DocVerificationDocument } from './schemas/docdocuments.schema';
 import { DocVerificationDto } from './interface/docverificationdto';
 import { S3Service } from '../s3/s3.service';
@@ -31,15 +31,15 @@ export class DoctorsService {
     return await this.DoctorModel.findOne({ email });
   }
 
-  async getDoctorById(id: string): Promise<Partial<CreateDoctorDto>> {
-    return await this.DoctorModel.findOne({ _id: id });
+  async getDoctorById(id: string): Promise<Partial<DoctorDocument>> {
+    return await this.DoctorModel.findOne({ _id: id }) as Partial<DoctorDocument>;
   }
 
-  async updateDoctor(email: string, data: {}) {
+  async updateDoctor(email: string, data: UpdateDoctorDto) {
     return await this.DoctorModel.updateOne({ email }, { $set: data });
   }
 
-  async updateDoctorById(id: string, data: Partial<CreateDoctorDto>) {
+  async updateDoctorById(id: string, data: Partial<UpdateDoctorDto>) {
     return await this.DoctorModel.updateOne({ _id: id }, { $set: data });
   }
 

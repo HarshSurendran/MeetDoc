@@ -46,7 +46,7 @@ export class Doctor {
   @Prop()
   languages: Array<string>;
 
-  @Prop()
+  @Prop({default: 50})
   fee: number;
 
   @Prop()

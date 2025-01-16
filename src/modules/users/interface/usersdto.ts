@@ -9,6 +9,7 @@ import {
 import { Address } from '../schemas/address.schema';
 
 export class CreateUserDto {
+  @IsOptional()
   @IsString()
   readonly _id: string;    
     
@@ -40,7 +41,8 @@ export class CreateUserDto {
 
   @IsOptional()
   readonly address: Address;
-
+  
+  @IsOptional()
   @IsBoolean()
   isBlocked: Boolean;
 

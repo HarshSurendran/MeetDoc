@@ -9,10 +9,31 @@ import {
 import { Address } from 'src/modules/users/schemas/address.schema';
 
 export class CreateDoctorDto {
+  @IsString()
+  @MinLength(3)
+  readonly name: string;
+
+  @IsEmail()
+  readonly email: string;
+
+  @IsString()
+  @IsStrongPassword()
+  @MinLength(6)
+  password: string;
+
+  @IsString()
+  readonly gender: string;
 
   @IsOptional()
   @IsString()
-  id: string;
+  readonly phone?: string;   
+  
+}
+
+
+export class UpdateDoctorDto {
+  @IsOptional()
+  readonly _id: string;
 
   @IsString()
   @MinLength(3)
@@ -54,6 +75,7 @@ export class CreateDoctorDto {
   @IsOptional()
   readonly specialisation: string;
 
+  @IsOptional()
   @IsBoolean()
   isVerified: Boolean;
 }
