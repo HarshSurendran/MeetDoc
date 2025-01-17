@@ -8,6 +8,7 @@ import { S3Module } from '../s3/s3.module';
 import { SlotsModule } from '../slots/slots.module';
 import { DoctorRepository } from './doctor.repository';
 import { BookingsModule } from '../bookings/bookings.module';
+import { PrescriptionModule } from '../prescription/prescription.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { BookingsModule } from '../bookings/bookings.module';
     MongooseModule.forFeature([{ name: DocVerification.name, schema: DocDocumentSchema }]),
     S3Module,
     SlotsModule,
-    BookingsModule
+    BookingsModule,
+    PrescriptionModule
   ],
   providers: [DoctorsService, DoctorRepository],
   controllers: [DoctorsController],

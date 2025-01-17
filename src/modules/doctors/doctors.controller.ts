@@ -4,6 +4,7 @@ import { DoctorsService } from './doctors.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GenerateSlotDto } from '../slots/dto/create-slot.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { CreatePrescriptionDto } from '../prescription/dto/create-prescription.dto';
 
 @UseGuards(AuthGuard('doctor-access-jwt'))
 @Controller('doctors')
@@ -44,6 +45,13 @@ export class DoctorsController {
     async fetchAppointments(@Req() req) {
         const doctor = req.user;
         return await this.doctorService.getAppointments(doctor.doctorId);
+    }
+
+    @Post('prescription')
+    async createPrescription(@Req() req, @Body() data: CreatePrescriptionDto) {
+        const doctor = req.user;
+        console.log("enetered create prescription");
+        return await this.doctorService.createPrescription(data);
     }
 
 

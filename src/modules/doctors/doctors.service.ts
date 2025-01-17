@@ -11,6 +11,8 @@ import { GenerateSlotDto } from '../slots/dto/create-slot.dto';
 import { BookingsRepository } from '../bookings/bookings.repository';
 import { IBookedAppointmentType } from '../bookings/dto/doctor-booking.dto';
 import * as moment from 'moment';
+import { PrescriptionRepository } from '../prescription/prescription.repository';
+import { CreatePrescriptionDto } from '../prescription/dto/create-prescription.dto';
 
 @Injectable()
 export class DoctorsService {
@@ -19,7 +21,8 @@ export class DoctorsService {
     @InjectModel(DocVerification.name) private DoctorVerificationModel: Model<DocVerificationDocument>,
     private s3Service: S3Service,
     private slotsRepo: SlotsRepository,
-    private bookingsRepo: BookingsRepository
+    private bookingsRepo: BookingsRepository,
+    private prescriptionRepo: PrescriptionRepository
   ) { }
 
   async create(body: CreateDoctorDto) {
@@ -167,6 +170,11 @@ export class DoctorsService {
       appointments
     }
   } 
+
+
+  async createPrescription (data: CreatePrescriptionDto) {
+    return await this.prescriptionRepo.createPrescription(data);
+  }
 
 
 
