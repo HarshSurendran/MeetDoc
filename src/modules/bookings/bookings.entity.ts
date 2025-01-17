@@ -6,6 +6,13 @@ export enum PaymentStatus {
     Pending = 'Pending',
 }
 
+export enum BookingStatus {
+    Completed = 'Completed',
+    Cancelled = 'Cancelled',
+    scheduled = 'scheduled',
+    inProgress = 'in-progress',
+}
+
 export type BookingsDocument = Bookings & Document;
 
 @Schema()
@@ -33,7 +40,17 @@ export class Bookings {
     amount: number;
 
     @Prop()
-    paymentId : string
+    reason: string;
+
+    @Prop()
+    paymentId: string;
+    
+    @Prop(({
+        type: String,
+        enum: BookingStatus,
+        default: BookingStatus.scheduled
+    }))
+    bookingStatus: string;
 };
 
 export const BookingsSchema = SchemaFactory.createForClass(Bookings)
