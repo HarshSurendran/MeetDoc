@@ -19,11 +19,11 @@ export class BookingsRepository {
         }
     }
 
-    async getBookingsforDoctor(doctorId: string) : Promise<IBookedAppointmentDBReturn[] | null> {
+    async getBookings(queryData: {key: string, value: string}) : Promise<IBookedAppointmentDBReturn[] | null> {
        try {
-        const bookings = await this.BookingModel.aggregate([
-            {
-              $match: { doctorId }
+         const bookings = await this.BookingModel.aggregate([
+           {
+             $match: queryData.key === 'doctorId' ? { doctorId: queryData.value } : { patientId: queryData.value }
             },
             {
                 $addFields: {
@@ -70,8 +70,9 @@ export class BookingsRepository {
                 _id: { $toString: '$_id' },
                 patientName: '$patient.name',
                 doctorName: '$doctor.name', 
-                date: { $dateToString: { format: '%Y-%m-%d', date: '$bookingTime' } },
-                time: { $dateToString: { format: '%H:%M', date: '$bookingTime' } },
+                date: '$slots.StartTime',
+                time: '$slots.StartTime',
+                bookingTime: '$bookingTime',
                 duration: 1, 
                 bookingStatus: 1,
                 reason: 1,
@@ -82,12 +83,12 @@ export class BookingsRepository {
         ]);
            
         if (!bookings.length) {
-            console.log("No bookings are found for doctor", doctorId)
-            throw new NotFoundException(`No bookings found for doctor - ${doctorId}`)
-        }
+            throw new NotFoundException(`No bookings found for - ${queryData.value}`)
+         }
+         
         return bookings;
        } catch (error) {
-           console.log(`Unexpected error while fetching booking of doctor: ${doctorId}`, error);
+           console.log(`Unexpected error while fetching booking of : ${queryData.value}`, error);
            throw new InternalServerErrorException("Could not fetch bookings. Please try again later.");        
        }
     }

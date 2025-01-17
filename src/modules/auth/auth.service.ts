@@ -362,7 +362,7 @@ export class AuthService {
 
     if (user) {
       const payload = {
-        id: user.id,
+        id: user._id,
         name: user.name,
         email: user.email,
         role: "user"

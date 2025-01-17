@@ -8,6 +8,8 @@ import { DoctorRepository } from '../doctors/doctor.repository';
 import { SlotsRepository } from '../slots/slots.repository';
 import { UpdateSlotDto } from '../slots/dto/update-slot.dto';
 import { BookingsRepository } from '../bookings/bookings.repository';
+import { IBookedAppointmentType } from '../bookings/dto/doctor-booking.dto';
+import * as moment from 'moment';
 
 
 @Injectable()
@@ -154,6 +156,34 @@ export class UsersService {
       return {
         doctors
       }
+    }
+  }
+
+  async getUserAppointments(userId) {
+    const appointmentFromDB = await this.BookingsRepo.getBookings({ key: 'patientId', value: userId });
+
+    if(appointmentFromDB.length == 0) {
+      return null;
+    }
+    console.log(appointmentFromDB,"this is the appointment from db");
+   
+    const appointments: IBookedAppointmentType[] = [];    
+    appointmentFromDB.forEach((appointment) => {
+      let duration: number = (new Date(appointment.slots.EndTime).getTime() - new Date(appointment.slots.StartTime).getTime()) / (1000 * 60);
+      appointments.push({
+        reason: appointment.reason,
+        bookingStatus: appointment.bookingStatus,
+        duration: duration,
+        _id: appointment._id,
+        patientName: appointment.patientName,
+        doctorName: appointment.doctorName,
+         bookingTime : moment(appointment.bookingTime).format('DD-MM-YYYY hh:mm A'),
+                date : moment(appointment.date).format('DD-MM-YYYY'),
+                time : moment(appointment.time).format('hh:mm A'),
+      })
+    });
+    return {
+      appointments
     }
   }
   

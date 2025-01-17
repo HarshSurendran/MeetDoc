@@ -10,6 +10,7 @@ import { SlotsRepository } from '../slots/slots.repository';
 import { GenerateSlotDto } from '../slots/dto/create-slot.dto';
 import { BookingsRepository } from '../bookings/bookings.repository';
 import { IBookedAppointmentType } from '../bookings/dto/doctor-booking.dto';
+import * as moment from 'moment';
 
 @Injectable()
 export class DoctorsService {
@@ -144,7 +145,7 @@ export class DoctorsService {
   }
 
   async getAppointments(doctorId : string) {
-    const appointmentFromDB = await this.bookingsRepo.getBookingsforDoctor(doctorId);
+    const appointmentFromDB = await this.bookingsRepo.getBookings({key: "doctorId", value: doctorId});
     
     const appointments : IBookedAppointmentType[] = [];
     appointmentFromDB.forEach((appointment) => {
@@ -155,9 +156,10 @@ export class DoctorsService {
         duration : duration,
         _id : appointment._id,
         patientName : appointment.patientName,
-        doctorName : appointment.doctorName,
-        date : appointment.date,
-        time : appointment.time
+        doctorName: appointment.doctorName,
+        bookingTime : moment(appointment.bookingTime).format('DD-MM-YYYY hh:mm A'),
+        date : moment(appointment.date).format('DD-MM-YYYY'),
+        time : moment(appointment.time).format('hh:mm A'),
       })
     })
     console.log(appointments,"this is the appointment from db");

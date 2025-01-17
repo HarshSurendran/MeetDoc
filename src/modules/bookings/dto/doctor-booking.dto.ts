@@ -13,8 +13,9 @@ export interface IBookedAppointmentType {
     _id: string,
     patientName: string,
     doctorName: string,
-    date: Date,
-    time: Date
+    bookingTime: string,
+    date: string,
+    time: string
 }
 
 
@@ -29,6 +30,7 @@ export interface IBookedAppointmentDBReturn {
         status: string,
         pendingBookingExpiry: null
     },
+    bookingTime: Date,
     _id: string,
     patientName: string,
     doctorName: string,

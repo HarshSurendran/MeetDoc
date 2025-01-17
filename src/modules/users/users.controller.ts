@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './interface/usersdto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -9,6 +9,14 @@ import { UpdateSlotDto } from '../slots/dto/update-slot.dto';
 @Controller('users')    
 export class UsersController {
     constructor(private userService: UsersService) { }
+
+    
+    @Get("appointments")
+    async getUserAppointments(@Req() req) {
+        const user = req.user;
+        console.log("reached fetchappointment endpoint-----------",user);
+        return await this.userService.getUserAppointments(user.userId);
+    }
     
     @Get("/:id")
     async getUser(@Param('id') id: string) {
@@ -54,6 +62,7 @@ export class UsersController {
     async getDoctorsForLanding() {
         return await this.userService.getDoctorsForLandingPage();
     }
+
 
     
 }
