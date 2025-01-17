@@ -8,6 +8,8 @@ import { DocVerificationDto } from './interface/docverificationdto';
 import { S3Service } from '../s3/s3.service';
 import { SlotsRepository } from '../slots/slots.repository';
 import { GenerateSlotDto } from '../slots/dto/create-slot.dto';
+import { BookingsRepository } from '../bookings/bookings.repository';
+import { IBookedAppointmentType } from '../bookings/dto/doctor-booking.dto';
 
 @Injectable()
 export class DoctorsService {
@@ -15,8 +17,9 @@ export class DoctorsService {
     @InjectModel(Doctor.name) private DoctorModel: Model<DoctorDocument>,
     @InjectModel(DocVerification.name) private DoctorVerificationModel: Model<DocVerificationDocument>,
     private s3Service: S3Service,
-    private slotsRepo: SlotsRepository
-  ) {}
+    private slotsRepo: SlotsRepository,
+    private bookingsRepo: BookingsRepository
+  ) { }
 
   async create(body: CreateDoctorDto) {
     const createdDoctor = new this.DoctorModel(body);
@@ -66,7 +69,7 @@ export class DoctorsService {
 
   async changeProfilePhoto(id: string, photo: Express.Multer.File) {
     try {
-    console.log(id)
+      console.log(id)
       const doctor = await this.DoctorModel.findById(id);
       if (!doctor) {
         throw new NotFoundException("Doctor Id is invalid.");
@@ -74,25 +77,25 @@ export class DoctorsService {
       const response = await this.s3Service.uploadSingleFile({ file: photo, isPublic: false });
       if (response.key) {
         if (doctor.photo) {
-          await this.s3Service.deleteFile(doctor.photo);      
+          await this.s3Service.deleteFile(doctor.photo);
         }
         await this.DoctorModel.updateOne({ _id: id }, { $set: { photo: response.key } });
         return {
           key: response.key
         }
       }
-  } catch (error) {
-    console.log(error, "This is the error during changing profile photo of doctor");
-    throw new InternalServerErrorException();
-  }
+    } catch (error) {
+      console.log(error, "This is the error during changing profile photo of doctor");
+      throw new InternalServerErrorException();
+    }
   }
 
   getDatesBetween(startDate: Date, endDate: Date): Date[] {
     const dates = [];
     let currentDate = new Date(startDate.getTime());
     while (currentDate <= endDate) {
-        dates.push(new Date(currentDate));
-        currentDate.setDate(currentDate.getDate() + 1);
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
     }
     return dates;
   }
@@ -114,7 +117,7 @@ export class DoctorsService {
       while (current < stoping) {
         const endTime = new Date(current.getTime() + generateSlotDto.duration * 60000);
         const slot = {
-          doctorId : generateSlotDto.doctorId,
+          doctorId: generateSlotDto.doctorId,
           StartTime: current,
           EndTime: endTime,
         }
@@ -129,7 +132,7 @@ export class DoctorsService {
   async getSlots(doctorId: string) {
     const slots = await this.slotsRepo.getSlotsByDoctorId(doctorId);
     console.log("Fetched slots", slots);
-    return {slots};
+    return { slots };
   }
 
   async deleteSlot(slotId: string) {
@@ -139,6 +142,29 @@ export class DoctorsService {
     }
     return await this.slotsRepo.deleteSlot(slotId);
   }
+
+  async getAppointments(doctorId : string) {
+    const appointmentFromDB = await this.bookingsRepo.getBookingsforDoctor(doctorId);
+    
+    const appointments : IBookedAppointmentType[] = [];
+    appointmentFromDB.forEach((appointment) => {
+      let duration: number = (new Date(appointment.slots.EndTime).getTime() - new Date(appointment.slots.StartTime).getTime()) / (1000 * 60);
+      appointments.push({
+        reason : appointment.reason,
+        bookingStatus : appointment.bookingStatus,
+        duration : duration,
+        _id : appointment._id,
+        patientName : appointment.patientName,
+        doctorName : appointment.doctorName,
+        date : appointment.date,
+        time : appointment.time
+      })
+    })
+    console.log(appointments,"this is the appointment from db");
+    return {
+      appointments
+    }
+  } 
 
 
 

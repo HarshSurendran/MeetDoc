@@ -9,8 +9,8 @@ export enum PaymentStatus {
 export enum BookingStatus {
     Completed = 'Completed',
     Cancelled = 'Cancelled',
-    scheduled = 'scheduled',
-    inProgress = 'in-progress',
+    scheduled = 'Scheduled',
+    inProgress = 'InProgress',
 }
 
 export type BookingsDocument = Bookings & Document;
