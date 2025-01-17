@@ -33,6 +33,9 @@ export class Bookings {
     amount: number;
 
     @Prop()
+    reason: string;
+
+    @Prop()
     paymentId : string
 };
 

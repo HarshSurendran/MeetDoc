@@ -14,10 +14,7 @@ export class PaymentService {
         });
     }
 
-    async createPaymentIntent(body: { slotId: string, userId: string, doctorId: string , fee: number, date: Date }) {
-        console.log(body.fee);
-        
-        console.log("created payment Intent ")
+    async createPaymentIntent(body: { slotId: string, userId: string, doctorId: string , fee: number, reason:string, date: Date }) {        
         const paymentIntent = await this.stripe.paymentIntents.create({
             amount: body.fee * 100,
             currency: "usd",
@@ -28,6 +25,7 @@ export class PaymentService {
                 slotId: body.slotId,
                 userId: body.userId,
                 doctorId: body.doctorId,
+                reason: body.reason,
                 appointmentDate: body.date.toISOString()
               }
         });

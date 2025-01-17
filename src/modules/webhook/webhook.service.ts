@@ -43,6 +43,7 @@ export class WebhookService {
                     doctorId: paymentIntent.metadata.doctorId,
                     slotId: paymentIntent.metadata.slotId,
                     bookingTime: new Date(),
+                    reason: paymentIntent.metadata.reason,
                     paymentStatus: 'Completed',
                     paymentId: paymentIntent.id
                 }
