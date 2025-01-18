@@ -32,7 +32,8 @@ export class PrescriptionRepository {
         const detailedPrescription = await this.PrescriptionModel.findById(result._id).populate('patientId', 'name gender date_of_birth').populate('doctorId', 'name specialistation').exec() as unknown as CreatePrescriptionPdfDto;
         const patientAge = this.calculateAge(detailedPrescription.patientId.date_of_birth);
         detailedPrescription.patientId.age = patientAge;
-        const pdfUrl = await this.prescriptionService.generatePrescriptionPDF(detailedPrescription);
+        const { key, isPublic } = await this.prescriptionService.generatePrescriptionPDF(detailedPrescription);
+        await this.PrescriptionModel.updateOne({_id: result._id}, { $set: { prescriptionPdfUrl: key} });
         return result;
     }
 

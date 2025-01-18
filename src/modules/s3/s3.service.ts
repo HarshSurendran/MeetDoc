@@ -40,7 +40,7 @@ export class S3Service {
             key,
             isPublic,
         };
-    }
+    };
 
     // async getFileUrl(key: string) {
     //     return { url: `https://${this.bucketName}.s3.amazonaws.com/${key}` };
@@ -57,7 +57,7 @@ export class S3Service {
         });
 
         return { url };
-    }
+    };
 
     async deleteFile(key: string): Promise<void> {
         try {
@@ -71,5 +71,27 @@ export class S3Service {
         } catch (error) {
           throw new Error(`Failed to delete file: ${error.message}`);
         }
-      }
+    };
+
+    async uploadPrescriptionFile({ file, isPublic = false }: { file: {originalname: string; buffer: Buffer, mimetype: string}; isPublic: boolean }) {
+        const key = `prescriptions/${file.originalname}`;
+        const command = new PutObjectCommand({
+            Bucket: this.bucketName,
+            Key: key,
+            Body: file.buffer,
+            ContentType: file.mimetype,
+            ACL: isPublic ? 'public-read' : 'private',
+            Metadata: {
+                originalName: file.originalname,
+            },
+        });
+
+        const uploadResult = await this.client.send(command);
+        console.log("Uploaded result", uploadResult);
+
+        return {
+            key,
+            isPublic,
+        };
+    }
 }
