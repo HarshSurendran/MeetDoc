@@ -18,7 +18,7 @@ export class WebhookService {
     async handleStripeWebhook(req : RawBodyRequest<Request>, res : Response) {
         const sig = req.headers['stripe-signature'];
         let event;
-        const rawBody = Buffer.from(req.body.toString());
+        const rawBody = Buffer.from(req.rawBody.toString());
     
         try {
           event = this.PaymentService.constructEvent(rawBody, sig);
