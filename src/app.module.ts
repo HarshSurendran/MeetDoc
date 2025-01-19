@@ -17,6 +17,7 @@ import { PaymentModule } from './modules/payment/payment.module';
 import { WebhookModule } from './modules/webhook/webhook.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { PrescriptionModule } from './modules/prescription/prescription.module';
+import { WebrtcModule } from './modules/webrtc/webrtc.module';
 
 
 @Module({
@@ -36,6 +37,7 @@ import { PrescriptionModule } from './modules/prescription/prescription.module';
     WebhookModule,
     TasksModule,
     PrescriptionModule,
+    WebrtcModule,
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],
