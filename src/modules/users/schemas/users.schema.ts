@@ -2,6 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { Address, AddressSchema } from './address.schema';
 
+export enum status {
+  online = 'online',
+  offline = 'offline'
+}
+
 export type UserDocument = User & Document;
 
 @Schema()
@@ -44,6 +49,12 @@ export class User {
 
   @Prop()
   photo: string;
+
+  @Prop({default: status.offline})
+  status: status
+
+  @Prop()
+  lastSeen: Date
 }
 
 

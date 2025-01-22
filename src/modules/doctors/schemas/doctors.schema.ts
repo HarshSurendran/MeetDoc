@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { Address, AddressSchema } from 'src/modules/users/schemas/address.schema';
+import { status } from 'src/modules/users/schemas/users.schema';
 
 
 export type DoctorDocument = Doctor & Document;
@@ -60,6 +61,12 @@ export class Doctor {
 
   @Prop({default: 0})
   consultations: number;
+
+  @Prop({default: status.offline})
+  status: status
+
+  @Prop()
+  lastSeen: Date
 }
 
 export const DoctorSchema = SchemaFactory.createForClass(Doctor);

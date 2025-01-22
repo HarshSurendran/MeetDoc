@@ -18,6 +18,7 @@ import { WebhookModule } from './modules/webhook/webhook.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { PrescriptionModule } from './modules/prescription/prescription.module';
 import { WebrtcModule } from './modules/webrtc/webrtc.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 
 @Module({
@@ -38,6 +39,7 @@ import { WebrtcModule } from './modules/webrtc/webrtc.module';
     TasksModule,
     WebrtcModule,
     PrescriptionModule,
+    ChatModule
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],

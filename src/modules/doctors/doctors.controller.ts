@@ -54,6 +54,12 @@ export class DoctorsController {
         return await this.doctorService.createPrescription(data);
     }
 
+    @Get('patients')
+    async getPatientsForChat(@Req() req) {
+        const doctor = req.user;
+        return await this.doctorService.getPatientsForChat(doctor.doctorId);
+    }
+
 
 
 
