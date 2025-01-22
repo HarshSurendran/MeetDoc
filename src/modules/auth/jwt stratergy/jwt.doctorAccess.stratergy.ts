@@ -23,7 +23,6 @@ export class JwtDoctorAccessStrategy extends PassportStrategy(Strategy, "doctor-
     if (payload.role !== 'doctor') {
       throw new HttpException("Your role is not assigned.", HttpStatus.FORBIDDEN);
     }
-    console.log("Passed doctor jwt token verification", payload.email, payload);
     
     return { doctorId: payload._id, name: payload.name, email: payload.email, role: payload.role};
   }

@@ -6,6 +6,7 @@ import { DoctorRepository } from '../doctors/doctor.repository';
 import { UsersRepository } from '../users/users.repository';
 import { status } from '../users/schemas/users.schema';
 import { ChatGateway } from './chat.gateway';
+import { use } from 'passport';
 
 @Injectable()
 export class ChatService {
@@ -78,16 +79,20 @@ export class ChatService {
   }
 
   async markMessagesAsRead(userId: string, senderId: string) {
-    return this.messageModel.updateMany(
+    const userObjectId = new Types.ObjectId(userId);
+    const senderObjectId = new Types.ObjectId(senderId);
+    const result = await this.messageModel.updateMany(
       {
-        receiver: userId,
-        sender: senderId,
+        receiverId: userObjectId,
+        senderId: senderObjectId,
         isRead: false,
       },
       {
         $set: { isRead: true },
       },
     );
+    console.log("Resutlt after updateing isread", result);
+    return result
   }
 
   async updateUserStatus(userId: string, status: status) {

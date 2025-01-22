@@ -47,6 +47,11 @@ export class DoctorsController {
         return await this.doctorService.getAppointments(doctor.doctorId);
     }
 
+    @Get('appointments/:appointmentId')
+        async fetchAppointment( @Param('appointmentId') appointmentId: string) {
+            return await this.doctorService.getAppointmentById(appointmentId)
+        }
+
     @Post('prescription')
     async createPrescription(@Req() req, @Body() data: CreatePrescriptionDto) {
         const doctor = req.user;

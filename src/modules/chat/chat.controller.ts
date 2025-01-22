@@ -25,6 +25,14 @@ export class ChatController {
   }) {
     return this.chatService.createMessage(createMessageDto);
   }
+
+  @Post('toggleisread')
+  toggleIsRead(@Body() toggleIsReadDto : {
+    senderId: string;
+    receiverId: string;
+  }) {
+    return this.chatService.markMessagesAsRead(toggleIsReadDto.senderId, toggleIsReadDto.receiverId);
+  }
   
 
   @UseGuards(AuthGuard("jwt"))

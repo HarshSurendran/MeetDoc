@@ -73,7 +73,6 @@ export class DoctorsService {
 
   async changeProfilePhoto(id: string, photo: Express.Multer.File) {
     try {
-      console.log(id)
       const doctor = await this.DoctorModel.findById(id);
       if (!doctor) {
         throw new NotFoundException("Doctor Id is invalid.");
@@ -135,7 +134,6 @@ export class DoctorsService {
 
   async getSlots(doctorId: string) {
     const slots = await this.slotsRepo.getSlotsByDoctorId(doctorId);
-    console.log("Fetched slots", slots);
     return { slots };
   }
 
@@ -165,7 +163,6 @@ export class DoctorsService {
         time : moment(appointment.time).format('hh:mm A'),
       })
     })
-    console.log(appointments,"this is the appointment from db");
     return {
       appointments
     }
@@ -175,6 +172,13 @@ export class DoctorsService {
     const patients = await this.bookingsRepo.getPatientsForChat(doctorId);
     
    return patients
+  }
+
+  async getAppointmentById(appointmentId: string) {
+    const appointment = await this.bookingsRepo.getBookingById(appointmentId);
+    return {
+      appointment
+    }
   }
 
 

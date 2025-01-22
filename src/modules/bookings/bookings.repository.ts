@@ -177,4 +177,8 @@ export class BookingsRepository {
     }
     return bookings;
   }
+
+  async getBookingById(_id: string) {
+    return await this.BookingModel.findById(_id)    
+  }
 }

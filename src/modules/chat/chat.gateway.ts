@@ -34,9 +34,10 @@ import * as jwt from 'jsonwebtoken';
     async handleConnection(client: Socket) {       
       const { token, userId} = client.handshake.auth;
       this.connectedUsers.set(userId, client.id);
-      console.log(`User ${userId} (Type: ) connected with socket ${client.id}`, this.connectedUsers);
+      const onlineUsers = [...this.connectedUsers.keys()];
+      console.log(`User ${userId} (Type: ) connected with socket ${client.id}`, this.connectedUsers.keys());
       
-      this.server.emit('onlineUsers', { onlineUsers: this.connectedUsers.keys() });      
+      this.server.emit('onlineUsers', { onlineUsers });      
       // try{
       //   // Extract token from handshake     
       //   // const token = client.handshake.auth?.token;
@@ -57,32 +58,31 @@ import * as jwt from 'jsonwebtoken';
       const userId = payload.userId;
       if (userId) {
         this.connectedUsers.delete(userId);
+        const onlineUsers = [...this.connectedUsers.keys()];
+        this.server.emit('onlineUsers', { onlineUsers });    
         await this.chatService.updateUserStatus(userId, status.offline);
-        this.server.emit('userStatusChange', { userId, status: 'offline' });
       }
     }
 
     async handleSendMessage(message) {
-      console.log("reached handle send message", message, this.connectedUsers)
       const receiverSocketId = this.connectedUsers.get(message.senderId.toString());
-      console.log(receiverSocketId, "receiver socket id")
       if (receiverSocketId) {
         console.log("going to emit msg to the online user", receiverSocketId)
         this.server.to(receiverSocketId).emit('newMessage', message);
       }
     }
 
-    @SubscribeMessage('userDetails')
-    async handleUserDetails(client: Socket, payload: { userId: string, userType: "patient" | "doctor" }) {
-      const { userId, userType } = payload;
-      if (userId) {
-        this.connectedUsers.set(userId, client.id)
-        await this.chatService.updateUserStatus(userId, status.online);
-        (client as any).userType = userType;
-        (client as any).userId = userId;
+    // @SubscribeMessage('userDetails')
+    // async handleUserDetails(client: Socket, payload: { userId: string, userType: "patient" | "doctor" }) {
+    //   const { userId, userType } = payload;
+    //   if (userId) {
+    //     this.connectedUsers.set(userId, client.id)
+    //     await this.chatService.updateUserStatus(userId, status.online);
+    //     (client as any).userType = userType;
+    //     (client as any).userId = userId;
 
-      }
-    }
+    //   }
+    // }
   
     // @UseGuards(WsJwtGuard)
     // @SubscribeMessage('sendMessage')
