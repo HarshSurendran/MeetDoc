@@ -15,6 +15,24 @@ export class ChatController {
   getDoctorRecentChats(@CurrentUser('doctorId') doctorId: string) {
     return this.chatService.getRecentChats(doctorId);
   }
+  
+  @Post('message')
+  createMessage(@Body() createMessageDto : {
+    senderId: string;
+    senderType: 'doctor' | 'patient';
+    receiverId: string;
+    content: string;
+  }) {
+    return this.chatService.createMessage(createMessageDto);
+  }
+  
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get('patient/recent')
+  getPatientRecentChats(@CurrentUser('userId') patientId: string) {
+    console.log(patientId);
+    return this.chatService.getRecentChatsForUsers(patientId);
+  }
 
   @UseGuards(AuthGuard('doctor-access-jwt'))
   @Get('doctor/messages/:patientId')
@@ -29,7 +47,7 @@ export class ChatController {
   @UseGuards(AuthGuard("jwt"))
   @Get('patient/messages/:doctorId')
   getPatientMessages(
-    @CurrentUser('id') patientId: string,
+    @CurrentUser('userId') patientId: string,
     @Param('doctorId') doctorId: string,
   ) {
     return this.chatService.getMessages(doctorId, patientId);

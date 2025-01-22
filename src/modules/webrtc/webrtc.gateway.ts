@@ -4,7 +4,7 @@ import {
   } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway({ cors: {origin: "*"} })
+@WebSocketGateway({ cors: {origin: 'http://localhost:5173'} , namespace: '/webrtc'})
 export class WebrtcGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
