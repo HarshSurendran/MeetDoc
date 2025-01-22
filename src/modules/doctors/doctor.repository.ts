@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Doctor, DoctorDocument } from "./schemas/doctors.schema";
 import { Model } from "mongoose";
+import { status } from "../users/schemas/users.schema";
 
 
 @Injectable()
@@ -22,5 +23,11 @@ export class DoctorRepository {
             throw new NotFoundException("No doctors available.")
         }
         return doctors;
+    }
+
+    async updateDoctorStatus(_id: string, status: status): Promise<DoctorDocument> {
+        return await this.DoctorModel.findByIdAndUpdate(_id, {
+            $set: { status, lastSeen: new Date() },
+        });
     }
 }

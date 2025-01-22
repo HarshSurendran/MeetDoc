@@ -19,6 +19,7 @@ export class WebhookController {
     @Res() res: Response,
    
   ) {
+    console.log("reached webhook endpoint")
     return await this.webhookService.handleStripeWebhook(req, res);
   }
 }

@@ -168,6 +168,12 @@ export class DoctorsService {
     }
   } 
 
+  async getPatientsForChat(doctorId : string) {
+    const patients = await this.bookingsRepo.getPatientsForChat(doctorId);
+    
+   return patients
+  }
+
 
 
 

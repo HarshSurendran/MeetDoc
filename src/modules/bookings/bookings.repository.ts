@@ -125,5 +125,56 @@ export class BookingsRepository {
             throw new NotFoundException("Booking details not found.");
         }
         return booking;
+  }
+  
+  async getPatientsForChat(doctorId: string) {
+    const bookings = await this.BookingModel.aggregate([
+      {
+        $match: { doctorId: doctorId } 
+      },
+      {
+        $group: {
+          _id: "$patientId",  
+          booking: { $first: "$$ROOT" } 
+        }
+      },
+      {
+        $replaceRoot: { newRoot: "$booking" } 
+      },
+      {
+        $addFields: {
+            patientIdObject: { $toObjectId: '$patientId' } ,
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "patientIdObject",
+          foreignField: "_id",
+          as: "patient"
+        }
+      },
+      {
+        $unwind: "$patient"
+      },
+      {
+        $project: {
+          _id: 1,
+          doctorId: 1,
+          patientId: 1,
+          patientName: "$patient.name",
+          Status: "$patient.status",
+          lastseen: "$patient.lastseen",
+          bookingTime: 1,
+          bookingStatus: 1,
+          reason: 1
+        }
+      }
+    ]);
+    console.log("Patients for doctor ", bookings);
+    if (!bookings.length) {
+      throw new NotFoundException(`No bookings found for doctor - ${doctorId}`);
     }
+    return bookings;
+  }
 }
