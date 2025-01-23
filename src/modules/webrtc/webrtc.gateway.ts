@@ -29,7 +29,7 @@ export class WebrtcGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 
   @SubscribeMessage('offer')
   handleOffer(client: Socket, payload: any): void {
-    console.log(`Offer received from ${client.id} for ${payload.target} , ${payload.offer}`);    
+    console.log(`Offer received from ${client.id} for ${payload.target}`);    
     this.server.to(payload.target).emit('offer', { target: client.id, offer: payload.offer }); 
   }
 
@@ -64,6 +64,12 @@ export class WebrtcGateway implements OnGatewayInit, OnGatewayConnection, OnGate
   handleNegotitationAnswer(client: Socket, payload: any): void{
     console.log(`Negotiation answer received from ${client.id} for ${payload.target}`); 
     this.server.to(payload.target).emit('negotiation-answer', { target: client.id, answer: payload.answer });
+  }
+
+  @SubscribeMessage('end-call')
+  handleEndCall(client: Socket, payload: { target: string }) {
+    console.log(`End call received from ${client.id} for ${payload.target}`);
+    this.server.to(payload.target).emit('end-call', { target: client.id });    
   }
 }
 

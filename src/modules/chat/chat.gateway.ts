@@ -102,6 +102,40 @@ import * as jwt from 'jsonwebtoken';
         this.server.to(receiverSocketId).emit('userTyping', { userId: senderId });
       }
     }
+
+    @SubscribeMessage("VideoCallInitiated")
+    handleVideoCallReq(client: Socket, {from, to , videoCallId}: { from: string, to: string, videoCallId: string }) {
+      const receiverSocketId = this.connectedUsers.get(to);
+      if (receiverSocketId) {
+        console.log("going to emit video call req to the online user", receiverSocketId);
+        this.server.to(receiverSocketId).emit('VideoCallInitiated', {from, to, videoCallId});
+      } else {
+        this.server.to(client.id).emit('RecieverNotOnline', {from, to, videoCallId});
+      }
+    }
+
+    @SubscribeMessage("VideoCallAccepted")
+    handleVideoCallAccepted(client: Socket, {from, to , videoCallId}: { from: string, to: string, videoCallId: string }) {
+      const receiverSocketId = this.connectedUsers.get(to);
+      if (receiverSocketId) {
+        this.server.to(receiverSocketId).emit('VideoCallAccepted', {from, to, videoCallId});
+      } else {
+        this.server.to(client.id).emit('RecieverNotOnline', {from, to, videoCallId});
+      }
+    }
+
+    @SubscribeMessage("VideoCallRejected")
+    handleVideoCallRejected(client: Socket, { from, to, videoCallId }: { from: string, to: string, videoCallId: string }) {
+      const receiverSocketId = this.connectedUsers.get(from);
+      if (receiverSocketId) {
+        console.log("VideoCallRejected");
+        this.server.to(receiverSocketId).emit('VideoCallRejected', {from, to, videoCallId});
+      } else {
+        this.server.to(client.id).emit('RecieverNotOnline', {from, to, videoCallId});
+      }
+    }
+
+
   
     // private getUserIdFromSocket(client: Socket): string {
     //   return client.handshake.auth?.userId;
