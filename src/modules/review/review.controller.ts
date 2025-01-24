@@ -10,9 +10,9 @@ export class ReviewController {
     constructor(private reviewService: ReviewService) {}
 
     @UseGuards(AuthGuard('jwt'))
-    @Post('/')
+    @Post('')
     async createReview(@CurrentUser('userId') userId: string, @Body() createReviewDto: CreateReviewDto) {
-        return await this.reviewService.createReview(createReviewDto);
+        return await this.reviewService.createReview(userId,createReviewDto);
     }
 
     @UseGuards(AuthGuard('jwt'))

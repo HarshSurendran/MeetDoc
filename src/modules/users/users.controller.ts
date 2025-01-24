@@ -11,6 +11,11 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 export class UsersController {
     constructor(private userService: UsersService) { }
 
+    @Get("appointments/:id")
+    async getAppointment(@Param('id') id: string) {
+        return await this.userService.getAppointment(id);
+    }
+
     
     @Get("appointments")
     async getUserAppointments(@Req() req) {

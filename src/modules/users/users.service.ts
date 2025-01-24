@@ -189,6 +189,13 @@ export class UsersService {
     }
   }
 
+  async getAppointment(appointmentId: string) {
+    const appointment = await this.BookingsRepo.getBookingById(appointmentId);
+    return {
+      appointment
+    }
+  }
+
   async getPrescriptions(userId) {
     const prescriptions = await this.PrescriptionRepo.getPrescriptionsByPatientId(userId);
     console.log("this is the prescription ", prescriptions[0])

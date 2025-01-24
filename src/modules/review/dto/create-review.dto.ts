@@ -1,15 +1,21 @@
-import { IsMongoId, IsNumber, IsString } from "class-validator";
+import { IsMongoId, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateReviewDto{
-    @IsMongoId()
+    @IsString()
     for: string;
 
-    @IsMongoId()
+    @IsOptional()
+    @IsString()
     from: string;
 
     @IsNumber()
     rating: number;
 
+    @IsOptional()
     @IsString()
     message?: string;
+
+    @IsOptional()
+    @IsString()
+    appointmentId?: string
 }

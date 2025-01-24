@@ -19,7 +19,6 @@ import { WebrtcModule } from './modules/webrtc/webrtc.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { ReviewModule } from './modules/review/review.module';
-import { RevewService } from './revew/revew.service';
 
 
 @Module({
@@ -44,7 +43,7 @@ import { RevewService } from './revew/revew.service';
     ReviewModule
   ],
   controllers: [AppController],
-  providers: [AppService, S3Service, RevewService],
+  providers: [AppService, S3Service],
 })
   
 export class AppModule {

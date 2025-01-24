@@ -6,7 +6,8 @@ import { ReviewRepository } from './review.repository';
 export class ReviewService {
     constructor(@Inject() private reviewRepo: ReviewRepository){}
 
-    async createReview(createReviewDto: CreateReviewDto) {
+    async createReview(userId: string, createReviewDto: CreateReviewDto) {
+        createReviewDto.from = userId;
         const review = await this.reviewRepo.createReview(createReviewDto);
         return {
             review
