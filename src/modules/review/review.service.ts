@@ -15,7 +15,12 @@ export class ReviewService {
     }
 
     async getReviews(doctorId: string) {
-        return await this.reviewRepo.getReviews(doctorId);
+        const reviews = await this.reviewRepo.getReviews(doctorId);
+        console.log(reviews, "reviews")
+        return {
+            reviews
+        }
+       
     }
 
     async getSingleReview(reviewId: string) {

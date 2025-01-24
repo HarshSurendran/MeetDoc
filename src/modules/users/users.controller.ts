@@ -24,6 +24,11 @@ export class UsersController {
         return await this.userService.getUserAppointments(user.userId);
     }
 
+    @Get("reviews")
+    async getYourReviews(@CurrentUser('userId') userId: string) {
+        return await this.userService.getYourReviews(userId);            
+    }
+
     @Get('prescriptions')
     async getPrescriptions(@CurrentUser('userId') userId: string) {
         return await this.userService.getPrescriptions(userId);        

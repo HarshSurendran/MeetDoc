@@ -9,5 +9,6 @@ import { ReviewController } from './review.controller';
   imports: [MongooseModule.forFeature([{name: Review.name, schema: ReviewSchema}])],
   providers: [ReviewService, ReviewRepository],
   controllers: [ReviewController],
+  exports: [ReviewService, ReviewRepository]
 })
 export class ReviewModule {}

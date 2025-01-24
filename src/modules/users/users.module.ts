@@ -10,6 +10,7 @@ import { SlotsModule } from '../slots/slots.module';
 import { BookingsModule } from '../bookings/bookings.module';
 import { UsersRepository } from './users.repository';
 import { PrescriptionModule } from '../prescription/prescription.module';
+import { ReviewModule } from '../review/review.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { PrescriptionModule } from '../prescription/prescription.module';
     DoctorsModule,
     SlotsModule,
     BookingsModule,
-    PrescriptionModule
+    PrescriptionModule,
+    ReviewModule
   ],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository],

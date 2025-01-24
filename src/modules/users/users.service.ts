@@ -11,6 +11,7 @@ import { BookingsRepository } from '../bookings/bookings.repository';
 import { IBookedAppointmentType } from '../bookings/dto/doctor-booking.dto';
 import * as moment from 'moment';
 import { PrescriptionRepository } from '../prescription/prescription.repository';
+import { ReviewRepository } from '../review/review.repository';
 
 
 @Injectable()
@@ -22,6 +23,7 @@ export class UsersService {
     private SlotsRepo: SlotsRepository,
     private BookingsRepo: BookingsRepository,
     private PrescriptionRepo: PrescriptionRepository,
+    private ReviewRepo: ReviewRepository
   ) { }
 
   async create(createUserDto: Partial<CreateUserDto>): Promise<UserDocument> {
@@ -204,4 +206,10 @@ export class UsersService {
     }
   }
   
+  async getYourReviews(userId) {
+    const reviews = await this.ReviewRepo.getReviewsByUserId(userId);
+    return {
+      reviews
+    }
+  }
 }

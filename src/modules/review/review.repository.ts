@@ -17,8 +17,11 @@ export class ReviewRepository {
     }
 
     async getReviews(doctorId: string) {
-        const doctorObjectId = new Types.ObjectId(doctorId);
-        return await this.reviewModel.find({ for: doctorObjectId }).populate('from', 'name ').populate('for', 'name specialisation').exec(); 
+        return await this.reviewModel.find({ for: doctorId }).populate('from', 'name ').populate('for', 'name specialisation').exec(); 
+    }
+
+    async getReviewsByUserId(userId: string) {
+        return await this.reviewModel.find({ from: userId }).populate('from', 'name').populate('for', 'name specialisation').exec();
     }
 
     async getReview(reviewId: string) {
