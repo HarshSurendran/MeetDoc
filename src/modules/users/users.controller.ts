@@ -4,6 +4,7 @@ import { CreateUserDto } from './interface/usersdto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateSlotDto } from '../slots/dto/update-slot.dto';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
 @UseGuards(AuthGuard("jwt"))
 @Controller('users')    
@@ -16,6 +17,11 @@ export class UsersController {
         const user = req.user;
         console.log("reached fetchappointment endpoint-----------",user);
         return await this.userService.getUserAppointments(user.userId);
+    }
+
+    @Get('prescriptions')
+    async getPrescriptions(@CurrentUser('userId') userId: string) {
+        return await this.userService.getPrescriptions(userId);        
     }
     
     @Get("/:id")
@@ -62,6 +68,8 @@ export class UsersController {
     async getDoctorsForLanding() {
         return await this.userService.getDoctorsForLandingPage();
     }
+
+   
 
 
     

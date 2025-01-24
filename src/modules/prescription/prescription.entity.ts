@@ -19,7 +19,6 @@ export class Medication {
 
 export const MedicationSchema = SchemaFactory.createForClass(Medication);
 
-
 export type PrescriptionDocument = Prescription & Document;
 
 @Schema({ timestamps: true }) 

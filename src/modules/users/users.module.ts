@@ -9,6 +9,7 @@ import { DoctorsModule } from '../doctors/doctors.module';
 import { SlotsModule } from '../slots/slots.module';
 import { BookingsModule } from '../bookings/bookings.module';
 import { UsersRepository } from './users.repository';
+import { PrescriptionModule } from '../prescription/prescription.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { UsersRepository } from './users.repository';
     S3Module,
     DoctorsModule,
     SlotsModule,
-    BookingsModule
+    BookingsModule,
+    PrescriptionModule
   ],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository],

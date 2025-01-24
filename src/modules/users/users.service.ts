@@ -10,6 +10,7 @@ import { UpdateSlotDto } from '../slots/dto/update-slot.dto';
 import { BookingsRepository } from '../bookings/bookings.repository';
 import { IBookedAppointmentType } from '../bookings/dto/doctor-booking.dto';
 import * as moment from 'moment';
+import { PrescriptionRepository } from '../prescription/prescription.repository';
 
 
 @Injectable()
@@ -20,6 +21,7 @@ export class UsersService {
     private DoctorRepo: DoctorRepository,
     private SlotsRepo: SlotsRepository,
     private BookingsRepo: BookingsRepository,
+    private PrescriptionRepo: PrescriptionRepository,
   ) { }
 
   async create(createUserDto: Partial<CreateUserDto>): Promise<UserDocument> {
@@ -184,6 +186,14 @@ export class UsersService {
     });
     return {
       appointments
+    }
+  }
+
+  async getPrescriptions(userId) {
+    const prescriptions = await this.PrescriptionRepo.getPrescriptionsByPatientId(userId);
+    console.log("this is the prescription ", prescriptions[0])
+    return {
+      prescriptions
     }
   }
   

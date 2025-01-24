@@ -38,7 +38,7 @@ export class PrescriptionRepository {
     }
 
     async getPrescriptionsByPatientId(patientId: string): Promise<Prescription[]> {
-        return this.PrescriptionModel.find({ patientId }).exec();
+        return this.PrescriptionModel.find({ patientId }).populate('patientId', 'name gender date_of_Birth').populate('doctorId', 'name specialisation').exec();
     }
 
     async getPrescriptionsByDoctorId(doctorId: string): Promise<Prescription[]> {
