@@ -4,11 +4,9 @@ import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
 import { MailModule } from './modules/mail/mail.module';
 import { MongooseConfigModule } from './dbconfig/mongoose.config';
 import { LoggerMiddleware } from './common/middlewares/logger/logger.middleware';
-import { GlobalCacheModule } from './modules/redis/GlobalCache.module';
 import { S3Module } from './modules/s3/s3.module';
 import { S3Service } from './modules/s3/s3.service'; 
 import { BookingsModule } from './modules/bookings/bookings.module';
@@ -19,6 +17,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
 import { PrescriptionModule } from './modules/prescription/prescription.module';
 import { WebrtcModule } from './modules/webrtc/webrtc.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { RedisModule } from './modules/redis/redis.module';
 
 
 @Module({
@@ -30,7 +29,6 @@ import { ChatModule } from './modules/chat/chat.module';
     UsersModule,
     AuthModule,
     MailModule,
-    GlobalCacheModule,
     S3Module,
     BookingsModule,
     SlotsModule,
@@ -39,7 +37,8 @@ import { ChatModule } from './modules/chat/chat.module';
     TasksModule,
     WebrtcModule,
     PrescriptionModule,
-    ChatModule
+    ChatModule,
+    RedisModule
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],

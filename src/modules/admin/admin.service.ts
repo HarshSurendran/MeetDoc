@@ -5,28 +5,26 @@ import { Model, ObjectId } from 'mongoose';
 import { CreateUserDto } from '../users/interface/usersdto';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcryptjs';
-import { Cache } from '@nestjs/cache-manager';
 import { DoctorsService } from '../doctors/doctors.service';
+import { RedisService } from '../redis/redis.service';
 
 
 @Injectable()
 export class AdminService {
   constructor(
     @InjectModel(Admin.name) private AdminModel: Model<AdminDocument>,
-    @Inject('CACHE_MANAGER') private cache: Cache,    
     private usersService: UsersService,
-    private doctorService: DoctorsService
-    
+    private doctorService: DoctorsService,
+    private redisService: RedisService
   ) { }
 
   
   async addUserBlockStatus(email: string, isBlocked: Boolean) {
-    const response = await this.cache.set(`user:${email}:isBlocked`, isBlocked.toString(), 900);
-    console.log("This is response after adding cache of blocked user", response);
+    const response = await this.redisService.set(`user:${email}:isBlocked`, isBlocked.toString(), 900);
   }
 
   async getUserBlockStatus(email: string) {
-    return await this.cache.get(`user:${email}:isBlocked`);
+    return await this.redisService.get(`user:${email}:isBlocked`);
   }
 
   async getAdmin(email: string): Promise<any> {
@@ -60,9 +58,7 @@ export class AdminService {
     try {
       const userData = await this.usersService.toggleBlock(id);
       await this.addUserBlockStatus(userData.email, userData.isBlocked);
-      console.log("toggleBlock")
       const status = await this.getUserBlockStatus(userData.email);
-      console.log(status);
       return {success: true}
     } catch (error) {
       throw new InternalServerErrorException;

@@ -2,13 +2,17 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { Cache } from '@nestjs/cache-manager';
+import { AdminService } from 'src/modules/admin/admin.service';
+import { RedisService } from 'src/modules/redis/redis.service';
 
 
 
 @Injectable()
 export class JwtAccessStrategy extends PassportStrategy(Strategy, "jwt") {
-  constructor(private configService: ConfigService,  @Inject('CACHE_MANAGER') private cacheManager: Cache) {
+  constructor(private configService: ConfigService,
+    @Inject() private adminService: AdminService,
+    @Inject() private redisService: RedisService
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -17,7 +21,7 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, "jwt") {
   }
 
   async validate(payload: any) {
-    const isBlocked = await this.cacheManager.get<string>(`user:${payload.email}:isBlocked`);
+    const isBlocked = await this.redisService.get(`user:${payload.email}:isBlocked`);
     console.log(`Block status for ${payload.email}: ${isBlocked}`);
     
     if (isBlocked === 'true') {

@@ -298,7 +298,19 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
+   
+
+
+
+
+
+
+
+
+
+
     const blockStatus = await this.adminService.getUserBlockStatus(email);
+    console.log("This is the block status", blockStatus)
 
     if (blockStatus === "true") {
       console.log("entered blck")

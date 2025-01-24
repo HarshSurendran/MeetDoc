@@ -2,13 +2,13 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { Cache } from '@nestjs/cache-manager';
 
 
 
 @Injectable()
 export class JwtDoctorAccessStrategy extends PassportStrategy(Strategy, "doctor-access-jwt") {
-  constructor(private configService: ConfigService,  @Inject('CACHE_MANAGER') private cacheManager: Cache) {
+  constructor(private configService: ConfigService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
