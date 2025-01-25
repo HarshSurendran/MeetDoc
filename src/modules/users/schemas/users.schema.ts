@@ -9,7 +9,7 @@ export enum status {
 
 export type UserDocument = User & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class User {
   @Prop()
   id: string;

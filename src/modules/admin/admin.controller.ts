@@ -4,7 +4,7 @@ import { CreateUserDto } from '../users/interface/usersdto';
 import { AdminService } from './admin.service';
 import { AuthGuard } from '@nestjs/passport';
 
-@UseGuards(AuthGuard("admin-access-jwt"))
+// @UseGuards(AuthGuard("admin-access-jwt"))
 @Controller('admin')
 export class AdminController {
     constructor(
@@ -49,6 +49,31 @@ export class AdminController {
     async getVerificationRequests() {
         return await this.adminService.getVerificationRequests();
     }
+
+    @Get('monthly-data')
+    async getMonthlyData() {
+        return await this.adminService.getMonthlyData();
+    }
+
+    @Get('revenue-data')
+    async getRevenueData() {
+        return await this.adminService.getRevenueData();
+    }
+
+    @Get('total-data')
+    async totalData() {
+        return await this.adminService.totalData();
+    }
+
+
+    @Get('convertdate')
+    async convertDate() {
+        return await this.adminService.convertDate();
+    }
+
+
+
+
 
     
 }

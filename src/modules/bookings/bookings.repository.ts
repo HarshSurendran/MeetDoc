@@ -181,4 +181,72 @@ export class BookingsRepository {
   async getBookingById(_id: string) {
     return await this.BookingModel.findById(_id)    
   }
+
+  async getMonthlyData() {
+    return await this.BookingModel.aggregate(
+      [
+          {
+              $group: {
+                  _id: {
+                      year: { $year: "$createdAt" },
+                      month: { $month: "$createdAt" } 
+                  },
+                  count: { $sum: 1 } 
+              }
+          },
+          {
+              $sort: { "_id.year": 1, "_id.month": 1 } 
+          }
+      ])
+  }
+
+  async getMonthlyRevenue() {
+    return await this.BookingModel.aggregate(
+      [
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" },
+              month: { $month: "$createdAt" }
+            },
+            amount: { $sum: "$amount" }
+          }
+        },
+        {
+          $group: {
+            _id: "$_id.year", 
+            revenueByMonth: {
+              $push: {
+                month: { $subtract: ["$_id.month", 1] }, 
+                amount: "$amount"
+              }
+            },
+            totalRevenue: { $sum: "$amount" }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            year: "$_id",
+            revenueByMonth: 1,
+            totalRevenue: 1
+          }
+        },
+        {
+          $sort: { year: 1 } 
+        }
+      ]
+    )
+  }
+
+  async getTotalDocuments() {
+    return await this.BookingModel.countDocuments();
+  }
+
+  async convertDate() {
+    return await this.BookingModel.updateMany(
+      {},
+      [{ $set: { createdAt: { $toDate: "$createdAt" } } }]
+    )
+  }
 }

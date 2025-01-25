@@ -18,4 +18,111 @@ export class UsersRepository {
         });
     }
 
+    async getMonthlyData() {
+        // const results = await this.userModel.aggregate([
+        //     {
+        //       $facet: {
+        //         // Monthly data for users
+        //         users: [
+        //           {
+        //             $match: {
+        //               createdAt: {
+        //                 $gte: new Date(year, 0, 1),
+        //                 $lt: new Date(year + 1, 0, 1),
+        //               },
+        //             },
+        //           },
+        //           {
+        //             $group: {
+        //               _id: { $month: '$createdAt' },
+        //               count: { $sum: 1 },
+        //             },
+        //           },
+        //         ],
+        //         // Total users
+        //         totalUsers: [
+        //           {
+        //             $count: 'total',
+        //           },
+        //         ],
+        //         // Monthly data for doctors
+        //         doctors: [
+        //           {
+        //             $match: {
+        //               createdAt: {
+        //                 $gte: new Date(year, 0, 1),
+        //                 $lt: new Date(year + 1, 0, 1),
+        //               },
+        //             },
+        //           },
+        //           {
+        //             $group: {
+        //               _id: { $month: '$createdAt' },
+        //               count: { $sum: 1 },
+        //             },
+        //           },
+        //         ],
+        //         // Total doctors
+        //         totalDoctors: [
+        //           {
+        //             $count: 'total',
+        //           },
+        //         ],
+        //         // Monthly data for appointments
+        //         appointments: [
+        //           {
+        //             $match: {
+        //               createdAt: {
+        //                 $gte: new Date(year, 0, 1),
+        //                 $lt: new Date(year + 1, 0, 1),
+        //               },
+        //             },
+        //           },
+        //           {
+        //             $group: {
+        //               _id: { $month: '$createdAt' },
+        //               count: { $sum: 1 },
+        //             },
+        //           },
+        //         ],
+        //         // Total appointments
+        //         totalAppointments: [
+        //           {
+        //             $count: 'total',
+        //           },
+        //         ],
+        //       },
+        //     },
+        // ]);
+        
+        const results = await this.userModel.aggregate([
+          {
+            $group: {
+              _id: {
+                year: { $year: "$createdAt" }, // Extract year
+                month: { $month: "$createdAt" } // Extract month
+              },
+              count: { $sum: 1 } // Count the documents
+            }
+          },
+          {
+            $sort: { "_id.year": 1, "_id.month": 1 } // Sort by year and month
+          }
+        ])
+        
+        return results;
+  }
+
+  async getTotalDocuments() {
+    return await this.userModel.countDocuments();
+  }
+  
+
+  async convertDate() {
+    return await this.userModel.updateMany(
+      {},
+      [{ $set: { createdAt: { $toDate: "$createdAt" } } }]
+    )
+  }
+
 }

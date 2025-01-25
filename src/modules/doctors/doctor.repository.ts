@@ -17,8 +17,8 @@ export class DoctorRepository {
         return doctor;
     }
 
-    async getTop5VerifiedDoctors() : Promise<DoctorDocument[]> {
-        const doctors = await this.DoctorModel.find({ isVerified: true }).sort({rating: -1}).limit(5);
+    async getTop5VerifiedDoctors(): Promise<DoctorDocument[]> {
+        const doctors = await this.DoctorModel.find({ isVerified: true }).sort({ rating: -1 }).limit(5);
         if (doctors.length == 0) {
             throw new NotFoundException("No doctors available.")
         }
@@ -30,4 +30,34 @@ export class DoctorRepository {
             $set: { status, lastSeen: new Date() },
         });
     }
+    
+    async getMonthlyData() {
+        return await this.DoctorModel.aggregate(
+            [
+                {
+                    $group: {
+                        _id: {
+                            year: { $year: "$createdAt" }, // Extract year
+                            month: { $month: "$createdAt" } // Extract month
+                        },
+                        count: { $sum: 1 } // Count the documents
+                    }
+                },
+                {
+                    $sort: { "_id.year": 1, "_id.month": 1 } // Sort by year and month
+                }
+            ]
+        )
+    }
+
+    async getTotalDocuments() {
+        return await this.DoctorModel.countDocuments();
+    }
+
+    async convertDate() {
+        return await this.DoctorModel.updateMany(
+          {},
+          [{ $set: { createdAt: { $toDate: "$createdAt" } } }]
+        )
+      }
 }

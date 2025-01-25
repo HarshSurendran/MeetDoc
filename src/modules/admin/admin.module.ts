@@ -6,12 +6,14 @@ import { Admin, AdminSchema } from './schemas/admin.schema';
 import { UsersModule } from '../users/users.module';
 import { DoctorsModule } from '../doctors/doctors.module';
 import { RedisModule } from '../redis/redis.module';
+import { BookingsModule } from '../bookings/bookings.module';
 
 @Module({
   imports: [   
     UsersModule,
     DoctorsModule,
     RedisModule,
+    BookingsModule,
     MongooseModule.forFeature([{ name: Admin.name, schema: AdminSchema }])
   ],
   providers: [AdminService],
