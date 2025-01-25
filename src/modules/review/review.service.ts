@@ -27,6 +27,12 @@ export class ReviewService {
         return await this.reviewRepo.getReview(reviewId);
     }
 
+    async updateReview(reviewId: string, createReviewDto: CreateReviewDto) {
+        return await this.reviewRepo.updateReview(reviewId, createReviewDto);
+    }
 
+    async deleteReview( reviewId: string) {
+        return await this.reviewRepo.deleteReview(reviewId);
+    }
 
 }

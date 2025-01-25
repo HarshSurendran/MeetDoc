@@ -16,6 +16,10 @@ export class ReviewRepository {
         return await newReview.save();
     }
 
+    async getReview(reviewId: string) {
+        return await this.reviewModel.findById(reviewId).populate('from', 'name').populate('for', 'name specialisation').exec();
+    }
+
     async getReviews(doctorId: string) {
         return await this.reviewModel.find({ for: doctorId }).populate('from', 'name ').populate('for', 'name specialisation').exec(); 
     }
@@ -24,9 +28,10 @@ export class ReviewRepository {
         return await this.reviewModel.find({ from: userId }).populate('from', 'name').populate('for', 'name specialisation').exec();
     }
 
-    async getReview(reviewId: string) {
-        return await this.reviewModel.findById(reviewId).populate('from', 'name').populate('for', 'name specialisation').exec();
+    async updateReview(reviewId: string, review: CreateReviewDto) {
+        return await this.reviewModel.findByIdAndUpdate(reviewId, review, { new: true }).exec();
     }
+
 
     async deleteReview(reviewId: string) {
         return await this.reviewModel.findByIdAndDelete(reviewId).exec();
