@@ -13,18 +13,28 @@ export class WebrtcGateway implements OnGatewayInit, OnGatewayConnection, OnGate
     console.log('WebSocket server initialized');
   }
 
+  onGatewayInit(server: Server) {
+    console.log('WebSocket server initialized');
+  }
+
   handleConnection(client: Socket, ...args: any[]) {
-    console.log('Client connected:', client.id);
+    console.log('Client connected webrtc:', client.id);
   }
 
   handleDisconnect(client: Socket) {
-    console.log('Client disconnected:', client.id);
+    console.log('Client disconnected webrtc:', client.id);
   }
-
-  @SubscribeMessage('message123')
-  handleMessage(@MessageBody() data: string) {
-    console.log(data);
-    return data;
+  
+  @SubscribeMessage('join-room')
+  handleJoinRoom(client: Socket, payload: any): void { 
+    console.log(`Client ${client.id} joined room ${payload.roomId}`);
+    this.server.to(client.id).emit('join-room', {
+      success: true,
+      yourId: client.id
+    });
+    this.server.to(payload.roomId).emit('NewUserJoined', { userSocketId : client.id });
+    client.join(payload.roomId); 
+    
   }
 
   @SubscribeMessage('offer')
@@ -33,14 +43,6 @@ export class WebrtcGateway implements OnGatewayInit, OnGatewayConnection, OnGate
     this.server.to(payload.target).emit('offer', { target: client.id, offer: payload.offer }); 
   }
 
-  @SubscribeMessage('join-room')
-  handleJoinRoom(client: Socket, payload: any): void { 
-    console.log(`Client ${client.id} joined room ${payload.roomId}`);
-    this.server.to(client.id).emit('join-room', {payload});
-    this.server.to(payload.roomId).emit('NewUserJoined', { userSocketId : client.id });
-    client.join(payload.roomId); 
-    
-  }
 
   @SubscribeMessage('answer')
   handleAnswer(client: Socket, payload: any): void { 
