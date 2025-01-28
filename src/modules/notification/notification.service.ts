@@ -16,7 +16,6 @@ export class NotificationService {
     @Cron(CronExpression.EVERY_MINUTE)
     async checkAppointments() {
         const appointments = await this.bookingsRepo.getUpcomingBookings();
-        console.log(appointments, "This is appointments from cronjob notification");
 
         appointments.forEach(async (appointment) => {
             const now = new Date();
@@ -33,7 +32,6 @@ export class NotificationService {
                     expiryTime: new Date(appointmentTime.getTime())                  
             }
             const notificationExists = await this.notificationRepo.checkIfNotificationExists(createNotiDto);
-            console.log("This is the notification exists", notificationExists);
             if (notificationExists) return        
             const notification = await this.notificationRepo.addNotification(createNotiDto);
             console.log("This is the notification", notification);
@@ -44,9 +42,24 @@ export class NotificationService {
         })
     }
 
+    @Cron(CronExpression.EVERY_MINUTE)
+    async deleteNoti() {
+        await this.notificationRepo.deleteExpiredNotification();
+    }
+
     async getNotificationsForUser(userId: string) {
         return await this.notificationRepo.getNotficationsForUser(userId);
     }
+
+    async markAsRead(notificationId: string) {
+        return await this.notificationRepo.markNotificationAsRead(notificationId);
+    }
+
+
+
+
+
+
 
 
     async deleteAllNotification() {

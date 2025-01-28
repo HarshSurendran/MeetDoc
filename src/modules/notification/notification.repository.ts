@@ -31,6 +31,10 @@ export class NotificationRepository {
         return await this.NotificationModel.exists(notification);
     }
 
+    async deleteExpiredNotification() {
+        return await this.NotificationModel.deleteMany({ expiryTime: { $lt: new Date() } });
+    }
+
 
     async deleteAllNotification() {
         return await this.NotificationModel.deleteMany({});

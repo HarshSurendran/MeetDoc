@@ -251,11 +251,7 @@ export class BookingsRepository {
   }
 
   async getUpcomingBookings() {
-    // return await this.BookingModel.find({ createdAt: { $gte: new Date() } });
     return await this.BookingModel.aggregate([
-      {
-        $match: { createdAt: { $gte: new Date(2024, 0, 27) } }
-      },
       {
         $addFields: {
           doctorIdObject: { $toObjectId: '$doctorId' }, 
@@ -308,6 +304,11 @@ export class BookingsRepository {
           patientName: '$patient.name',
           startTime: '$slot.StartTime',
           endTime: '$slot.EndTime'
+        }
+      },
+      {
+        $match: {
+          startTime: { $gte: new Date() }
         }
       }
     ])
