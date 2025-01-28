@@ -95,4 +95,32 @@ export class SlotsRepository {
             console.log("Unexpected error occured while fetching slots older than 3 months")
         }
     }
+
+    async getMonthlySlotsByDoctorId(doctorId: string) {
+        try {
+            return await this.SlotModel.aggregate([
+               
+                {
+                    $match: {
+                        doctorId: doctorId
+                    }
+                },
+                {
+                    $group: {
+                        _id: {
+                            year: { $year: "$StartTime" },
+                            month: { $month: "$StartTime" }
+                        },
+                        count: { $sum: 1 } 
+                    }
+                },
+                {
+                    $sort: { "_id.year": 1, "_id.month": 1 }
+                }
+            ]);
+            
+        } catch (error) {
+            console.log("Unexpected error occured while fetching monthly slots by doctor id")
+        }
+    }
 }

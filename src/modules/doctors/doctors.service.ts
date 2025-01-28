@@ -194,7 +194,16 @@ export class DoctorsService {
       appointmentCount: appointmentsCount,
       revenue : revenue[0].totalRevenue
     }
+  }
 
+  async getGraphData(doctorId: string) {
+    const slots = await this.slotsRepo.getMonthlySlotsByDoctorId(doctorId);
+    const appointments = await this.bookingsRepo.getMonthlyBookingsByDoctorId(doctorId);
+    console.log("This is the slots monthly", slots, "this is appointment", appointments)
+    return {
+      slots,
+      appointments
+    }
 
   }
 

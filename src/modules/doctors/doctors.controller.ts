@@ -70,7 +70,13 @@ export class DoctorsController {
         async fetchDashboardData(@Req() req) {
         const doctor = req.user;
         return await this.doctorService.getDashboardData(doctor.doctorId);
-        }
+    }
+    
+    @Get('/graph')
+    async getGraphData(@Req() req) {
+        const doctor = req.user;
+        return await this.doctorService.getGraphData(doctor.doctorId);
+    }
 
 
 

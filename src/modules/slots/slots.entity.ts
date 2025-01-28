@@ -9,7 +9,7 @@ export enum SlotStatus {
     Booked = 'Booked',
 }
 
-@Schema()
+@Schema({timestamps: true})
 export class Slot {
     @Prop()
     doctorId: string;
