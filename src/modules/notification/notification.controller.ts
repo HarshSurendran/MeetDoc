@@ -17,6 +17,11 @@ export class NotificationController {
         return await this.notificationService.markAsRead(notificationId);
     }
 
+    @Patch("/all/:userId")
+    async updateAllNotification(@Param('userId') userId: string) {
+        return await this.notificationService.markAllAsRead(userId);
+    }
+
 
 
 

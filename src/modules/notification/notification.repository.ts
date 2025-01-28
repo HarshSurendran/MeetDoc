@@ -35,6 +35,10 @@ export class NotificationRepository {
         return await this.NotificationModel.deleteMany({ expiryTime: { $lt: new Date() } });
     }
 
+    async markAllAsRead(userId: string) {
+        return await this.NotificationModel.updateMany({ userId: userId }, { $set: { isRead: true } });
+    }
+
 
     async deleteAllNotification() {
         return await this.NotificationModel.deleteMany({});

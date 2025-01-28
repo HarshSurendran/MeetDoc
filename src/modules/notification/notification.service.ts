@@ -55,6 +55,10 @@ export class NotificationService {
         return await this.notificationRepo.markNotificationAsRead(notificationId);
     }
 
+    async markAllAsRead(userId) {
+        return await this.notificationRepo.markAllAsRead(userId);
+    }
+
 
 
 
