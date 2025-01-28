@@ -20,7 +20,7 @@ export class Notification {
     isRead: boolean;
 
     @Prop()
-    endTime: Date;
+    expiryTime: Date;
 }
 
 export const NotificationSchema = SchemaFactory.createForClass(Notification);

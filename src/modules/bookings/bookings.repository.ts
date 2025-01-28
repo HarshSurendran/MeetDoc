@@ -249,4 +249,68 @@ export class BookingsRepository {
       [{ $set: { createdAt: { $toDate: "$createdAt" } } }]
     )
   }
+
+  async getUpcomingBookings() {
+    // return await this.BookingModel.find({ createdAt: { $gte: new Date() } });
+    return await this.BookingModel.aggregate([
+      {
+        $match: { createdAt: { $gte: new Date(2024, 0, 27) } }
+      },
+      {
+        $addFields: {
+          doctorIdObject: { $toObjectId: '$doctorId' }, 
+          patientIdObject: { $toObjectId: '$patientId' } ,
+          slotsIdObject: { $toObjectId: '$slotId' }
+        }
+      },
+      {
+        $lookup: {
+          from: 'slots',
+          localField: 'slotsIdObject',
+          foreignField: '_id',
+          as: 'slot'
+        }
+      },
+      {
+        $unwind: '$slot'
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'patientIdObject',
+          foreignField: '_id',
+          as: 'patient'
+        }
+      },
+      {
+        $unwind: '$patient'
+      },
+      {
+        $lookup: {
+          from: 'doctors',
+          localField: 'doctorIdObject',
+          foreignField: '_id',
+          as: 'doctor'
+        }
+      },
+      {
+        $unwind: '$doctor'
+      },
+      {
+        $project: {
+          _id: 1,
+          createdAt: 1,
+          patientId: 1,
+          doctorId: 1,
+          amount: 1,
+          reason: 1,
+          doctorName: '$doctor.name',
+          patientName: '$patient.name',
+          startTime: '$slot.StartTime',
+          endTime: '$slot.EndTime'
+        }
+      }
+    ])
+    
+  }
 }
