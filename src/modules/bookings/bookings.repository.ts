@@ -251,6 +251,71 @@ export class BookingsRepository {
     )
   }
 
+  async getUpcomingBookings() {
+    return await this.BookingModel.aggregate([
+      {
+        $addFields: {
+          doctorIdObject: { $toObjectId: '$doctorId' }, 
+          patientIdObject: { $toObjectId: '$patientId' } ,
+          slotsIdObject: { $toObjectId: '$slotId' }
+        }
+      },
+      {
+        $lookup: {
+          from: 'slots',
+          localField: 'slotsIdObject',
+          foreignField: '_id',
+          as: 'slot'
+        }
+      },
+      {
+        $unwind: '$slot'
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'patientIdObject',
+          foreignField: '_id',
+          as: 'patient'
+        }
+      },
+      {
+        $unwind: '$patient'
+      },
+      {
+        $lookup: {
+          from: 'doctors',
+          localField: 'doctorIdObject',
+          foreignField: '_id',
+          as: 'doctor'
+        }
+      },
+      {
+        $unwind: '$doctor'
+      },
+      {
+        $project: {
+          _id: 1,
+          createdAt: 1,
+          patientId: 1,
+          doctorId: 1,
+          amount: 1,
+          reason: 1,
+          doctorName: '$doctor.name',
+          patientName: '$patient.name',
+          startTime: '$slot.StartTime',
+          endTime: '$slot.EndTime'
+        }
+      },
+      {
+        $match: {
+          startTime: { $gte: new Date() }
+        }
+      }
+    ])
+    
+  }
+
   async getBookingsCount(doctorId: string) {
     return await this.BookingModel.find({ doctorId }).countDocuments();
   }

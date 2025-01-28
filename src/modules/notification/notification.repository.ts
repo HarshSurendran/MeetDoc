@@ -1,0 +1,47 @@
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { NotificationDocument } from "./notification.entity";
+import { CreateNotificationDto } from "./dto/create-notification.dto";
+
+
+
+@Injectable()
+export class NotificationRepository {
+    constructor(@InjectModel('Notification') private NotificationModel: Model<NotificationDocument>) { }
+
+    async addNotification(notification: CreateNotificationDto) {
+        const newNotification = new this.NotificationModel(notification);
+        return await newNotification.save();
+    }
+
+    async deleteNotification(id: string) {
+        return await this.NotificationModel.deleteOne({ _id: id });
+    }
+
+    async getNotficationsForUser(userId: string) {
+        return await this.NotificationModel.find({ userId: userId });
+    }
+
+    async markNotificationAsRead(id: string) {
+        return await this.NotificationModel.updateOne({ _id: id }, { $set: { isRead: true } });
+    }
+
+    async checkIfNotificationExists(notification: CreateNotificationDto) {
+        return await this.NotificationModel.exists(notification);
+    }
+
+    async deleteExpiredNotification() {
+        return await this.NotificationModel.deleteMany({ expiryTime: { $lt: new Date() } });
+    }
+
+    async markAllAsRead(userId: string) {
+        return await this.NotificationModel.updateMany({ userId: userId }, { $set: { isRead: true } });
+    }
+
+
+    async deleteAllNotification() {
+        return await this.NotificationModel.deleteMany({});
+    }
+
+}

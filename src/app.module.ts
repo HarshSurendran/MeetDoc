@@ -19,6 +19,7 @@ import { WebrtcModule } from './modules/webrtc/webrtc.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { ReviewModule } from './modules/review/review.module';
+import { NotificationModule } from './modules/notification/notification.module';
 
 
 @Module({
@@ -40,7 +41,8 @@ import { ReviewModule } from './modules/review/review.module';
     PrescriptionModule,
     ChatModule,
     RedisModule,
-    ReviewModule
+    ReviewModule,
+    NotificationModule
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],
