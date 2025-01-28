@@ -27,4 +27,13 @@ export class NotificationRepository {
         return await this.NotificationModel.updateOne({ _id: id }, { $set: { isRead: true } });
     }
 
+    async checkIfNotificationExists(notification: CreateNotificationDto) {
+        return await this.NotificationModel.exists(notification);
+    }
+
+
+    async deleteAllNotification() {
+        return await this.NotificationModel.deleteMany({});
+    }
+
 }

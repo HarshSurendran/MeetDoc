@@ -20,7 +20,7 @@ export class NotificationGateway implements OnGatewayInit, OnGatewayConnection, 
     }
 
     handleConnection(client: any, ...args: any[]) {
-        console.log('Client connected notification:', client.id);
+        console.log('Client connected notification for notification:', client.id);
         const userId = client.handshake.auth.userId;
         this.connectedUsers.set(userId, client.id);
     }
@@ -34,7 +34,7 @@ export class NotificationGateway implements OnGatewayInit, OnGatewayConnection, 
     sendNewNotification(notification) { 
         const to = this.connectedUsers.get(notification.userId);
         if (to) {
-            this.server.to(to).emit('newNotification',  notification );
+            this.server.to(to).emit('notification',  notification );
         } else {
             console.log('User not Online for notification');
         }

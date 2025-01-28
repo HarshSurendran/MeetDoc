@@ -27,17 +27,30 @@ export class NotificationService {
             // if (timeDifference <= 15 * 60 * 1000 && timeDifference > 0) {
                 const createNotiDto = {                
                     title: 'Appointment in 15 minutes',
-                    message: `Hey, your appointment with ${appointment.doctorName} is in 15 minutes!`,
+                    message: `Hey, your appointment with Dr.${appointment.doctorName} is in 15 minutes!`,
                     type: "appointment",
                     userId: appointment.patientId,
-                    expiryTime: new Date(appointmentTime.getTime() + 15 * 60 * 1000)                  
-                }
-                const notification = await this.notificationRepo.addNotification(createNotiDto);
-                console.log("This is the notification", notification);
-                this.notificationsGateway.sendNewNotification(
-                   notification
-                );
+                    expiryTime: new Date(appointmentTime.getTime())                  
+            }
+            const notificationExists = await this.notificationRepo.checkIfNotificationExists(createNotiDto);
+            console.log("This is the notification exists", notificationExists);
+            if (notificationExists) return        
+            const notification = await this.notificationRepo.addNotification(createNotiDto);
+            console.log("This is the notification", notification);
+            this.notificationsGateway.sendNewNotification(
+                notification
+            );
             // }
         })
+    }
+
+    async getNotificationsForUser(userId: string) {
+        return await this.notificationRepo.getNotficationsForUser(userId);
+    }
+
+
+    async deleteAllNotification() {
+        console.log("delete all notification");
+        return await this.notificationRepo.deleteAllNotification();
     }
 }
