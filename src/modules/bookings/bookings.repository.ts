@@ -249,4 +249,76 @@ export class BookingsRepository {
       [{ $set: { createdAt: { $toDate: "$createdAt" } } }]
     )
   }
+
+  async getBookingsCount(doctorId: string) {
+    return await this.BookingModel.find({ doctorId }).countDocuments();
+  }
+
+  async monthlyRevenueOfDoctor(doctorId: string) {    
+      return await this.BookingModel.aggregate(
+        [
+          {
+            $match: {
+              doctorId: doctorId
+            }
+          },
+          {
+            $group: {
+              _id: {
+                year: { $year: "$createdAt" },
+                month: { $month: "$createdAt" }
+              },
+              amount: { $sum: "$amount" }
+            }
+          },
+          {
+            $group: {
+              _id: "$_id.year", 
+              revenueByMonth: {
+                $push: {
+                  month: { $subtract: ["$_id.month", 1] }, 
+                  amount: "$amount"
+                }
+              },
+              totalRevenue: { $sum: "$amount" }
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              year: "$_id",
+              revenueByMonth: 1,
+              totalRevenue: 1
+            }
+          },
+          {
+            $sort: { year: 1 } 
+          }
+        ]
+      )
+  }
+  
+  async totalRevenueOfDoctor(doctorId: string) {
+    return await this.BookingModel.aggregate(
+      [
+        {
+          $match: {
+            doctorId: doctorId
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalRevenue: { $sum: "$amount" }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            totalRevenue: 1
+          }
+        }
+      ]
+    )
+  }
 }

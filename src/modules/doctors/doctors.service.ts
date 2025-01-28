@@ -186,6 +186,18 @@ export class DoctorsService {
     return await this.prescriptionRepo.createPrescription(data);
   }
 
+  async getDashboardData (doctorId: string) {
+    const appointmentsCount = await this.bookingsRepo.getBookingsCount(doctorId);
+    const revenue = await this.bookingsRepo.totalRevenueOfDoctor(doctorId);
+    console.log(appointmentsCount, revenue, revenue[0].totalRevenue, "This is the data for doctor dashboard");
+    return {
+      appointmentCount: appointmentsCount,
+      revenue : revenue[0].totalRevenue
+    }
+
+
+  }
+
 
 
 
