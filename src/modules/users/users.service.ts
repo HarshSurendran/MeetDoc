@@ -12,6 +12,7 @@ import { IBookedAppointmentType } from '../bookings/dto/doctor-booking.dto';
 import * as moment from 'moment';
 import { PrescriptionRepository } from '../prescription/prescription.repository';
 import { ReviewRepository } from '../review/review.repository';
+import { CreatePatientDto } from './interface/createPatientdto';
 
 
 @Injectable()
@@ -199,7 +200,7 @@ export class UsersService {
     }
   }
 
-  async getPrescriptions(userId) {
+  async getPrescriptions(userId: string) {
     const prescriptions = await this.PrescriptionRepo.getPrescriptionsByPatientId(userId);
     console.log("this is the prescription ", prescriptions[0])
     return {
@@ -207,12 +208,40 @@ export class UsersService {
     }
   }
   
-  async getYourReviews(userId) {
+  async getYourReviews(userId: string) {
     const reviews = await this.ReviewRepo.getReviewsByUserId(userId);
     return {
       reviews
     }
   }
 
-  
+  async getAllPatients(userId: string) {
+    const response = await this.UserModel.findById( userId ).lean();
+    console.log(response, "this is the response from get all patients");
+    if(response.patients) {
+      return {
+        patients : response.patients
+      }
+    }else{
+      return null;
+    }
+  }
+
+  async addPatients(userId: string, patientData: CreatePatientDto) {
+    const response = await this.UserModel.findByIdAndUpdate({ _id: userId }, { $push: { patients: patientData } });
+    const patients = await this.UserModel.findById( userId ).lean();
+    console.log(response, patients, "Response after createing patient. ")
+    return {
+      patients: patients.patients
+    }
+  }
+
+  async deletePatient(userId:string, id: string) {
+    const response = await this.UserModel.findByIdAndUpdate({ _id: userId }, { $pull: { patients: { _id: id } } });
+    const patients = await this.UserModel.findById( userId ).lean();
+    console.log(response, patients, "Response after deleting patient. ")
+    return {
+      patients: patients?.patients
+    }
+  }
 }

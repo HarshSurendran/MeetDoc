@@ -5,8 +5,10 @@ import {
   MinLength,
   IsStrongPassword,
   IsBoolean,
+  IsObject,
 } from 'class-validator';
 import { Address } from '../schemas/address.schema';
+import { Patient } from '../schemas/patient.schema';
 
 export class CreateUserDto {
   @IsOptional()
@@ -49,4 +51,8 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   refresh_token: string;
+
+  @IsOptional()
+  @IsObject()
+  patients: Patient[];
 }

@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req, Delete, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './interface/usersdto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateSlotDto } from '../slots/dto/update-slot.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { CreatePatientDto } from './interface/createPatientdto';
 
 @UseGuards(AuthGuard("jwt"))
 @Controller('users')    
@@ -22,6 +23,22 @@ export class UsersController {
         const user = req.user;
         console.log("reached fetchappointment endpoint-----------",user);
         return await this.userService.getUserAppointments(user.userId);
+    }
+
+    @Get("/patients")
+    async getAllPatients(@CurrentUser('userId') userId: string) {
+        console.log(userId, "Thiis is the userId fro get all apatients");
+        return await this.userService.getAllPatients(userId);
+    }
+
+    @Post("/patients")
+    async addPatients(@CurrentUser('userId') userId: string, @Body() patientData: CreatePatientDto) {
+        return await this.userService.addPatients(userId, patientData);   
+    }
+
+    @Delete("patients/:id")
+    async deletePatient(@CurrentUser('userId') userId: string, @Param('id') id: string) {
+        return await this.userService.deletePatient(userId, id);
     }
 
     @Get("reviews")
@@ -79,8 +96,5 @@ export class UsersController {
         return await this.userService.getDoctorsForLandingPage();
     }
 
-   
-
-
-    
+  
 }

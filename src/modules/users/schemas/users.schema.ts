@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { Address, AddressSchema } from './address.schema';
+import { Patient, PatientSchema } from './patient.schema';
 
 export enum status {
   online = 'online',
@@ -55,6 +56,9 @@ export class User {
 
   @Prop()
   lastSeen: Date
+
+  @Prop({ type: PatientSchema })
+  patients: Patient[]
 }
 
 
