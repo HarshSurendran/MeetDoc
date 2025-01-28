@@ -68,6 +68,7 @@ export class BookingsRepository {
             {
               $project: {
                 _id: { $toString: '$_id' },
+                patientId: '$patient._id',
                 patientName: '$patient.name',
                 doctorName: '$doctor.name', 
                 date: '$slots.StartTime',

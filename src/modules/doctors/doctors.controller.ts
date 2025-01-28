@@ -78,6 +78,11 @@ export class DoctorsController {
         return await this.doctorService.getGraphData(doctor.doctorId);
     }
 
+    @Get('/medicalhistory/:patientId')
+    async getMedicalHistory(@Param('patientId') patientId: string) {
+        return await this.doctorService.getMedicalHistory(patientId);
+    }
+
 
 
 

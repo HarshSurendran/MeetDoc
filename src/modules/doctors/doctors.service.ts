@@ -146,7 +146,7 @@ export class DoctorsService {
   }
 
   async getAppointments(doctorId : string) {
-    const appointmentFromDB = await this.bookingsRepo.getBookings({key: "doctorId", value: doctorId});
+    const appointmentFromDB = await this.bookingsRepo.getBookings({ key: "doctorId", value: doctorId });
     
     const appointments : IBookedAppointmentType[] = [];
     appointmentFromDB.forEach((appointment) => {
@@ -155,7 +155,8 @@ export class DoctorsService {
         reason : appointment.reason,
         bookingStatus : appointment.bookingStatus,
         duration : duration,
-        _id : appointment._id,
+        _id: appointment._id,
+        patientId: appointment.patientId,
         patientName : appointment.patientName,
         doctorName: appointment.doctorName,
         bookingTime : moment(appointment.bookingTime).format('DD-MM-YYYY hh:mm A'),
@@ -204,8 +205,14 @@ export class DoctorsService {
       slots,
       appointments
     }
-
   }
+
+  async getMedicalHistory(patientId: string) {
+    const medicalHistory = await this.prescriptionRepo.getPrescriptionsByPatientId(patientId);
+    return {
+      medicalHistory
+    }
+  } 
 
 
 

@@ -180,6 +180,7 @@ export class UsersService {
         duration: duration,
         _id: appointment._id,
         patientName: appointment.patientName,
+        patientId: appointment.patientId,
         doctorName: appointment.doctorName,
          bookingTime : moment(appointment.bookingTime).format('DD-MM-YYYY hh:mm A'),
                 date : moment(appointment.date).format('DD-MM-YYYY'),
