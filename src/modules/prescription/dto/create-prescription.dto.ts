@@ -4,7 +4,13 @@ import { MedicationDto } from './create-medication.dto';
 
 export class CreatePrescriptionDto {
   @IsMongoId()
-  patientId: string;  
+  patientId: string;
+  
+  @IsString()
+  prescriptionFor: string;
+
+  @IsString()
+  prescriptionForId: string;
 
   @IsMongoId()
   doctorId: string;  

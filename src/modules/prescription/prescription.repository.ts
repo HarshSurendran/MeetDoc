@@ -6,13 +6,15 @@ import { CreatePrescriptionDto } from "./dto/create-prescription.dto";
 import { PrescriptionService } from "./prescription.service";
 import * as moment from 'moment';
 import { CreatePrescriptionPdfDto } from "./dto/create-prescriptionpdf.dto";
+import { UsersRepository } from "../users/users.repository";
 
 
 @Injectable()
 export class PrescriptionRepository {
     constructor(
         @InjectModel('Prescription') private PrescriptionModel: Model<PrescriptionDocument>,
-        private prescriptionService: PrescriptionService
+        private prescriptionService: PrescriptionService,
+        private userRepo: UsersRepository
     ) { }
 
     
@@ -29,8 +31,23 @@ export class PrescriptionRepository {
     async createPrescription(prescriptionDto: CreatePrescriptionDto): Promise<Prescription> {
       const prescription = new this.PrescriptionModel(prescriptionDto);
         const result = await prescription.save();
+        console.log("This is the saved prescription", result);
+
+        //todo- get the details of the relative if its for a relative
         const detailedPrescription = await this.PrescriptionModel.findById(result._id).populate('patientId', 'name gender date_of_birth').populate('doctorId', 'name specialistation').exec() as unknown as CreatePrescriptionPdfDto;
+       
+        
+        if (prescription.prescriptionForId.toString() !== prescription.patientId.toString()){
+            let relativeData = await this.userRepo.getRelativeData(result.patientId.toString(), result.prescriptionForId);
+            console.log(relativeData, "This is the relative data from the repo");
+            detailedPrescription.patientId.name = relativeData.patients[0].name;
+            detailedPrescription.patientId.gender = relativeData.patients[0].gender;
+            detailedPrescription.patientId.date_of_birth = relativeData.patients[0].dateOfBirth;
+        }
+        console.log(detailedPrescription, "This is th detailsed prescription" )
+
         const patientAge = this.calculateAge(detailedPrescription.patientId.date_of_birth);
+
         detailedPrescription.patientId.age = patientAge;
         const { key, isPublic } = await this.prescriptionService.generatePrescriptionPDF(detailedPrescription);
         await this.PrescriptionModel.updateOne({_id: result._id}, { $set: { prescriptionPdfUrl: key} });

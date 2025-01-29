@@ -27,6 +27,12 @@ export class Prescription extends Document {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true }) 
   patientId: Types.ObjectId;
 
+  @Prop()
+  prescriptionFor: string;
+
+  @Prop()
+  prescriptionForId: string;
+
   @Prop({ type: Types.ObjectId, ref: 'Doctor', required: true }) 
   doctorId: Types.ObjectId;
 
