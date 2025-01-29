@@ -20,6 +20,7 @@ import { ChatModule } from './modules/chat/chat.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { ReviewModule } from './modules/review/review.module';
 import { NotificationModule } from './modules/notification/notification.module';
+import { SubscriptionModule } from './modules/subscription/subscription.module';
 
 
 @Module({
@@ -42,7 +43,8 @@ import { NotificationModule } from './modules/notification/notification.module';
     ChatModule,
     RedisModule,
     ReviewModule,
-    NotificationModule
+    NotificationModule,
+    SubscriptionModule
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],

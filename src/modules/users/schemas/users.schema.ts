@@ -59,6 +59,12 @@ export class User {
 
   @Prop({ type: PatientSchema })
   patients: Patient[]
+
+  @Prop({ required: true, default: false })
+  isPremium: Boolean
+
+  @Prop()
+  premiumExpiry: Date
 }
 
 

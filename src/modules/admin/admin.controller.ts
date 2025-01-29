@@ -71,6 +71,21 @@ export class AdminController {
         return await this.adminService.convertDate();
     }
 
+    @Get('subscription')
+    async getSubscriptions() {
+        return await this.adminService.getSubscriptions();
+    }
+
+    @Post('subscription')
+    async createSubscription(@Body() body: any) {
+        return await this.adminService.createSubscription(body);
+    }
+
+    @Delete('subscription/:id')
+    async deleteSubscription(@Param('id') id: string) {
+        return await this.adminService.deleteSubscription(id);
+    }
+
 
 
 

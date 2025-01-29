@@ -10,6 +10,7 @@ import { RedisService } from '../redis/redis.service';
 import { UsersRepository } from '../users/users.repository';
 import { DoctorRepository } from '../doctors/doctor.repository';
 import { BookingsRepository } from '../bookings/bookings.repository';
+import { SubscriptionRepository } from '../subscription/subscription.repository';
 
 
 @Injectable()
@@ -21,7 +22,8 @@ export class AdminService {
     private redisService: RedisService,
     private userRepo: UsersRepository,
     private doctorRepo: DoctorRepository,
-    private bookingsRepo: BookingsRepository
+    private bookingsRepo: BookingsRepository,
+    private subscriptionRepo: SubscriptionRepository
   ) { }
 
   
@@ -158,6 +160,27 @@ export class AdminService {
 
   async convertDate() {
     await this.userRepo.convertDate();
+  }
+
+  async getSubscriptions() {
+    const schemes = await this.subscriptionRepo.getSubscriptions();
+    return {
+      schemes
+    }
+  }
+
+  async createSubscription(body: any) {
+    const scheme = await this.subscriptionRepo.createSubscription(body);
+    return {
+      scheme
+    }
+  }
+
+  async deleteSubscription(id: string) {
+    const scheme = await this.subscriptionRepo.deleteSubscription(id);
+    return {
+      scheme
+    }
   }
 
 
