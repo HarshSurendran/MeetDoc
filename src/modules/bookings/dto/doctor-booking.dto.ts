@@ -16,7 +16,9 @@ export interface IBookedAppointmentType {
     doctorName: string,
     bookingTime: string,
     date: string,
-    time: string
+    time: string,
+    appointmentFor?: string,
+    appointmentForName?: string
 }
 
 
@@ -36,6 +38,8 @@ export interface IBookedAppointmentDBReturn {
     patientId: string,
     patientName: string,
     doctorName: string,
+    appointmentFor: string,
+    appointmentForName: string,
     date: Date,
     time: Date
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { DoctorsService } from './doctors.service';
 import { DoctorsController } from './doctors.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -9,6 +9,7 @@ import { SlotsModule } from '../slots/slots.module';
 import { DoctorRepository } from './doctor.repository';
 import { BookingsModule } from '../bookings/bookings.module';
 import { PrescriptionModule } from '../prescription/prescription.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { PrescriptionModule } from '../prescription/prescription.module';
     S3Module,
     SlotsModule,
     BookingsModule,
-    PrescriptionModule
+    PrescriptionModule,
+    forwardRef(() => UsersModule)
   ],
   providers: [DoctorsService, DoctorRepository],
   controllers: [DoctorsController],

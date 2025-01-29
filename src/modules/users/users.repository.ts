@@ -116,6 +116,14 @@ export class UsersRepository {
   async getTotalDocuments() {
     return await this.userModel.countDocuments();
   }
+
+  async getRelativeData(userId: string, relativeId: string) {
+    const user = await this.userModel.findOne(
+      { _id: userId, "patients._id": relativeId },
+      { "patients.$": 1 }
+    ).lean();
+    return user;
+  }
   
 
   async convertDate() {

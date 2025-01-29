@@ -13,6 +13,7 @@ import { IBookedAppointmentType } from '../bookings/dto/doctor-booking.dto';
 import * as moment from 'moment';
 import { PrescriptionRepository } from '../prescription/prescription.repository';
 import { CreatePrescriptionDto } from '../prescription/dto/create-prescription.dto';
+import { UsersRepository } from '../users/users.repository';
 
 @Injectable()
 export class DoctorsService {
@@ -22,7 +23,8 @@ export class DoctorsService {
     private s3Service: S3Service,
     private slotsRepo: SlotsRepository,
     private bookingsRepo: BookingsRepository,
-    private prescriptionRepo: PrescriptionRepository
+    private prescriptionRepo: PrescriptionRepository,
+    private userRepo: UsersRepository
   ) { }
 
   async create(body: CreateDoctorDto) {
@@ -147,10 +149,11 @@ export class DoctorsService {
 
   async getAppointments(doctorId : string) {
     const appointmentFromDB = await this.bookingsRepo.getBookings({ key: "doctorId", value: doctorId });
-    
+
     const appointments : IBookedAppointmentType[] = [];
     appointmentFromDB.forEach((appointment) => {
-      let duration: number = (new Date(appointment.slots.EndTime).getTime() - new Date(appointment.slots.StartTime).getTime()) / (1000 * 60);
+      let duration: number = (new Date(appointment.slots.EndTime).getTime() - new Date(appointment.slots.StartTime).getTime()) / (1000 * 60);      
+     
       appointments.push({
         reason : appointment.reason,
         bookingStatus : appointment.bookingStatus,
@@ -159,6 +162,7 @@ export class DoctorsService {
         patientId: appointment.patientId,
         patientName : appointment.patientName,
         doctorName: appointment.doctorName,
+        appointmentForName : appointment.appointmentForName,
         bookingTime : moment(appointment.bookingTime).format('DD-MM-YYYY hh:mm A'),
         date : moment(appointment.date).format('DD-MM-YYYY'),
         time : moment(appointment.time).format('hh:mm A'),

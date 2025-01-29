@@ -74,6 +74,8 @@ export class BookingsRepository {
                 date: '$slots.StartTime',
                 time: '$slots.StartTime',
                 bookingTime: '$bookingTime',
+                appointmentFor: 1,
+                appointmentForName: 1,
                 duration: 1, 
                 bookingStatus: 1,
                 reason: 1,

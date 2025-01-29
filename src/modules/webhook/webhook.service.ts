@@ -46,7 +46,8 @@ export class WebhookService {
                     reason: paymentIntent.metadata.reason,
                     paymentStatus: 'Completed',
                     paymentId: paymentIntent.id,
-                    appointmentFor: paymentIntent.metadata.appointmentFor
+                    appointmentFor: paymentIntent.metadata.appointmentFor,
+                    appointmentForName: paymentIntent.metadata.appointmentForName
                 }
                 const createBooking = await this.BookingRepo.addBookings(booking);
                 // const result = await this.confirmBooking(paymentIntent.metadata.userId, paymentIntent.metadata.slotId, paymentIntent.id, amount);               

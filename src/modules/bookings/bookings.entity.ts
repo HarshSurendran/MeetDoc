@@ -27,6 +27,9 @@ export class Bookings {
     appointmentFor: string;
 
     @Prop()
+    appointmentForName: string;
+
+    @Prop()
     slotId: string;
 
     @Prop()
