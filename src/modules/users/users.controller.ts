@@ -21,7 +21,6 @@ export class UsersController {
     @Get("appointments")
     async getUserAppointments(@Req() req) {
         const user = req.user;
-        console.log("reached fetchappointment endpoint-----------",user);
         return await this.userService.getUserAppointments(user.userId);
     }
 
