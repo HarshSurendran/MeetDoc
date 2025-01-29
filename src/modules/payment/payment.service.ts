@@ -43,6 +43,26 @@ export class PaymentService {
 
     }
 
+    async createSubscriptionPaymentIntent(body: { subId: string, userId: string, fee: number, duration: number, date: Date }) {                
+        const paymentIntent = await this.stripe.paymentIntents.create({
+            amount: body.fee * 100,
+            currency: "usd",
+            automatic_payment_methods: {
+                enabled: true
+            },
+            metadata: {
+                type: "Subscription",
+                userId: body.userId,
+                subId: body.subId,
+                duration: body.duration,
+                date: body.date.toISOString()
+              }
+        });
+        return {
+            clientSecret: paymentIntent.client_secret,
+        };
+    }
+
 
 
 }

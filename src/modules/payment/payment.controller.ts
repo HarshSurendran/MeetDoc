@@ -7,10 +7,16 @@ export class PaymentController {
     
     @Post('paymentintent')
     async createPaymentIntent(@Body() body: { slotId: string, userId: string, doctorId: string, fee: number, reason: string, appointmentFor: string, appointmentForName: string, date: Date }) {
-        console.log(body, "raw body")
         body.date = new Date(body.date);
         console.log("reached payment intent endpoint", body);
         return await this.paymentService.createPaymentIntent(body);      
+    }
+
+    @Post('subscriptionpaymentintent')
+    async createSubscriptionPaymentIntent(@Body() body: { subId: string, userId: string, fee: number, duration: number, date: Date }) {
+        body.date = new Date(body.date);
+        return await this.paymentService.createSubscriptionPaymentIntent(body);
+        
     }
     
     

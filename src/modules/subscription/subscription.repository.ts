@@ -24,4 +24,15 @@ export class SubscriptionRepository {
     async getSubscriptions() {
         return await this.SubscriptionModel.find();
     }
+
+    async getSingleSubscription(id: string) {
+        const scheme = await this.SubscriptionModel.findById(id);
+        return {
+            scheme
+        }
+    }
+
+    async addActiveUsers(subscriptionId: string) {
+        return await this.SubscriptionModel.updateOne({ _id: subscriptionId }, { $inc: { activeUsers: 1 } });        
+    }
 }

@@ -5,6 +5,8 @@ import mongoose, { ObjectId } from "mongoose";
 import { SlotsRepository } from "../slots/slots.repository";
 import { SlotStatus } from "../slots/slots.entity";
 import { BookingsRepository } from "../bookings/bookings.repository";
+import { UsersRepository } from "../users/users.repository";
+import { SubscriptionRepository } from "../subscription/subscription.repository";
 
 
 @Injectable()
@@ -12,7 +14,9 @@ export class WebhookService {
     constructor(
         private PaymentService: PaymentService,
         private SlotsRepo: SlotsRepository,
-        private BookingRepo: BookingsRepository
+        private BookingRepo: BookingsRepository,
+        private userRepo: UsersRepository,
+        private subscriptionRepo: SubscriptionRepository
     ){}
     
     async handleStripeWebhook(req : RawBodyRequest<Request>, res : Response) {
@@ -36,6 +40,19 @@ export class WebhookService {
             case 'payment_intent.succeeded':
                 const paymentIntent = event.data.object;
                 const amount = paymentIntent.amount / 100;
+                if (paymentIntent.metadata.type === 'Subscription') {
+                    console.log("reached subscription payment success", paymentIntent.metadata);
+                    const subId = paymentIntent.metadata.subId;
+                    const userId = paymentIntent.metadata.userId;
+                    const duration = paymentIntent.metadata.duration;
+                    const updateUser = await this.userRepo.updateSubscription(userId, {
+                        subscriptionId: subId,
+                        //todo-checck again
+                        subscriptionExpiry: new Date(new Date().getTime() + duration * 24 * 60 * 60 * 1000)                      
+                    })
+                    const updateSub = await this.subscriptionRepo.addActiveUsers(subId);
+                    break;
+                }
                 const updateSlot = await this.SlotsRepo.updateSlot(paymentIntent.metadata.slotId, { status: SlotStatus.Booked, pendingBookingExpiry: null });
                 const booking = {
                     patientId: paymentIntent.metadata.userId,

@@ -61,10 +61,13 @@ export class User {
   patients: Patient[]
 
   @Prop({ required: true, default: false })
-  isPremium: Boolean
+  isSubscribed: Boolean
 
   @Prop()
-  premiumExpiry: Date
+  subscriptionId: string;
+
+  @Prop()
+  subscriptionExpiry: Date
 }
 
 
