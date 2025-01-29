@@ -170,7 +170,6 @@ export class UsersService {
     if(appointmentFromDB.length == 0) {
       return null;
     }
-    console.log(appointmentFromDB,"this is the appointment from db");
    
     const appointments: IBookedAppointmentType[] = [];    
     appointmentFromDB.forEach((appointment) => {
@@ -182,6 +181,7 @@ export class UsersService {
         _id: appointment._id,
         patientName: appointment.patientName,
         patientId: appointment.patientId,
+        appointmentForName: appointment.appointmentForName,
         doctorName: appointment.doctorName,
          bookingTime : moment(appointment.bookingTime).format('DD-MM-YYYY hh:mm A'),
                 date : moment(appointment.date).format('DD-MM-YYYY'),
