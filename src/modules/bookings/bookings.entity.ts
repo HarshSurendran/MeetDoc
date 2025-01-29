@@ -23,6 +23,9 @@ export class Bookings {
     @Prop()
     patientId: string;
 
+    @Prop({default: 'Self'})
+    appointmentFor: string;
+
     @Prop()
     slotId: string;
 

@@ -27,7 +27,9 @@ export class CreateBookingDto {
   amount: number;
   
     @IsEnum(PaymentStatus, { message: 'Status must be one of Completed, Failed, or Pending' })
-    paymentStatus: string;
-
+  paymentStatus: string;
+  
+  @IsString()
+  appointmentFor: string;
      
   }
