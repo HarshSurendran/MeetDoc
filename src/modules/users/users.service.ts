@@ -62,6 +62,14 @@ export class UsersService {
     return userData;
   }
 
+  async getUserByResetToken(token: string): Promise<Partial<UserDocument> | null> {
+    const user = await this.UserModel.findOne({ resetToken: token , resetTokenExpiry: { $gt: Date.now() } });
+    if (!user) {
+      throw new NotFoundException('User not found. Invalid Token');
+    }
+    return user;
+  }
+
   async allUsers() {
     return await this.UserModel.find();
   }

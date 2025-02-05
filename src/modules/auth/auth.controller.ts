@@ -91,7 +91,18 @@ export class AuthController {
     return { accessToken };
   }
 
-  //Doctor Auth
+  @Post('forgot-password')
+  async handleForgotPassword(@Body() body) {
+    console.log("Reached forgorpassword", body);
+    return this.authService.handleForgotPassword(body.email);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() body) {
+    return this.authService.resetPassword(body);
+  }
+
+  //Doctor Auth ------------------------------------------------------
   @Post('doctor/register')
   async doctorRegister(@Body() body: CreateDoctorDto) {
     return this.authService.doctorRegister(body);

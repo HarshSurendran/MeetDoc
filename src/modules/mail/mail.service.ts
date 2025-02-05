@@ -16,7 +16,8 @@ export class MailService {
     });
   }
 
-  async sendMail(to: string, subject: string, text: string) : Promise<any> {
+  async sendMail(to: string, subject: string, text: string): Promise<any> {
+    console.log("Reached send mail", text)
     const mailOptions = {
       from: this.configService.get<string>('EMAIL_USER'),
       to,

@@ -11,6 +11,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcryptjs';
+import * as crypto from 'crypto';
 import { CreateUserDto } from '../users/interface/usersdto';
 import { MailService } from '../mail/mail.service';
 import { InjectModel } from '@nestjs/mongoose';
@@ -104,7 +105,6 @@ export class AuthService {
     };
   }
 
-  
   generateDoctorTokens(payload: { _id: string, name: string, email: string, role: string }) {
     console.log("This is the payload", payload);
     const doctorAccessToken = this.jwtService.sign(
@@ -176,6 +176,10 @@ export class AuthService {
 
   generateOtp(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  generateResetToken() {
+    return crypto.randomBytes(32).toString('hex');
   }
 
   //User Registeration 
@@ -298,16 +302,6 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-   
-
-
-
-
-
-
-
-
-
 
     const blockStatus = await this.adminService.getUserBlockStatus(email);
     console.log("This is the block status", blockStatus)
@@ -392,6 +386,41 @@ export class AuthService {
       };
     };
   };
+
+  async handleForgotPassword(email: string) {
+    const user = await this.usersService.getUser(email);
+    if(!user) {
+      throw new NotFoundException('User not found');
+    }
+    const resetToken = this.generateResetToken();
+    const hashedResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    user.resetToken = hashedResetToken;
+    user.resetTokenExpiry = new Date(Date.now() + 3600000);
+    await user.save();
+    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+    await this.mailService.sendMail(
+      email,
+      `Request for password reset`,
+      `Click the link to reset your password: ${resetUrl}`
+    );
+
+    return { message: 'Password reset link sent to your email.' };
+  }
+
+  async resetPassword(body) {
+    const hashedToken = crypto.createHash('sha256').update(body.resetToken).digest('hex');
+    const user = await this.usersService.getUserByResetToken(hashedToken);
+    if(!user) {
+      throw new NotFoundException('User not found');
+    }
+    const hashedPassword = await bcrypt.hash(body.password, 10);
+    user.password = hashedPassword;
+    user.resetToken = null;
+    user.resetTokenExpiry = null;
+    await user.save();
+    return { message: 'Password reset successfully.' };
+  }
+
 
   //Doctor Registeration
   async doctorRegister(doctorDto: CreateDoctorDto): Promise<object> {

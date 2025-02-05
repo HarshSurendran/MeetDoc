@@ -57,7 +57,7 @@ export class User {
   @Prop()
   lastSeen: Date
 
-  @Prop({ type: PatientSchema })
+  @Prop({ type: [PatientSchema], default: [] })
   patients: Patient[]
 
   @Prop({ required: true, default: false })
@@ -67,7 +67,13 @@ export class User {
   subscriptionId: string;
 
   @Prop()
-  subscriptionExpiry: Date
+  subscriptionExpiry: Date;
+
+  @Prop()
+  resetToken: string;
+
+  @Prop()
+  resetTokenExpiry: Date
 }
 
 
