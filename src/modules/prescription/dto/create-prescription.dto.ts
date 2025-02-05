@@ -6,6 +6,7 @@ export class CreatePrescriptionDto {
   @IsMongoId()
   patientId: string;
   
+  @IsOptional()
   @IsString()
   prescriptionFor: string;
 

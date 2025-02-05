@@ -38,7 +38,7 @@ export class ChatController {
   @UseGuards(AuthGuard("jwt"))
   @Get('patient/recent')
   getPatientRecentChats(@CurrentUser('userId') patientId: string) {
-    console.log(patientId);
+    console.log("reached endpoint to fetch cchat for patient", patientId);
     return this.chatService.getRecentChatsForUsers(patientId);
   }
 

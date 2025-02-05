@@ -31,11 +31,12 @@ import * as jwt from 'jsonwebtoken';
       console.log('WebSocket server initialized');  
     }
   
-    async handleConnection(client: Socket) {       
+    async handleConnection(client: Socket) {     
+      console.log("reached handle conection")
       const { token, userId} = client.handshake.auth;
       this.connectedUsers.set(userId, client.id);
       const onlineUsers = [...this.connectedUsers.keys()];
-      console.log(`User ${userId} (Type: ) connected with socket ${client.id}`, this.connectedUsers.keys());
+      console.log(`User ${userId} (Type: ) connected with socket for chatt ${client.id}`, this.connectedUsers.keys());
       
       this.server.emit('onlineUsers', { onlineUsers });      
       // try{
@@ -56,6 +57,7 @@ import * as jwt from 'jsonwebtoken';
   
     async handleDisconnect(payload: { userId: string, client: Socket }) {
       const userId = payload.userId;
+      console.log("userID disconected", userId)
       if (userId) {
         this.connectedUsers.delete(userId);
         const onlineUsers = [...this.connectedUsers.keys()];
