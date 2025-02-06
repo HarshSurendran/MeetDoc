@@ -6,9 +6,10 @@ import { SlotsModule } from '../slots/slots.module';
 import { BookingsModule } from '../bookings/bookings.module';
 import { UsersModule } from '../users/users.module';
 import { SubscriptionModule } from '../subscription/subscription.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [PaymentModule, SlotsModule, BookingsModule, UsersModule, SubscriptionModule],
+  imports: [PaymentModule, SlotsModule, BookingsModule, UsersModule, SubscriptionModule, NotificationModule],
   controllers: [WebhookController],
   providers: [WebhookService]
 })

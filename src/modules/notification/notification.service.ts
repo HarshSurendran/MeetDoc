@@ -30,14 +30,14 @@ export class NotificationService {
                     type: "appointment",
                     userId: appointment.patientId,
                     expiryTime: new Date(appointmentTime.getTime())                  
-            }
-            const notificationExists = await this.notificationRepo.checkIfNotificationExists(createNotiDto);
-            if (notificationExists) return        
-            const notification = await this.notificationRepo.addNotification(createNotiDto);
-            console.log("This is the notification", notification);
-            this.notificationsGateway.sendNewNotification(
-                notification
-            );
+                }
+                const notificationExists = await this.notificationRepo.checkIfNotificationExists(createNotiDto);
+                if (notificationExists) return        
+                const notification = await this.notificationRepo.addNotification(createNotiDto);
+                console.log("This is the notification from cronjob", notification);
+                this.notificationsGateway.sendNewNotification(
+                    notification
+                );
             // }
         })
     }

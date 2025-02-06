@@ -7,6 +7,8 @@ import { SlotStatus } from "../slots/slots.entity";
 import { BookingsRepository } from "../bookings/bookings.repository";
 import { UsersRepository } from "../users/users.repository";
 import { SubscriptionRepository } from "../subscription/subscription.repository";
+import { NotificationGateway } from "../notification/notification.gateway";
+import { NotificationRepository } from "../notification/notification.repository";
 
 
 @Injectable()
@@ -16,7 +18,9 @@ export class WebhookService {
         private SlotsRepo: SlotsRepository,
         private BookingRepo: BookingsRepository,
         private userRepo: UsersRepository,
-        private subscriptionRepo: SubscriptionRepository
+        private subscriptionRepo: SubscriptionRepository,
+        private notificationsGateway: NotificationGateway,
+        private notificationRepo: NotificationRepository
     ){}
     
     async handleStripeWebhook(req : RawBodyRequest<Request>, res : Response) {
@@ -40,6 +44,7 @@ export class WebhookService {
             case 'payment_intent.succeeded':
                 const paymentIntent = event.data.object;
                 const amount = paymentIntent.amount / 100;
+
                 if (paymentIntent.metadata.type === 'Subscription') {
                     console.log("reached subscription payment success", paymentIntent.metadata);
                     const subId = paymentIntent.metadata.subId;
@@ -53,6 +58,7 @@ export class WebhookService {
                     const updateSub = await this.subscriptionRepo.addActiveUsers(subId);
                     break;
                 }
+                
                 const updateSlot = await this.SlotsRepo.updateSlot(paymentIntent.metadata.slotId, { status: SlotStatus.Booked, pendingBookingExpiry: null });
                 const booking = {
                     patientId: paymentIntent.metadata.userId,
@@ -67,6 +73,24 @@ export class WebhookService {
                     appointmentForName: paymentIntent.metadata.appointmentForName
                 }
                 const createBooking = await this.BookingRepo.addBookings(booking);
+
+                //Send notification to the doctor
+                const createNotiDto = {                
+                    title: 'New Appointment Booked',
+                    message: `Hey, you have a new appointment booked by ${booking.appointmentForName}!`,
+                    type: "appointment",
+                    userId: booking.doctorId,
+                    expiryTime: new Date(new Date().getTime() + 24 * 60 * 60 * 1000)               
+                }
+                 
+                const notification = await this.notificationRepo.addNotification(createNotiDto);
+                console.log("This is the notification from payment success", notification);
+                this.notificationsGateway.sendNewNotification(
+                    notification
+                );
+
+
+
                 // const result = await this.confirmBooking(paymentIntent.metadata.userId, paymentIntent.metadata.slotId, paymentIntent.id, amount);               
                 //Send mail logic can be added here.   
                 console.log("Payment completed. Data saved to the database..", createBooking)

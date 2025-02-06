@@ -14,6 +14,6 @@ import { Notification, NotificationSchema } from './notification.entity';
   ],
   providers: [NotificationService, NotificationRepository, NotificationGateway],
   controllers: [NotificationController],
-  exports: [NotificationRepository]
+  exports: [NotificationRepository, NotificationGateway]
 })
 export class NotificationModule {}
