@@ -201,6 +201,13 @@ export class UsersService {
     }
   }
 
+  async getUpcomingAppointments(userId: string) {
+    const appointments = await this.BookingsRepo.getUpcomingBookingsForPatient(userId);
+    return {
+      appointments
+    }
+  }
+
   async getAppointment(appointmentId: string) {
     const appointment = await this.BookingsRepo.getBookingById(appointmentId);
     return {
@@ -252,4 +259,19 @@ export class UsersService {
       patients: patients?.patients
     }
   }
+
+  async getLastPayment(userId: string) {
+    const lastPayment = await this.BookingsRepo.getLastBooking(userId);
+    return {
+      lastPayment
+    }
+  }
+
+  async getPaymentHistory(userId: string) {
+    const payments = await this.BookingsRepo.getBookingsforPatient(userId);
+    return {
+      payments
+    }
+  }
+
 }

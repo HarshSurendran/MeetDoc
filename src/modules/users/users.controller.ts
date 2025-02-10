@@ -17,11 +17,26 @@ export class UsersController {
         return await this.userService.getAppointment(id);
     }
 
+    @Get("lastpayment")
+    async getLastPayment(@CurrentUser('userId') userId: string) {
+        return await this.userService.getLastPayment(userId);
+    }
+
+    @Get("paymenthistory")
+    async getPaymentHistory(@CurrentUser('userId') userId: string) {
+        return await this.userService.getPaymentHistory(userId);
+    }
+
     
     @Get("appointments")
     async getUserAppointments(@Req() req) {
         const user = req.user;
         return await this.userService.getUserAppointments(user.userId);
+    }
+
+    @Get("upcomingappointments")
+    async getUpcomingAppointments(@CurrentUser('userId') userId: string) {
+        return await this.userService.getUpcomingAppointments(userId);
     }
 
     @Get("/patients")
@@ -94,6 +109,7 @@ export class UsersController {
     async getDoctorsForLanding() {
         return await this.userService.getDoctorsForLandingPage();
     }
+
 
   
 }

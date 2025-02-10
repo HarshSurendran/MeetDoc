@@ -10,7 +10,7 @@ export class SubscriptionController {
     
     @Get("/:id")
     async getSubscription(@Param("id") id: string) {
-        return await this.subscriptionRepo.getSingleSubscription(id);
+        return await this.subscriptionRepo.getSubscriptionById(id);
     }
     
     @Get("/")

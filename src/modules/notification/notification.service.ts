@@ -22,8 +22,9 @@ export class NotificationService {
             if(appointment.startTime < now) return 
             const appointmentTime = appointment.startTime;
             const timeDifference = appointmentTime.getTime() - now.getTime();
+            console.log('timeDifference', timeDifference);
 
-            // if (timeDifference <= 15 * 60 * 1000 && timeDifference > 0) {
+            if (timeDifference <= 15 * 60 * 1000 && timeDifference > 0) {
                 const createNotiDto = {                
                     title: 'Appointment in 15 minutes',
                     message: `Hey, your appointment with Dr.${appointment.doctorName} is in 15 minutes!`,
@@ -38,7 +39,7 @@ export class NotificationService {
                 this.notificationsGateway.sendNewNotification(
                     notification
                 );
-            // }
+            }
         })
     }
 

@@ -25,7 +25,7 @@ export class SubscriptionRepository {
         return await this.SubscriptionModel.find();
     }
 
-    async getSingleSubscription(id: string) {
+    async getSubscriptionById(id: string) {
         const scheme = await this.SubscriptionModel.findById(id);
         return {
             scheme

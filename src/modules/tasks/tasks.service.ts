@@ -4,11 +4,15 @@ import { Slot } from '../slots/slots.entity';
 import { Model } from 'mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { SlotsRepository } from '../slots/slots.repository';
+import { UsersRepository } from '../users/users.repository';
 
 @Injectable()
 export class TasksService {
     
-    constructor(private SlotsRepo: SlotsRepository) { }
+    constructor(
+        private SlotsRepo: SlotsRepository,
+        private UserRepo: UsersRepository
+    ) { }
     
     @Cron(CronExpression.EVERY_5_MINUTES)
     async handleExpiredSlots() {
@@ -28,6 +32,17 @@ export class TasksService {
             threeMonthsAgo.setMonth(now.getMonth() - 3);
             await this.SlotsRepo.deleteSlotsOlderThan3Months(threeMonthsAgo);
             console.log('Deleted slots older than 3 months.');
+        } catch (error) {
+            console.error('Error releasing expired slots:', error);
+        }
+    }
+
+    @Cron(CronExpression.EVERY_DAY_AT_1AM)
+    async expiredSubscriptions() {
+        try {
+            const now = new Date();
+            const result = await this.UserRepo.deleteExpiredSubscriptions(now);
+            console.log('Deleted expired subscriptions.', result);
         } catch (error) {
             console.error('Error releasing expired slots:', error);
         }

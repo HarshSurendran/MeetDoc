@@ -137,4 +137,9 @@ export class UsersRepository {
     const user = await this.userModel.updateOne({ _id: userId }, { $set: { isSubscribed: true, subscriptionId: subscriptionData.subscriptionId, subscriptionExpiry: subscriptionData.subscriptionExpiry } });
   }
 
+  async deleteExpiredSubscriptions(date) {
+    const result = await this.userModel.updateMany({ isSubscribed: true, subscriptionExpiry: { $lte: date } }, { $set: { isSubscribed: false, subscriptionId: null, subscriptionExpiry: null } });
+    return result;
+  }
+
 }
