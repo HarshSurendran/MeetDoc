@@ -5,13 +5,15 @@ import { Model } from 'mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { SlotsRepository } from '../slots/slots.repository';
 import { UsersRepository } from '../users/users.repository';
+import { SubscriptionRepository } from '../subscription/subscription.repository';
 
 @Injectable()
 export class TasksService {
     
     constructor(
         private SlotsRepo: SlotsRepository,
-        private UserRepo: UsersRepository
+        private UserRepo: UsersRepository,
+        private SubscriptionRepo: SubscriptionRepository
     ) { }
     
     @Cron(CronExpression.EVERY_5_MINUTES)
@@ -40,8 +42,15 @@ export class TasksService {
     @Cron(CronExpression.EVERY_DAY_AT_1AM)
     async expiredSubscriptions() {
         try {
+            console.log("Checking expired subscription cronjob task")
             const now = new Date();
+            const expiredSubscriptionUser = await this.UserRepo.getExpiredSubscriptions(now);
+            console.log('Expired subscriptions:', expiredSubscriptionUser);
+            expiredSubscriptionUser.forEach(async (user) => {
+                await this.SubscriptionRepo.decreaseActiveUsers(user.subscriptionId);
+            });
             const result = await this.UserRepo.deleteExpiredSubscriptions(now);
+            
             console.log('Deleted expired subscriptions.', result);
         } catch (error) {
             console.error('Error releasing expired slots:', error);

@@ -18,11 +18,15 @@ export class SubscriptionRepository {
     }
 
     async deleteSubscription(id: string) {
-        return await this.SubscriptionModel.findByIdAndDelete(id);
+        return await this.SubscriptionModel.updateOne({ _id: id }, { isDisabled: true });
     }
 
     async getSubscriptions() {
-        return await this.SubscriptionModel.find();
+        return await this.SubscriptionModel.find({ isDisabled: false });
+    }
+
+    async getDisabledSubscriptions() {
+        return await this.SubscriptionModel.find({ isDisabled: true });
     }
 
     async getSubscriptionById(id: string) {
@@ -34,5 +38,9 @@ export class SubscriptionRepository {
 
     async addActiveUsers(subscriptionId: string) {
         return await this.SubscriptionModel.updateOne({ _id: subscriptionId }, { $inc: { activeUsers: 1 } });        
+    }
+
+    async decreaseActiveUsers(subscriptionId: string) {
+        return await this.SubscriptionModel.updateOne({ _id: subscriptionId }, { $inc: { activeUsers: -1 } });
     }
 }

@@ -76,6 +76,11 @@ export class AdminController {
         return await this.adminService.getSubscriptions();
     }
 
+    @Get('subscription/disabled')
+    async getDisabledSubscriptions() {
+        return await this.adminService.getDisabledSubscriptions();
+    }
+
     @Post('subscription')
     async createSubscription(@Body() body: any) {
         return await this.adminService.createSubscription(body);

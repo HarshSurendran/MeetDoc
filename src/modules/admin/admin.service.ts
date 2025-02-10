@@ -169,6 +169,13 @@ export class AdminService {
     }
   }
 
+  async getDisabledSubscriptions() {
+    const schemes = await this.subscriptionRepo.getDisabledSubscriptions();
+    return {
+      schemes
+    }
+  }
+
   async createSubscription(body: any) {
     const scheme = await this.subscriptionRepo.createSubscription(body);
     return {

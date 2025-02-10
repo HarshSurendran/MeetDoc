@@ -19,6 +19,9 @@ export class Subscription {
 
     @Prop({ default: 0 })
     activeUsers: number;
+
+    @Prop({ default: false })
+    isDisabled: boolean;
 }
 
 export const SubscriptionsSchema = SchemaFactory.createForClass(Subscription);
