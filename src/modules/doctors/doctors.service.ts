@@ -216,7 +216,15 @@ export class DoctorsService {
     return {
       medicalHistory
     }
-  } 
+  }
+
+  async getDoctorByResetToken(resetToken: string) {
+    const doctor = await this.DoctorModel.findOne({ resetToken, resetTokenExpiry: { $gt: Date.now() } });
+    if (!doctor) {
+      throw new NotFoundException('Doctor not found. Invalid or Expired Token');
+    }
+    return doctor;
+  }
 
 
 

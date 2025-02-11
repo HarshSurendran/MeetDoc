@@ -93,7 +93,6 @@ export class AuthController {
 
   @Post('forgot-password')
   async handleForgotPassword(@Body() body) {
-    console.log("Reached forgorpassword", body);
     return this.authService.handleForgotPassword(body.email);
   }
 
@@ -152,6 +151,16 @@ export class AuthController {
     const doctor = req.user;
     console.log("FRom renewToken admin, ", req.user);
     return this.authService.doctorRenewTokens(doctor.doctorId, res);
+  }
+
+  @Post('doctor/forgot-password')
+  async doctorForgotPassword(@Body() body) {
+    return this.authService.handleDoctorForgotPassword(body.email);
+  }
+
+  @Post('doctor/reset-password')
+  async doctorResetPassword(@Body() body) {
+    return this.authService.resetDoctorPassword(body);
   }
 
   // Admin Auth

@@ -23,6 +23,7 @@ import { AdminService } from '../admin/admin.service';
 import { OAuth2Client } from 'google-auth-library';
 import { DocVerificationDto } from '../doctors/interface/docverificationdto';
 import { DoctorDocument } from '../doctors/schemas/doctors.schema';
+import { ConfigService } from '@nestjs/config';
 
 
 
@@ -35,7 +36,7 @@ export class AuthService {
     private mailService: MailService,
     private doctorService: DoctorsService,
     private adminService: AdminService,
-    
+    private configService: ConfigService,
   ) { }
 
 
@@ -397,7 +398,8 @@ export class AuthService {
     user.resetToken = hashedResetToken;
     user.resetTokenExpiry = new Date(Date.now() + 3600000);
     await user.save();
-    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+
+    const resetUrl = `${this.configService.get<string>('FRONTEND_URL')}/reset-password/${resetToken}`;
     await this.mailService.sendMail(
       email,
       `Request for password reset`,
@@ -607,6 +609,40 @@ export class AuthService {
     return {
       doctorAccessToken 
     };
+  }
+
+  async handleDoctorForgotPassword(email: string) {
+    const doctor = await this.doctorService.getUser(email);
+    if(!doctor) {
+      throw new NotFoundException('Doctor not found');
+    }
+    const resetToken = this.generateResetToken();
+    const hashedResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    doctor.resetToken = hashedResetToken;
+    doctor.resetTokenExpiry = new Date(Date.now() + 3600000);
+    await doctor.save();
+    const resetUrl = `${this.configService.get<string>('FRONTEND_URL')}/doctor/reset-password/${resetToken}`;
+    await this.mailService.sendMail(
+      email,
+      `Request for password reset`,
+      `Click the link to reset your password: ${resetUrl}`
+    );
+
+    return { message: 'Password reset link sent to your email.' };
+  }
+
+  async resetDoctorPassword(body) {
+    const hashedToken = crypto.createHash('sha256').update(body.token).digest('hex');
+    const doctor = await this.doctorService.getDoctorByResetToken(hashedToken);
+    if(!doctor) {
+      throw new NotFoundException('Doctor not found');
+    }
+    const hashedPassword = await bcrypt.hash(body.password, 10);
+    doctor.password = hashedPassword;
+    doctor.resetToken = null;
+    doctor.resetTokenExpiry = null;
+    await doctor.save();
+    return { message: 'Password reset successfully.' };
   }
 
   // Admin Authentication

@@ -67,6 +67,12 @@ export class Doctor {
 
   @Prop()
   lastSeen: Date
+  
+  @Prop()
+  resetToken: string;
+
+  @Prop()
+  resetTokenExpiry: Date
 }
 
 export const DoctorSchema = SchemaFactory.createForClass(Doctor);
