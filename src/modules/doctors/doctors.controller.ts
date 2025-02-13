@@ -6,6 +6,7 @@ import { GenerateSlotDto } from '../slots/dto/create-slot.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { CreatePrescriptionDto } from '../prescription/dto/create-prescription.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { UpdatePrescriptionDto } from '../prescription/dto/update-prescription.dto';
 
 @UseGuards(AuthGuard('doctor-access-jwt'))
 @Controller('doctors')
@@ -58,6 +59,18 @@ export class DoctorsController {
         const doctor = req.user;
         console.log("enetered create prescription");
         return await this.doctorService.createPrescription(data);
+    }
+
+    @Get('prescriptions')
+    async fetchPrescriptions(@CurrentUser('doctorId') doctorId: string) {
+        console.log("reached fetch prescriptions endpoint", doctorId); 
+        return await this.doctorService.getPrescriptions(doctorId);
+    }
+
+    @Patch('prescription')
+    async updatePrescription(@Body() data: UpdatePrescriptionDto) {
+        console.log("reached update prescription endpoint", data);
+        return await this.doctorService.updatePrescription(data);
     }
 
     @Get('patients')

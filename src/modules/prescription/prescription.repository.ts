@@ -7,6 +7,7 @@ import { PrescriptionService } from "./prescription.service";
 import * as moment from 'moment';
 import { CreatePrescriptionPdfDto } from "./dto/create-prescriptionpdf.dto";
 import { UsersRepository } from "../users/users.repository";
+import { UpdatePrescriptionDto } from "./dto/update-prescription.dto";
 
 
 @Injectable()
@@ -16,8 +17,6 @@ export class PrescriptionRepository {
         private prescriptionService: PrescriptionService,
         private userRepo: UsersRepository
     ) { }
-
-    
 
     calculateAge(dob: Date): number {
         try {
@@ -55,15 +54,15 @@ export class PrescriptionRepository {
     }
 
     async getPrescriptionsByPatientId(patientId: string): Promise<Prescription[]> {
-        return this.PrescriptionModel.find({ patientId }).populate('patientId', 'name gender date_of_Birth').populate('doctorId', 'name specialisation').exec();
+        return this.PrescriptionModel.find({ patientId }).populate('patientId', 'name gender date_of_Birth').populate('doctorId', 'name specialisation').sort({ createdAt: -1 }).limit(5).exec();
     }
 
     async getPrescriptionsByDoctorId(doctorId: string): Promise<Prescription[]> {
-        return this.PrescriptionModel.find({ doctorId }).exec();
+        return await this.PrescriptionModel.find({ doctorId }).populate('patientId', 'name gender date_of_Birth').populate('doctorId', 'name specialisation').sort({ createdAt: -1 }).limit(15).exec();
     }
 
-    
-    
-
+    async updatePrescription(data: UpdatePrescriptionDto) {
+        return await this.PrescriptionModel.updateOne({ _id: data._id }, { $set: data });
+    }
 
 }

@@ -14,6 +14,7 @@ import * as moment from 'moment';
 import { PrescriptionRepository } from '../prescription/prescription.repository';
 import { CreatePrescriptionDto } from '../prescription/dto/create-prescription.dto';
 import { UsersRepository } from '../users/users.repository';
+import { UpdatePrescriptionDto } from '../prescription/dto/update-prescription.dto';
 
 @Injectable()
 export class DoctorsService {
@@ -189,6 +190,23 @@ export class DoctorsService {
 
   async createPrescription (data: CreatePrescriptionDto) {
     return await this.prescriptionRepo.createPrescription(data);
+  }
+
+  async getPrescriptions(doctorId: string) {
+    const prescriptions = await this.prescriptionRepo.getPrescriptionsByDoctorId(doctorId);
+    return {
+      prescriptions
+    }
+  }
+
+  async updatePrescription(data: UpdatePrescriptionDto) {
+    const updateStatus = await this.prescriptionRepo.updatePrescription(data);
+    if (updateStatus.matchedCount == 0) {
+      throw new NotFoundException("Prescription not found");
+    }
+    return {
+      updateStatus
+    }
   }
 
   async getDashboardData (doctorId: string) {

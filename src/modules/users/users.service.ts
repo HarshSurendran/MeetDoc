@@ -217,7 +217,6 @@ export class UsersService {
 
   async getPrescriptions(userId: string) {
     const prescriptions = await this.PrescriptionRepo.getPrescriptionsByPatientId(userId);
-    console.log("this is the prescription ", prescriptions[0])
     return {
       prescriptions
     }
