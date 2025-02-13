@@ -82,6 +82,11 @@ export class BookingsRepository {
               meetingLink: 1,
               slots: 1
             }
+          },
+          {
+            $sort: {
+              date: -1
+            }
           }
       ]);
           

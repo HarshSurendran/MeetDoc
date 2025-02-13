@@ -148,31 +148,58 @@ export class DoctorsService {
     return await this.slotsRepo.deleteSlot(slotId);
   }
 
-  async getAppointments(doctorId : string) {
-    const appointmentFromDB = await this.bookingsRepo.getBookings({ key: "doctorId", value: doctorId });
+  async getUpcomingAppointments(doctorId : string) {
+    const appointmentFromDB = (await this.bookingsRepo.getBookings({ key: "doctorId", value: doctorId }));
 
     const appointments : IBookedAppointmentType[] = [];
     appointmentFromDB.forEach((appointment) => {
-      let duration: number = (new Date(appointment.slots.EndTime).getTime() - new Date(appointment.slots.StartTime).getTime()) / (1000 * 60);      
+      let duration: number = (new Date(appointment.slots.EndTime).getTime() - new Date(appointment.slots.StartTime).getTime()) / (1000 * 60);   
      
+      if (appointment.date.toDateString() == new Date().toDateString()) {
+        appointments.push({
+          reason: appointment.reason,
+          bookingStatus: appointment.bookingStatus,
+          duration: duration,
+          _id: appointment._id,
+          patientId: appointment.patientId,
+          patientName: appointment.patientName,
+          doctorName: appointment.doctorName,
+          appointmentForName: appointment.appointmentForName,
+          bookingTime: moment(appointment.bookingTime).format('DD-MM-YYYY hh:mm A'),
+          date: moment(appointment.date).format('DD-MM-YYYY'),
+          time: moment(appointment.time).format('hh:mm A'),
+        })
+      }
+    })
+    return {
+      appointments
+    }
+  }
+
+  async getAppointments(doctorId : string) {
+    const appointmentFromDB = (await this.bookingsRepo.getBookings({ key: "doctorId", value: doctorId }));
+
+    const appointments : IBookedAppointmentType[] = [];
+    appointmentFromDB.forEach((appointment) => {
+      let duration: number = (new Date(appointment.slots.EndTime).getTime() - new Date(appointment.slots.StartTime).getTime()) / (1000 * 60);   
       appointments.push({
-        reason : appointment.reason,
-        bookingStatus : appointment.bookingStatus,
-        duration : duration,
+        reason: appointment.reason,
+        bookingStatus: appointment.bookingStatus,
+        duration: duration,
         _id: appointment._id,
         patientId: appointment.patientId,
-        patientName : appointment.patientName,
+        patientName: appointment.patientName,
         doctorName: appointment.doctorName,
-        appointmentForName : appointment.appointmentForName,
-        bookingTime : moment(appointment.bookingTime).format('DD-MM-YYYY hh:mm A'),
-        date : moment(appointment.date).format('DD-MM-YYYY'),
-        time : moment(appointment.time).format('hh:mm A'),
+        appointmentForName: appointment.appointmentForName,
+        bookingTime: moment(appointment.bookingTime).format('DD-MM-YYYY hh:mm A'),
+        date: moment(appointment.date).format('DD-MM-YYYY'),
+        time: moment(appointment.time).format('hh:mm A'),
       })
     })
     return {
       appointments
     }
-  } 
+  }
 
   async getPatientsForChat(doctorId : string) {
     const patients = await this.bookingsRepo.getPatientsForChat(doctorId);
