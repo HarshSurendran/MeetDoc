@@ -2,9 +2,11 @@ import {
     WebSocketGateway, WebSocketServer, SubscribeMessage, 
     MessageBody, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect 
   } from '@nestjs/websockets';
+import { config } from 'node:process';
 import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway({ cors: {origin: 'http://localhost:5173'} , namespace: '/webrtc'})
+
+@WebSocketGateway({ cors: {origin:'http://localhost:5173'} , namespace: '/webrtc'})
 export class WebrtcGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
@@ -27,13 +29,15 @@ export class WebrtcGateway implements OnGatewayInit, OnGatewayConnection, OnGate
   
   @SubscribeMessage('join-room')
   handleJoinRoom(client: Socket, payload: any): void { 
+    this.server.to(payload.roomId).emit('NewUserJoined', { userSocketId: client.id });
     console.log(`Client ${client.id} joined room ${payload.roomId}`);
     this.server.to(client.id).emit('join-room', {
       success: true,
       yourId: client.id
     });
-    this.server.to(payload.roomId).emit('NewUserJoined', { userSocketId : client.id });
-    client.join(payload.roomId); 
+    setTimeout(() => {      
+      client.join(payload.roomId); 
+    }, 10);
     
   }
 
