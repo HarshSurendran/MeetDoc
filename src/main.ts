@@ -11,7 +11,7 @@ async function bootstrap() {
     bodyParser: false,
   });
   app.enableCors({
-    origin: "http://localhost:5173",
+    origin: ['https://meetdoc.harshsurendran.online'],
     credentials: true
   });
   app.use(
