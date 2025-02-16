@@ -74,28 +74,7 @@ import * as jwt from 'jsonwebtoken';
       }
     }
 
-    // @SubscribeMessage('userDetails')
-    // async handleUserDetails(client: Socket, payload: { userId: string, userType: "patient" | "doctor" }) {
-    //   const { userId, userType } = payload;
-    //   if (userId) {
-    //     this.connectedUsers.set(userId, client.id)
-    //     await this.chatService.updateUserStatus(userId, status.online);
-    //     (client as any).userType = userType;
-    //     (client as any).userId = userId;
 
-    //   }
-    // }
-  
-    // @UseGuards(WsJwtGuard)
-    // @SubscribeMessage('sendMessage')
-    // async handleMessage(client: Socket, payload: { senderId: string, receiverId: string; content: string, senderType: senderType }) {
-    
-        
-  
-      
-    // }
-  
-    // @UseGuards(WsJwtGuard)
     @SubscribeMessage('typing')
     handleTyping(client: Socket, payload: { senderId: string, receiverId: string }) {
       const senderId = payload.senderId;
@@ -136,11 +115,5 @@ import * as jwt from 'jsonwebtoken';
         this.server.to(client.id).emit('RecieverNotOnline', {from, to, videoCallId});
       }
     }
-
-
-  
-    // private getUserIdFromSocket(client: Socket): string {
-    //   return client.handshake.auth?.userId;
-    // }
   }
   

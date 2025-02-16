@@ -13,7 +13,7 @@ export class JwtAdminAccessStrategy extends PassportStrategy(Strategy, "admin-ac
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload:  { _id: string, name: string, email: string, role: string }) {
     return { id: payload._id, name: payload.name, email: payload.email, role: payload.role };
   }
 }

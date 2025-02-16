@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import { SentMessageInfo } from 'nodemailer';
 
 @Injectable()
 export class MailService {
@@ -16,7 +17,7 @@ export class MailService {
     });
   }
 
-  async sendMail(to: string, subject: string, text: string): Promise<any> {
+  async sendMail(to: string, subject: string, text: string): Promise<SentMessageInfo> {
     console.log("Reached send mail", text)
     const mailOptions = {
       from: this.configService.get<string>('EMAIL_USER'),

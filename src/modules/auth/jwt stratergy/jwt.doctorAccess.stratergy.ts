@@ -16,7 +16,7 @@ export class JwtDoctorAccessStrategy extends PassportStrategy(Strategy, "doctor-
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: {role: string, _id: string, name: string, email: string}) {
     // const isBlocked = await this.cacheManager.get<string>(`user:${payload.email}:isBlocked`);
     // console.log(`Block status for ${payload.email}: ${isBlocked}`);
     

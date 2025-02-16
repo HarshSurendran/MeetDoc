@@ -20,7 +20,7 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, "jwt") {
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: {email: string, userId: string}) {
     const isBlocked = await this.redisService.get(`user:${payload.email}:isBlocked`);
     console.log(`Block status for ${payload.email}: ${isBlocked}`);
     

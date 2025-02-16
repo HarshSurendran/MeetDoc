@@ -11,6 +11,7 @@ import { UsersRepository } from '../users/users.repository';
 import { DoctorRepository } from '../doctors/doctor.repository';
 import { BookingsRepository } from '../bookings/bookings.repository';
 import { SubscriptionRepository } from '../subscription/subscription.repository';
+import { CreateSubscriptionDto } from '../subscription/dto/create-subscription.dto';
 
 
 @Injectable()
@@ -35,7 +36,7 @@ export class AdminService {
     return await this.redisService.get(`user:${email}:isBlocked`);
   }
 
-  async getAdmin(email: string): Promise<any> {
+  async getAdmin(email: string): Promise<Admin | null> {
     return await this.AdminModel.findOne({ email });
   }
 
@@ -91,7 +92,6 @@ export class AdminService {
   async getVerificationRequests() {
     return await this.doctorService.getVerficationsRequests();
   }
-
 
   async getMonthlyData() {
     const months = [
@@ -176,7 +176,7 @@ export class AdminService {
     }
   }
 
-  async createSubscription(body: any) {
+  async createSubscription(body: CreateSubscriptionDto) {
     const scheme = await this.subscriptionRepo.createSubscription(body);
     return {
       scheme
@@ -189,7 +189,4 @@ export class AdminService {
       scheme
     }
   }
-
-
-
 }

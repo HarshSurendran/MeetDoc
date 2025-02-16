@@ -37,7 +37,7 @@ export class DoctorsService {
     return this.DoctorModel.find().exec();
   }
 
-  async getUser(email: string): Promise<any> {
+  async getUser(email: string): Promise<Doctor | null> {
     return await this.DoctorModel.findOne({ email });
   }
 
@@ -62,7 +62,7 @@ export class DoctorsService {
     return await createdVerification.save();
   }
 
-  async getDocVerification(id: string): Promise<any> {
+  async getDocVerification(id: string): Promise<DocVerification> {
     return await this.DoctorVerificationModel.findOne({ doctorId: id });
   }
 

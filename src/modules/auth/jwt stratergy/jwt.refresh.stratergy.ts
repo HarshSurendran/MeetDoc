@@ -18,7 +18,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: { sub: string, email: string}) {
     console.log('Refresh Token Payload:', payload);
     return { userId: payload.sub, email: payload.email }; 
   }

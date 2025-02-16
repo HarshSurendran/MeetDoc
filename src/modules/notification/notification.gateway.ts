@@ -1,5 +1,5 @@
 import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 
 
 
@@ -15,17 +15,17 @@ export class NotificationGateway implements OnGatewayInit, OnGatewayConnection, 
     server: Server
     private connectedUsers: Map<string, string> = new Map();
 
-    afterInit(server: any) {
+    afterInit(server: Server) {
         console.log('WebSocket server initialized');
     }
 
-    handleConnection(client: any, ...args: any[]) {
+    handleConnection(client: Socket) {
         console.log('Client connected notification for notification:', client.id);
         const userId = client.handshake.auth.userId;
         this.connectedUsers.set(userId, client.id);
     }
 
-    handleDisconnect(payload: { userId: string, client: any }) {
+    handleDisconnect(payload: { userId: string, client: Socket }) {
         console.log('Client disconnected notification:', payload.client.id);
         const userId = payload.userId;
         this.connectedUsers.delete(userId);

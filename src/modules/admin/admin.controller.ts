@@ -3,6 +3,7 @@ import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/interface/usersdto';
 import { AdminService } from './admin.service';
 import { AuthGuard } from '@nestjs/passport';
+import { CreateSubscriptionDto } from '../subscription/dto/create-subscription.dto';
 
 // @UseGuards(AuthGuard("admin-access-jwt"))
 @Controller('admin')
@@ -82,18 +83,12 @@ export class AdminController {
     }
 
     @Post('subscription')
-    async createSubscription(@Body() body: any) {
+    async createSubscription(@Body() body: CreateSubscriptionDto) {
         return await this.adminService.createSubscription(body);
     }
 
     @Delete('subscription/:id')
     async deleteSubscription(@Param('id') id: string) {
         return await this.adminService.deleteSubscription(id);
-    }
-
-
-
-
-
-    
+    } 
 }

@@ -13,6 +13,7 @@ import * as moment from 'moment';
 import { PrescriptionRepository } from '../prescription/prescription.repository';
 import { ReviewRepository } from '../review/review.repository';
 import { CreatePatientDto } from './interface/createPatientdto';
+import { UpdateUserDto } from './interface/updateUserDto';
 
 
 @Injectable()
@@ -32,7 +33,7 @@ export class UsersService {
     return await createdUser.save();
   }
 
-  async updateUser(id: string, userDetails: any) {    
+  async updateUser(id: string, userDetails: UpdateUserDto) {    
     const user = await this.UserModel.find({ _id: id });
     if (!user) {
       throw new NotFoundException('User not found.');
@@ -46,7 +47,7 @@ export class UsersService {
     return this.UserModel.find().exec();
   }
 
-  async getUser(email: string): Promise<any> {
+  async getUser(email: string): Promise<User | null> {
     const user = await this.UserModel.findOne({ email });
     return user;
   }
