@@ -103,66 +103,6 @@ export class ChatService {
     return this.doctorRepo.updateDoctorStatus(doctorId, status);
   }
 
-  // async getRecentChats(userId: string) {
-  //   const messages = await this.messageModel
-  //     .aggregate([
-  //       {
-  //         $match: {
-  //           $or: [{ sender: userId }, { receiver: userId }],
-  //         },
-  //       },
-  //       {
-  //         $sort: { timestamp: -1 },
-  //       },
-  //       {
-  //         $group: {
-  //           _id: {
-  //             $cond: [
-  //               { $eq: ['$sender', userId] },
-  //               '$receiver',
-  //               '$sender',
-  //             ],
-  //           },
-  //           lastMessage: { $first: '$$ROOT' },
-  //         },
-  //       },
-  //       {
-  //         $lookup: {
-  //           from: 'users',
-  //           localField: '_id',
-  //           foreignField: '_id',
-  //           as: 'user',
-  //         },
-  //       },
-  //       {
-  //         $unwind: '$user',
-  //       },
-  //       {
-  //         $project: {
-  //           _id: 1,
-  //           user: 1,
-  //           lastMessage: 1,
-  //           unreadCount: {
-  //             $size: {
-  //               $filter: {
-  //                 input: '$messages',
-  //                 as: 'msg',
-  //                 cond: {
-  //                   $and: [
-  //                     { $eq: ['$$msg.receiver', userId] },
-  //                     { $eq: ['$$msg.isRead', false] },
-  //                   ],
-  //                 },
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     ]);
-
-  //   return messages;
-  // }
-
   async getRecentChats(userId1: string) {
     const userId = new Types.ObjectId(userId1)
     const messages = await this.messageModel.aggregate([

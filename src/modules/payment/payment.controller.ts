@@ -18,7 +18,5 @@ export class PaymentController {
         return await this.paymentService.createSubscriptionPaymentIntent(body);
         
     }
-    
-    
 
 }

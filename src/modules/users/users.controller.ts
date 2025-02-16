@@ -12,9 +12,9 @@ import { CreatePatientDto } from './interface/createPatientdto';
 export class UsersController {
     constructor(private userService: UsersService) { }
 
-    @Get("appointments/:id")
-    async getAppointment(@Param('id') id: string) {
-        return await this.userService.getAppointment(id);
+    @Get("appointments/:appointmentId")
+    async getAppointment(@Param('appointmentId') appointmentId: string) {
+        return await this.userService.getAppointment(appointmentId);
     }
 
     @Get("lastpayment")
@@ -41,7 +41,6 @@ export class UsersController {
 
     @Get("/patients")
     async getAllPatients(@CurrentUser('userId') userId: string) {
-        console.log(userId, "Thiis is the userId fro get all apatients");
         return await this.userService.getAllPatients(userId);
     }
 
@@ -50,9 +49,9 @@ export class UsersController {
         return await this.userService.addPatients(userId, patientData);   
     }
 
-    @Delete("patients/:id")
-    async deletePatient(@CurrentUser('userId') userId: string, @Param('id') id: string) {
-        return await this.userService.deletePatient(userId, id);
+    @Delete("patients/:patientId")
+    async deletePatient(@CurrentUser('userId') userId: string, @Param('patientId') patientId: string) {
+        return await this.userService.deletePatient(userId, patientId);
     }
 
     @Get("reviews")
@@ -65,22 +64,20 @@ export class UsersController {
         return await this.userService.getPrescriptions(userId);        
     }
     
-    @Get("/:id")
-    async getUser(@Param('id') id: string) {
-        console.log("reached get users endpoint", id)
-        return await this.userService.getUserById(id);
+    @Get("/:userId")
+    async getUser(@Param('userId') userId: string) {
+        return await this.userService.getUserById(userId);
     }
 
-    @Patch("/:id")
-    async updateUser(@Param('id') id: string, @Body() body: Partial<CreateUserDto>) {
-        console.log("reached updateUser end point")
-        return await this.userService.updateUser(id, body);
+    @Patch("/:userId")
+    async updateUser(@Param('userId') userId: string, @Body() body: Partial<CreateUserDto>) {
+        return await this.userService.updateUser(userId, body);
     }
 
-    @Patch("profilephoto/:id")
+    @Patch("profilephoto/:userId")
     @UseInterceptors(FileInterceptor('photo'))
-    async updateProfilePic(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
-        return await this.userService.updateProfilePhoto(id, file);        
+    async updateProfilePic(@Param('userId') userId: string, @UploadedFile() file: Express.Multer.File) {
+        return await this.userService.updateProfilePhoto(userId, file);        
     }
 
     @Get("doctordetails/:doctorId")
@@ -109,7 +106,4 @@ export class UsersController {
     async getDoctorsForLanding() {
         return await this.userService.getDoctorsForLandingPage();
     }
-
-
-  
 }

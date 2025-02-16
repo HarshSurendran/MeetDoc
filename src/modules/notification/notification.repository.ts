@@ -39,7 +39,6 @@ export class NotificationRepository {
         return await this.NotificationModel.updateMany({ userId: userId }, { $set: { isRead: true } });
     }
 
-
     async deleteAllNotification() {
         return await this.NotificationModel.deleteMany({});
     }

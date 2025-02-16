@@ -133,16 +133,14 @@ export class AuthController {
     return this.authService.createVerificationDoc(body);
   }
   
-  @Get('doctor/checkVerification/:id')
-  async checkVerification(@Param('id') id: string) {
-    console.log("reached check verification endpoint", id);    
-    return this.authService.checkVerification(id);
+  @Get('doctor/checkVerification/:doctorId')
+  async checkVerification(@Param('doctorId') doctorId: string) {
+    return this.authService.checkVerification(doctorId);
   }
 
-  @Patch('doctor/verify/:id')
-  async verifyDoctor(@Param('id') id: string, @Body() body : Partial<UpdateDoctorDto> ) {
-    console.log("reached verify doctor endpoint", id, body);
-    return this.authService.verifyDoctor(id, body);
+  @Patch('doctor/verify/:doctorId')
+  async verifyDoctor(@Param('doctorId') doctorId: string, @Body() body : Partial<UpdateDoctorDto> ) {
+    return this.authService.verifyDoctor(doctorId, body);
   }
 
   @UseGuards(AuthGuard("doctor-refresh-jwt"))

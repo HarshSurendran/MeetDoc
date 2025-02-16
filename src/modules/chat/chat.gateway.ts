@@ -8,9 +8,7 @@ import {
   import { Server, Socket } from 'socket.io';
   import { ChatService } from './chat.service';
 import { status } from '../users/schemas/users.schema';
-import { senderType } from './entities/message.entity';
-import { forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import * as jwt from 'jsonwebtoken';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
   
 
   @Injectable()

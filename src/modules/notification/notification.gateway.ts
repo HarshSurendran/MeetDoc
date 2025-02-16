@@ -2,7 +2,6 @@ import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, WebSocketGatew
 import { Server, Socket } from "socket.io";
 
 
-
 @WebSocketGateway({
     cors: {
         origin: '*',

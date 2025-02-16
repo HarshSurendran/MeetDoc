@@ -101,10 +101,6 @@ export class DoctorsController {
         return await this.doctorService.getMedicalHistory(patientId);
     }
 
-
-
-
-
 //for testing
     @Get('deleteslots')
     async deleteAll() {

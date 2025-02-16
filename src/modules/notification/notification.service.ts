@@ -60,13 +60,6 @@ export class NotificationService {
         return await this.notificationRepo.markAllAsRead(userId);
     }
 
-
-
-
-
-
-
-
     async deleteAllNotification() {
         console.log("delete all notification");
         return await this.notificationRepo.deleteAllNotification();

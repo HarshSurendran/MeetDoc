@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Console } from 'console';
 import Stripe from 'stripe';
 
 @Injectable()
 export class PaymentService {
-
-    private stripe: Stripe
-    
+    private stripe: Stripe    
     constructor(private configService: ConfigService) {
         this.stripe = new Stripe(configService.get('STRIPE_SKEY'), {
             apiVersion: "2024-12-18.acacia"
@@ -62,7 +59,5 @@ export class PaymentService {
             clientSecret: paymentIntent.client_secret,
         };
     }
-
-
 
 }

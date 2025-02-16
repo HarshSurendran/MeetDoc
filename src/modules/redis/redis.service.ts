@@ -7,7 +7,7 @@ import { createClient } from 'redis';
 export class RedisService implements OnModuleInit, OnModuleDestroy {
   private client;
 
-    constructor(
+  constructor(
       private configService: ConfigService
   ) {
     this.client = createClient({

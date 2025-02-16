@@ -1,7 +1,6 @@
 import { Injectable, RawBodyRequest } from "@nestjs/common";
 import { Response } from 'express';
 import { PaymentService } from "../payment/payment.service";
-import mongoose, { ObjectId } from "mongoose";
 import { SlotsRepository } from "../slots/slots.repository";
 import { SlotStatus } from "../slots/slots.entity";
 import { BookingsRepository } from "../bookings/bookings.repository";
@@ -141,6 +140,4 @@ export class WebhookService {
     //         throw error;
     //     }
     // }
-    
-
 }

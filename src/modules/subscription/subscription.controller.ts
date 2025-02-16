@@ -1,16 +1,13 @@
-import { Controller, Get, Inject, Param } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Subscription, SubscriptionDocument } from './subscription.entity';
-import { Model } from 'mongoose';
+import { Controller, Get, Param } from '@nestjs/common';
 import { SubscriptionRepository } from './subscription.repository';
 
 @Controller('subscription')
 export class SubscriptionController {
     constructor( private subscriptionRepo: SubscriptionRepository) { }
     
-    @Get("/:id")
-    async getSubscription(@Param("id") id: string) {
-        return await this.subscriptionRepo.getSubscriptionById(id);
+    @Get("/:subscriptionId")
+    async getSubscription(@Param("subscriptionId") subscriptionId: string) {
+        return await this.subscriptionRepo.getSubscriptionById(subscriptionId);
     }
     
     @Get("/")
@@ -20,7 +17,5 @@ export class SubscriptionController {
             schemes
         }
     }
-    
-    
     
 }

@@ -124,7 +124,6 @@ export class UsersRepository {
     ).lean();
     return user;
   }
-  
 
   async convertDate() {
     return await this.userModel.updateMany(

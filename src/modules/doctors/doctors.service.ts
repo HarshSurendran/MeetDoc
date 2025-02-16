@@ -41,16 +41,16 @@ export class DoctorsService {
     return await this.DoctorModel.findOne({ email });
   }
 
-  async getDoctorById(id: string): Promise<Partial<DoctorDocument>> {
-    return await this.DoctorModel.findOne({ _id: id }) as Partial<DoctorDocument>;
+  async getDoctorById(doctorId: string): Promise<Partial<DoctorDocument>> {
+    return await this.DoctorModel.findOne({ _id: doctorId }) as Partial<DoctorDocument>;
   }
 
   async updateDoctor(email: string, data: Partial<UpdateDoctorDto>) {
     return await this.DoctorModel.updateOne({ email }, { $set: data });
   }
 
-  async updateDoctorById(id: string, data: Partial<UpdateDoctorDto>) {
-    const updateStat = await this.DoctorModel.updateOne({ _id: id }, { $set: data });
+  async updateDoctorById(doctorId: string, data: Partial<UpdateDoctorDto>) {
+    const updateStat = await this.DoctorModel.updateOne({ _id: doctorId }, { $set: data });
     if (updateStat.matchedCount == 0) {
       throw new NotFoundException("Doctor Id is invalid.");
     }
@@ -62,21 +62,21 @@ export class DoctorsService {
     return await createdVerification.save();
   }
 
-  async getDocVerification(id: string): Promise<DocVerification> {
-    return await this.DoctorVerificationModel.findOne({ doctorId: id });
+  async getDocVerification(doctorId: string): Promise<DocVerification> {
+    return await this.DoctorVerificationModel.findOne({ doctorId });
   }
 
   async getVerficationsRequests(): Promise<DocVerification[]> {
     return this.DoctorVerificationModel.find().exec();
   }
 
-  async updateDoctorDocuments(id: string, data: {}) {
-    return await this.DoctorVerificationModel.updateOne({ doctorId: id }, { $set: data });
+  async updateDoctorDocuments(doctorId: string, data: {}) {
+    return await this.DoctorVerificationModel.updateOne({ doctorId }, { $set: data });
   }
 
-  async changeProfilePhoto(id: string, photo: Express.Multer.File) {
+  async changeProfilePhoto(doctorId: string, photo: Express.Multer.File) {
     try {
-      const doctor = await this.DoctorModel.findById(id);
+      const doctor = await this.DoctorModel.findById(doctorId);
       if (!doctor) {
         throw new NotFoundException("Doctor Id is invalid.");
       }
@@ -85,7 +85,7 @@ export class DoctorsService {
         if (doctor.photo) {
           await this.s3Service.deleteFile(doctor.photo);
         }
-        await this.DoctorModel.updateOne({ _id: id }, { $set: { photo: response.key } });
+        await this.DoctorModel.updateOne({ _id: doctorId }, { $set: { photo: response.key } });
         return {
           key: response.key
         }
@@ -270,9 +270,6 @@ export class DoctorsService {
     }
     return doctor;
   }
-
-
-
 
   //testing purpose
   async deleteAllSlots() {

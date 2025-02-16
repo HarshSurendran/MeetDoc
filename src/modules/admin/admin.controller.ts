@@ -25,25 +25,25 @@ export class AdminController {
         return await this.adminService.getUsers();
     }
 
-    @Get('users/:id')
-    async fetchUser(@Param() id: { id: string}) {
-        return await this.userService.getUserById(id.id);
+    @Get('users/:userId')
+    async fetchUser(@Param('userId') userId:  string) {
+        return await this.userService.getUserById(userId);
     }
 
-    @Delete('users/:id')
-    async deleteUser(@Param('id') id: string) {
-        return await this.userService.deleteUser(id);
+    @Delete('users/:userId')
+    async deleteUser(@Param('userId') userId: string) {
+        return await this.userService.deleteUser(userId);
     }
 
-    @Patch('users/:id')
-    async updateUser(@Param('id') id: string, @Body() body: CreateUserDto) {
+    @Patch('users/:userId')
+    async updateUser(@Param('userId') userId: string, @Body() body: CreateUserDto) {
         console.log("reached updateUser end point", body)
-        return await this.userService.updateUser(id, body);      
+        return await this.userService.updateUser(userId, body);      
     }
 
-    @Patch('users/toggleblock/:id')
-    async toggleBlock(@Param('id') id: string) {
-        return await this.adminService.toggleBlock(id);
+    @Patch('users/toggleblock/:userId')
+    async toggleBlock(@Param('userId') userId: string) {
+        return await this.adminService.toggleBlock(userId);
     }
 
     @Get('verification-requests')
@@ -87,8 +87,8 @@ export class AdminController {
         return await this.adminService.createSubscription(body);
     }
 
-    @Delete('subscription/:id')
-    async deleteSubscription(@Param('id') id: string) {
-        return await this.adminService.deleteSubscription(id);
+    @Delete('subscription/:subscriptionId')
+    async deleteSubscription(@Param('subscriptionId') subscriptionId: string) {
+        return await this.adminService.deleteSubscription(subscriptionId);
     } 
 }

@@ -22,18 +22,6 @@ export class NotificationController {
         return await this.notificationService.markAllAsRead(userId);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     @Post('/deleteAllNotification')
     async deleteAllNotification() {
         console.log("reached here deleting")

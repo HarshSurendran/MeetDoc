@@ -1,5 +1,4 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { PrescriptionController } from './prescription.controller';
 import { PrescriptionService } from './prescription.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Prescription, PrescriptionSchema } from './prescription.entity';
@@ -13,7 +12,6 @@ import { UsersModule } from '../users/users.module';
     S3Module,
     forwardRef(() => UsersModule)
   ],
-  controllers: [PrescriptionController],
   providers: [PrescriptionService, PrescriptionRepository],
   exports: [PrescriptionRepository]
 })
