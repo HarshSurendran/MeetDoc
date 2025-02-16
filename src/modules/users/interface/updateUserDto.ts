@@ -13,26 +13,26 @@ import { Patient } from '../schemas/patient.schema';
 export class UpdateUserDto {
   @IsOptional()
   @IsString()
-  readonly _id: string;    
+  readonly _id?: string;    
     
   @IsOptional()
   @IsString()
   @MinLength(3)
-  readonly name: string;
+  readonly name?: string;
 
   @IsOptional()
   @IsEmail()
-  readonly email: string;
+  readonly email?: string;
 
   @IsOptional()
   @IsString()
   @IsStrongPassword()
   @MinLength(6)
-  password: string;
+  password?: string;
 
   @IsOptional()
   @IsString()
-  readonly gender: string;
+  readonly gender?: string;
 
   @IsOptional()
   @IsString()
@@ -43,20 +43,20 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  readonly occupation: string;
+  readonly occupation?: string;
 
   @IsOptional()
-  readonly address: Address;
+  readonly address?: Address;
   
   @IsOptional()
   @IsBoolean()
-  isBlocked: Boolean;
+  isBlocked?: Boolean;
 
   @IsOptional()
   @IsString()
-  refresh_token: string;
+  refresh_token?: string;
 
   @IsOptional()
   @IsObject()
-  patients: Patient[];
+  patients?: Patient[];
 }

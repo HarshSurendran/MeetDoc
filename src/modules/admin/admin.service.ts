@@ -36,7 +36,7 @@ export class AdminService {
     return await this.redisService.get(`user:${email}:isBlocked`);
   }
 
-  async getAdmin(email: string): Promise<Admin | null> {
+  async getAdmin(email: string): Promise<AdminDocument | null> {
     return await this.AdminModel.findOne({ email });
   }
 

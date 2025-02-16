@@ -37,7 +37,7 @@ export class DoctorsService {
     return this.DoctorModel.find().exec();
   }
 
-  async getUser(email: string): Promise<Doctor | null> {
+  async getUser(email: string): Promise<DoctorDocument | null> {
     return await this.DoctorModel.findOne({ email });
   }
 

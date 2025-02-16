@@ -68,19 +68,19 @@ export class AuthService {
       }
 
       const payload = {
-        id: user._id,
+        id: user._id.toString(),
         name: user.name,
         email: user.email,
         role: 'user',
       };
   
-      const accessToken = await this.generateAccessToken(payload);
-      const refreshToken = await this.generateRefreshToken(user._id, user.email);
+      const accessToken = this.generateAccessToken(payload);
+      const refreshToken = this.generateRefreshToken(user._id.toString(), user.email);
       const update = { refresh_token: refreshToken }    
       delete user.refresh_token;
       delete user.password;
     
-      await this.usersService.updateUser(user._id, update);
+      await this.usersService.updateUser(user._id.toString(), update);
   
       return {
         user,
@@ -353,7 +353,7 @@ export class AuthService {
        httpOnly: true,
        secure: true
      });
-     await this.usersService.updateUser(_id, { refreshToken: "" });
+     await this.usersService.updateUser(_id, { refresh_token: "" });
      return "Successfully logged out"
    } catch (error) {
      throw new RequestTimeoutException("Database not responding. Please try again later.");
@@ -375,7 +375,7 @@ export class AuthService {
         role: "user"
       };
       
-      const accessToken = this.generateAccessToken(payload);
+      const accessToken = this.generateAccessToken({ ...payload, id: user._id.toString() });
       const refreshToken = this.generateRefreshToken(user.id, user.email);
 
       const update = { refresh_token: refreshToken };  
@@ -698,7 +698,7 @@ export class AuthService {
     const adminData = await this.adminService.getAdmin(admin.email);
     if (adminData) {
       const payload = {
-        _id: adminData._id,
+        _id: adminData._id.toString(),
         email: adminData.email,
         name: adminData.name,
         role: "admin"
