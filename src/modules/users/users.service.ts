@@ -230,11 +230,9 @@ export class UsersService {
     }
   }
   
-  async getYourReviews(userId: string) {
-    const reviews = await this.ReviewRepo.getReviewsByUserId(userId);
-    return {
-      reviews
-    }
+  async getYourReviews(userId: string, page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    return await this.ReviewRepo.getReviewsByUserId(userId, skip, limit);
   }
 
   async getAllPatients(userId: string) {

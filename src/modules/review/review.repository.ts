@@ -24,8 +24,10 @@ export class ReviewRepository {
         return await this.reviewModel.find({ for: doctorId }).populate('from', 'name ').populate('for', 'name specialisation').exec(); 
     }
 
-    async getReviewsByUserId(userId: string) {
-        return await this.reviewModel.find({ from: userId }).populate('from', 'name').populate('for', 'name specialisation').exec();
+    async getReviewsByUserId(userId: string, skip: number, limit: number) {
+        const reviews = await this.reviewModel.find({ from: userId }).skip(skip).limit(limit).populate('from', 'name').populate('for', 'name specialisation').exec();
+        const totalDocs = await this.reviewModel.countDocuments({ from: userId });
+        return { reviews, totalDocs };
     }
 
     async updateReview(reviewId: string, review: CreateReviewDto) {

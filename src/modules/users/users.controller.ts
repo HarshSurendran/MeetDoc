@@ -56,8 +56,8 @@ export class UsersController {
     }
 
     @Get("reviews")
-    async getYourReviews(@CurrentUser('userId') userId: string) {
-        return await this.userService.getYourReviews(userId);            
+    async getYourReviews(@CurrentUser('userId') userId: string, @Query('page') page: number, @Query('limit') limit: number) {
+        return await this.userService.getYourReviews(userId, page, limit);            
     }
 
     @Get('prescriptions')
