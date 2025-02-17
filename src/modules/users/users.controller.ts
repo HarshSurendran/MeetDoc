@@ -23,8 +23,8 @@ export class UsersController {
     }
 
     @Get("paymenthistory")
-    async getPaymentHistory(@CurrentUser('userId') userId: string) {
-        return await this.userService.getPaymentHistory(userId);
+    async getPaymentHistory(@CurrentUser('userId') userId: string, @Query('page') page: number, @Query('limit') limit: number) {
+        return await this.userService.getPaymentHistory(userId, page, Number(limit));
     }
 
     

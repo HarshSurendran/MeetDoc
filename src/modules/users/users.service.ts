@@ -274,11 +274,9 @@ export class UsersService {
     }
   }
 
-  async getPaymentHistory(userId: string) {
-    const payments = await this.BookingsRepo.getBookingsforPatient(userId);
-    return {
-      payments
-    }
+  async getPaymentHistory(userId: string, page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    return await this.BookingsRepo.getBookingsforPatient(userId, skip, limit);
   }
 
 }

@@ -110,16 +110,17 @@ export class BookingsRepository {
       }
   } 
 
-  async getBookingsforPatient(patientId: string): Promise<BookingsDocument[] | null> {
+  async getBookingsforPatient(patientId: string, skip: number, limit: number): Promise<{payments:BookingsDocument[], totalDocs: number} | null> {
     try {
-        const bookings = await this.BookingModel.find({ patientId }).exec();
-        if (!bookings.length) {
-            console.log("No bookings for user", patientId);
-            throw new NotFoundException(
-                `No bookings found for user - ${patientId}`
-            )
-        }
-        return bookings;            
+      const payments = await this.BookingModel.find({ patientId }).skip(skip).limit(limit).sort({ bookingTime: -1 }).exec();
+      if (!payments.length) {
+          console.log("No bookings for user", patientId);
+          throw new NotFoundException(
+              `No bookings found for user - ${patientId}`
+          )
+      }
+      const totalDocs = await this.BookingModel.countDocuments({ patientId });
+      return {payments, totalDocs};            
     } catch (error) {
         console.log(`Unexpected error while fetching booking of doctor: ${patientId}`, error);
         throw new InternalServerErrorException("Could not fetch bookings. Please try again later.");
