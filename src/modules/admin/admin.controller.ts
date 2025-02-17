@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/interface/usersdto';
 import { AdminService } from './admin.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateSubscriptionDto } from '../subscription/dto/create-subscription.dto';
 
-// @UseGuards(AuthGuard("admin-access-jwt"))
+@UseGuards(AuthGuard("admin-access-jwt"))
 @Controller('admin')
 export class AdminController {
     constructor(
@@ -18,11 +18,9 @@ export class AdminController {
         return await this.adminService.createUser(body);
     }
     
-    
     @Get('users')
-    async getUser() {
-        console.log("reached get users endpoint")
-        return await this.adminService.getUsers();
+    async getUser(@Query('page') page: number, @Query('limit') limit: number) {
+        return await this.adminService.getUsers(page, limit);
     }
 
     @Get('users/:userId')
@@ -47,9 +45,14 @@ export class AdminController {
     }
 
     @Get('verification-requests')
-    async getVerificationRequests() {
-        return await this.adminService.getVerificationRequests();
+    async getVerificationRequests(@Query('page') page: number, @Query('limit') limit: number) {
+        return await this.adminService.getVerificationRequests(page,limit);
     }
+
+    @Get('verified-doctors')
+        async getVerifiedDoctors(@Query('page') page: number, @Query('limit') limit: number) {
+            return await this.adminService.getVerifiedDoctors(page, limit);
+        }
 
     @Get('monthly-data')
     async getMonthlyData() {

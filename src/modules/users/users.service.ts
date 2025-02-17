@@ -71,8 +71,11 @@ export class UsersService {
     return user;
   }
 
-  async allUsers() {
-    return await this.UserModel.find();
+  async allUsers(skip: number, limit: number) {
+    console.log(skip, limit, "This is the skip and limit")
+    const users = await this.UserModel.find().sort({ name: 1 }).skip(skip).limit(limit);
+    const totalUsers = await this.UserModel.countDocuments();
+    return { users, totalUsers };
   }
 
   async deleteUser(id: string) {

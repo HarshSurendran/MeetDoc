@@ -9,7 +9,6 @@ import { SubscriptionRepository } from '../subscription/subscription.repository'
 
 @Injectable()
 export class TasksService {
-    
     constructor(
         private SlotsRepo: SlotsRepository,
         private UserRepo: UsersRepository,
@@ -56,7 +55,5 @@ export class TasksService {
             console.error('Error releasing expired slots:', error);
         }
     }
-
-
 }
 

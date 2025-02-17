@@ -59,8 +59,9 @@ export class AdminService {
     }
   }
 
-  async getUsers(){
-    return await this.usersService.allUsers();
+  async getUsers(page, limit) {
+    const skip = (page - 1) * limit;
+    return await this.usersService.allUsers(skip, limit);
   }
 
   async toggleBlock(id: string) {    
@@ -89,8 +90,14 @@ export class AdminService {
     return await this.AdminModel.updateOne({ _id: _id }, { $set: data} )
   }
 
-  async getVerificationRequests() {
-    return await this.doctorService.getVerficationsRequests();
+  async getVerificationRequests(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    return await this.doctorService.getVerficationsRequests(skip, limit);
+  }
+
+  async getVerifiedDoctors(page:number, limit:number) {
+    const skip = (page - 1) * limit;
+    return await this.doctorService.getVerifiedDoctors(skip, limit);
   }
 
   async getMonthlyData() {
