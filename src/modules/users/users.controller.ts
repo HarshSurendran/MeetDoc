@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Req, Delete, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req, Delete, UploadedFile, UseGuards, UseInterceptors, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './interface/usersdto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -29,9 +29,10 @@ export class UsersController {
 
     
     @Get("appointments")
-    async getUserAppointments(@Req() req) {
+    async getUserAppointments(@Req() req, @Query('page') page: number, @Query('limit') limit: number) {
         const user = req.user;
-        return await this.userService.getUserAppointments(user.userId);
+        console.log("tyep of ", typeof limit)
+        return await this.userService.getUserAppointments(user.userId, page, Number(limit));
     }
 
     @Get("upcomingappointments")

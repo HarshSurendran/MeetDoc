@@ -19,8 +19,9 @@ export class BookingsRepository {
       }
   }
 
-  async getBookings(queryData: {key: string, value: string}) : Promise<IBookedAppointmentDBReturn[] | null> {
-      try {
+  async getBookings(queryData: {key: string, value: string}, skip: number, limit: number) : Promise<{  appointmentFromDB: IBookedAppointmentDBReturn[], totalDocs: number} | null> {
+    try {
+        console.log("Type of  limit and skip ", typeof skip, typeof limit);
         const bookings = await this.BookingModel.aggregate([
           {
             $match: queryData.key === 'doctorId' ? { doctorId: queryData.value } : { patientId: queryData.value }
@@ -87,14 +88,22 @@ export class BookingsRepository {
             $sort: {
               date: -1
             }
+          },
+          {
+            $skip: skip
+          },
+          {
+            $limit: limit
           }
       ]);
           
       if (!bookings.length) {
           throw new NotFoundException(`No bookings found for - ${queryData.value}`)
-        }
+      }
+
+      const totalDocs = await this.BookingModel.countDocuments(queryData.key === 'doctorId' ? { doctorId: queryData.value } : { patientId: queryData.value });
         
-      return bookings;
+      return {appointmentFromDB: bookings, totalDocs}; 
       } catch (error) {
           console.log(`Unexpected error while fetching booking of : ${queryData.value}`, error);
           throw new InternalServerErrorException("Could not fetch bookings. Please try again later.");        

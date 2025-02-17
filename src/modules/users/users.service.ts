@@ -176,8 +176,10 @@ export class UsersService {
     }
   }
 
-  async getUserAppointments(userId) {
-    const appointmentFromDB = await this.BookingsRepo.getBookings({ key: 'patientId', value: userId });
+  async getUserAppointments(userId, page: number, limit: number) {
+    console.log(typeof limit,"type of limit")
+    const skip = (page - 1) * limit;
+    const {appointmentFromDB, totalDocs } = await this.BookingsRepo.getBookings({ key: 'patientId', value: userId }, skip, limit);
 
     if(appointmentFromDB.length == 0) {
       return null;
@@ -200,8 +202,10 @@ export class UsersService {
                 time : moment(appointment.time).format('hh:mm A'),
       })
     });
+
     return {
-      appointments
+      appointments,
+      totalDocs
     }
   }
 

@@ -157,10 +157,12 @@ export class DoctorsService {
     return await this.slotsRepo.deleteSlot(slotId);
   }
 
-  async getUpcomingAppointments(doctorId : string) {
-    const appointmentFromDB = (await this.bookingsRepo.getBookings({ key: "doctorId", value: doctorId }));
-
-    const appointments : IBookedAppointmentType[] = [];
+  async getUpcomingAppointments(doctorId: string, page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    const { appointmentFromDB, totalDocs } = (await this.bookingsRepo.getBookings({ key: "doctorId", value: doctorId }, skip, limit));
+    
+    const appointments: IBookedAppointmentType[] = [];
+    
     appointmentFromDB.forEach((appointment) => {
       let duration: number = (new Date(appointment.slots.EndTime).getTime() - new Date(appointment.slots.StartTime).getTime()) / (1000 * 60);   
      
@@ -180,13 +182,17 @@ export class DoctorsService {
         })
       }
     })
+    console.log(appointments, "appointments")
+    const docs = appointments.length;
     return {
-      appointments
+      appointments,
+      totalDocs : docs
     }
   }
 
-  async getAppointments(doctorId : string) {
-    const appointmentFromDB = (await this.bookingsRepo.getBookings({ key: "doctorId", value: doctorId }));
+  async getAppointments(doctorId: string, page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    const {appointmentFromDB, totalDocs} = (await this.bookingsRepo.getBookings({ key: "doctorId", value: doctorId }, skip, limit));
 
     const appointments : IBookedAppointmentType[] = [];
     appointmentFromDB.forEach((appointment) => {
@@ -206,7 +212,8 @@ export class DoctorsService {
       })
     })
     return {
-      appointments
+      appointments,
+      totalDocs
     }
   }
 

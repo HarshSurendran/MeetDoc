@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CreateDoctorDto, UpdateDoctorDto } from './interface/doctorsdto';
 import { DoctorsService } from './doctors.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -44,14 +44,14 @@ export class DoctorsController {
     }; 
 
     @Get('appointments')
-    async fetchAppointments(@Req() req) {
+    async fetchAppointments(@Req() req, @Query('page') page: number, @Query('limit') limit: number) {
         const doctor = req.user;
-        return await this.doctorService.getAppointments(doctor.doctorId);
+        return await this.doctorService.getAppointments(doctor.doctorId, page, Number(limit));
     }
 
     @Get('upcomingappointments')
-    async fetchUpcomingAppointments(@CurrentUser('doctorId') doctorId: string) {
-        return await this.doctorService.getUpcomingAppointments(doctorId);
+    async fetchUpcomingAppointments(@CurrentUser('doctorId') doctorId: string, @Query('page') page: number, @Query('limit') limit: number) {
+        return await this.doctorService.getUpcomingAppointments(doctorId, page, Number(limit));
     }
 
     @Get('appointments/:appointmentId')
