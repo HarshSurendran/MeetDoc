@@ -61,8 +61,8 @@ export class UsersController {
     }
 
     @Get('prescriptions')
-    async getPrescriptions(@CurrentUser('userId') userId: string) {
-        return await this.userService.getPrescriptions(userId);        
+    async getPrescriptions(@CurrentUser('userId') userId: string, @Query('page') page: number, @Query('limit') limit: number) {
+        return await this.userService.getPrescriptions(userId, page, limit);        
     }
     
     @Get("/:userId")

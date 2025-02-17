@@ -53,8 +53,13 @@ export class PrescriptionRepository {
         return result;
     }
 
-    async getPrescriptionsByPatientId(patientId: string): Promise<Prescription[]> {
-        return this.PrescriptionModel.find({ patientId }).populate('patientId', 'name gender date_of_Birth').populate('doctorId', 'name specialisation').sort({ createdAt: -1 }).limit(5).exec();
+    async getPrescriptionsByPatientId(patientId: string, skip:number, limit: number): Promise<{ prescriptions: Prescription[], totalDocs: number }> {
+        const prescriptions = await this.PrescriptionModel.find({ patientId }).populate('patientId', 'name gender date_of_Birth').populate('doctorId', 'name specialisation').sort({ createdAt: -1 }).skip(skip).limit(limit).exec();
+        const totalDocs = await this.PrescriptionModel.countDocuments({ patientId });
+        return {
+            prescriptions,
+            totalDocs
+        }
     }
 
     async getPrescriptionsByDoctorId(doctorId: string): Promise<Prescription[]> {

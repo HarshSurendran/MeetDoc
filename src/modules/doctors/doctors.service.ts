@@ -273,7 +273,7 @@ export class DoctorsService {
   }
 
   async getMedicalHistory(patientId: string) {
-    const medicalHistory = await this.prescriptionRepo.getPrescriptionsByPatientId(patientId);
+    const medicalHistory = await this.prescriptionRepo.getPrescriptionsByPatientId(patientId, 1, 10);
     return {
       medicalHistory
     }

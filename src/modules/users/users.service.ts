@@ -223,11 +223,9 @@ export class UsersService {
     }
   }
 
-  async getPrescriptions(userId: string) {
-    const prescriptions = await this.PrescriptionRepo.getPrescriptionsByPatientId(userId);
-    return {
-      prescriptions
-    }
+  async getPrescriptions(userId: string, page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    return await this.PrescriptionRepo.getPrescriptionsByPatientId(userId, skip, limit);
   }
   
   async getYourReviews(userId: string, page: number, limit: number) {
