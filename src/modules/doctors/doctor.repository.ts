@@ -17,12 +17,18 @@ export class DoctorRepository {
         return doctor;
     }
 
-    async getTop5VerifiedDoctors(): Promise<DoctorDocument[]> {
-        const doctors = await this.DoctorModel.find({ isVerified: true }).sort({ rating: -1 }).limit(5);
+    async getTop4VerifiedDoctors(): Promise<DoctorDocument[]> {
+        const doctors = await this.DoctorModel.find({ isVerified: true }).sort({ rating: -1 }).limit(4);
         if (doctors.length == 0) {
             throw new NotFoundException("No doctors available.")
         }
         return doctors;
+    }
+
+    async getAllDoctors(skip: number, limit: number): Promise<{ doctors: DoctorDocument[], totalDocs: number }> {
+        const doctors = await this.DoctorModel.find({ isVerified: true }).sort({rating: -1}).skip(skip).limit(limit).exec();
+        const totalDocs = await this.DoctorModel.countDocuments({ isVerified: true });
+        return { doctors, totalDocs };
     }
 
     async updateDoctorStatus(_id: string, status: status): Promise<DoctorDocument> {
@@ -59,5 +65,15 @@ export class DoctorRepository {
           {},
           [{ $set: { createdAt: { $toDate: "$createdAt" } } }]
         )
+    }
+
+    async updateRating(doctorId: string, rating: number) {
+        return await this.DoctorModel.findByIdAndUpdate(
+            doctorId,
+            {
+                $set: { rating: rating },
+                $inc: { ratingCount: 1 }
+            }
+        );
     }
 }

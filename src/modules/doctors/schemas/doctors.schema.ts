@@ -47,11 +47,14 @@ export class Doctor {
   @Prop()
   languages: Array<string>;
 
-  @Prop({default: 50})
+  @Prop({ default: 100 })
   fee: number;
 
-  @Prop()
+  @Prop({ default: 0 })
   rating: number;
+
+  @Prop({ default: 0 })
+  ratingCount: number;
 
   @Prop()
   refresh_token: string;

@@ -22,16 +22,19 @@ export class UsersController {
         return await this.userService.getLastPayment(userId);
     }
 
+    @Get("doctors")
+    async getAllDoctors(@Query('page') page: number, @Query('limit') limit: number) {
+        return await this.userService.getAllDoctors(page, limit);
+    }
+
     @Get("paymenthistory")
     async getPaymentHistory(@CurrentUser('userId') userId: string, @Query('page') page: number, @Query('limit') limit: number) {
         return await this.userService.getPaymentHistory(userId, page, Number(limit));
     }
 
-    
     @Get("appointments")
     async getUserAppointments(@Req() req, @Query('page') page: number, @Query('limit') limit: number) {
         const user = req.user;
-        console.log("tyep of ", typeof limit)
         return await this.userService.getUserAppointments(user.userId, page, Number(limit));
     }
 

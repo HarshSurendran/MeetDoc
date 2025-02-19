@@ -9,7 +9,7 @@ import { SlotsRepository } from '../slots/slots.repository';
 import { UpdateSlotDto } from '../slots/dto/update-slot.dto';
 import { BookingsRepository } from '../bookings/bookings.repository';
 import { IBookedAppointmentType } from '../bookings/dto/doctor-booking.dto';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { PrescriptionRepository } from '../prescription/prescription.repository';
 import { ReviewRepository } from '../review/review.repository';
 import { CreatePatientDto } from './interface/createPatientdto';
@@ -117,6 +117,11 @@ export class UsersService {
    }
   }
 
+  async getAllDoctors(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    return await this.DoctorRepo.getAllDoctors(skip, limit);
+  }
+
   async getDoctor(id: string) {
     const doctor = await this.DoctorRepo.getSingleDoctor(id);
     return {
@@ -168,7 +173,7 @@ export class UsersService {
   }
 
   async getDoctorsForLandingPage() {
-    const doctors = await this.DoctorRepo.getTop5VerifiedDoctors();
+    const doctors = await this.DoctorRepo.getTop4VerifiedDoctors();
     if (doctors) {
       return {
         doctors
@@ -177,7 +182,6 @@ export class UsersService {
   }
 
   async getUserAppointments(userId, page: number, limit: number) {
-    console.log(typeof limit,"type of limit")
     const skip = (page - 1) * limit;
     const {appointmentFromDB, totalDocs } = await this.BookingsRepo.getBookings({ key: 'patientId', value: userId }, skip, limit);
 
@@ -197,9 +201,9 @@ export class UsersService {
         patientId: appointment.patientId,
         appointmentForName: appointment.appointmentForName,
         doctorName: appointment.doctorName,
-         bookingTime : moment(appointment.bookingTime).format('DD-MM-YYYY hh:mm A'),
-                date : moment(appointment.date).format('DD-MM-YYYY'),
-                time : moment(appointment.time).format('hh:mm A'),
+         bookingTime : moment(appointment.bookingTime).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mm A'),
+         date : moment(appointment.date).tz('Asia/Kolkata').format('DD-MM-YYYY'),
+         time : moment(appointment.time).tz('Asia/Kolkata').format('hh:mm A'),
       })
     });
 
