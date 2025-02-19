@@ -433,15 +433,15 @@ export class AuthService {
 
     const otp: string = this.generateOtp();
 
-    // const mailInfo = await this.mailService.sendMail(
-    //   doctorDto.email,
-    //   'OTP for meetdoc',
-    //   `Your otp for registering in MeetDoc is ${otp}`,
-    // );
+    const mailInfo = await this.mailService.sendMail(
+      doctorDto.email,
+      'OTP for meetdoc',
+      `Your otp for registering in MeetDoc is ${otp}`,
+    );
 
-    // if (mailInfo.rejected.length > 0) {
-    //   throw new InternalServerErrorException('Some error while sending mail.');
-    // }
+    if (mailInfo.rejected.length > 0) {
+      throw new InternalServerErrorException('Some error while sending mail.');
+    }
 
     const storeOtp = new this.OtpModel({
       email: doctorDto.email,
