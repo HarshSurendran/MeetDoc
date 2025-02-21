@@ -18,13 +18,9 @@ export class ReviewService {
         }
     }
 
-    async getReviews(doctorId: string) {
-        const reviews = await this.reviewRepo.getReviews(doctorId);
-        console.log(reviews, "reviews")
-        return {
-            reviews
-        }
-       
+    async getReviews(doctorId: string, page: number, limit: number) {
+        const skip = (page - 1) * limit;
+        return await this.reviewRepo.getReviews(doctorId, skip, limit);
     }
 
     async getSingleReview(reviewId: string) {

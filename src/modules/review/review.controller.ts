@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { CreateReviewDto } from "./dto/create-review.dto";
@@ -18,8 +18,8 @@ export class ReviewController {
 
     @UseGuards(AuthGuard('jwt'))
     @Get('/:doctorId')
-    async getReviews(@CurrentUser('userId') userId: string, @Param('doctorId') doctorId: string) {
-        return await this.reviewService.getReviews(doctorId)
+    async getReviews(@CurrentUser('userId') userId: string, @Param('doctorId') doctorId: string, @Query('page') page: number, @Query('limit') limit: number) {
+        return await this.reviewService.getReviews(doctorId, page, limit)
     }
 
 

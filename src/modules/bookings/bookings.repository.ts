@@ -114,9 +114,9 @@ export class BookingsRepository {
     try {
       const payments = await this.BookingModel.find({ patientId }).skip(skip).limit(limit).sort({ bookingTime: -1 }).exec();
       if (!payments.length) {
-          console.log("No bookings for user", patientId);
+          console.log("No Documents found for user", patientId);
           throw new NotFoundException(
-              `No bookings found for user`
+              `No Documents found for user`
           )
       }
       const totalDocs = await this.BookingModel.countDocuments({ patientId });

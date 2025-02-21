@@ -243,7 +243,7 @@ export class UsersService {
   async getAllPatients(userId: string) {
     const response = await this.UserModel.findById( userId ).lean();
     console.log(response, "this is the response from get all patients");
-    if(response.patients) {
+    if(response?.patients) {
       return {
         patients : response.patients
       }
