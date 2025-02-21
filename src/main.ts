@@ -18,7 +18,6 @@ async function bootstrap() {
     '/webhook/stripe',
     express.raw({ type: 'application/json' }), (req, res, next) => {
       req.rawBody = req.body;
-      console.log("Reached stripe webhook endpoint", req.rawBody);
       next();
     }
   );

@@ -52,7 +52,7 @@ export class WebhookService {
                     const updateUser = await this.userRepo.updateSubscription(userId, {
                         subscriptionId: subId,
                         //todo-checck again
-                        subscriptionExpiry: new Date(new Date().getTime() + duration * 24 * 60 * 60 * 1000)                      
+                        subscriptionExpiry: new Date(new Date().getTime() + duration * 24 * 60 * 60 * 1000)               
                     })
                     const updateSub = await this.subscriptionRepo.addActiveUsers(subId);
                     break;

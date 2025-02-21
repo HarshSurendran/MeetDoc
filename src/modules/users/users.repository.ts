@@ -133,7 +133,8 @@ export class UsersRepository {
   }
 
   async updateSubscription(userId, subscriptionData) {
-    const user = await this.userModel.updateOne({ _id: userId }, { $set: { isSubscribed: true, subscriptionId: subscriptionData.subscriptionId, subscriptionExpiry: subscriptionData.subscriptionExpiry } });
+    const updateStatus = await this.userModel.updateOne({ _id: userId }, { $set: { isSubscribed: true, subscriptionId: subscriptionData.subscriptionId, subscriptionExpiry: subscriptionData.subscriptionExpiry } });
+    return updateStatus;
   }
 
   async getExpiredSubscriptions(date) {

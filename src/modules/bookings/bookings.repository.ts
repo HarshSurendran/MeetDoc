@@ -21,18 +21,17 @@ export class BookingsRepository {
 
   async getBookings(queryData: {key: string, value: string}, skip: number, limit: number) : Promise<{  appointmentFromDB: IBookedAppointmentDBReturn[], totalDocs: number} | null> {
     try {
-        console.log("Type of  limit and skip ", typeof skip, typeof limit);
         const bookings = await this.BookingModel.aggregate([
           {
             $match: queryData.key === 'doctorId' ? { doctorId: queryData.value } : { patientId: queryData.value }
           },
           {
-              $addFields: {
-                doctorIdObject: { $toObjectId: '$doctorId' }, 
-                  patientIdObject: { $toObjectId: '$patientId' } ,
-                slotsIdObject: { $toObjectId: '$slotId' }
-              }
-            },
+            $addFields: {
+              doctorIdObject: { $toObjectId: '$doctorId' }, 
+                patientIdObject: { $toObjectId: '$patientId' } ,
+              slotsIdObject: { $toObjectId: '$slotId' }
+            }
+          },
           {
             $lookup: {
               from: 'users',
@@ -102,6 +101,8 @@ export class BookingsRepository {
       }
 
       const totalDocs = await this.BookingModel.countDocuments(queryData.key === 'doctorId' ? { doctorId: queryData.value } : { patientId: queryData.value });
+
+      console.log("Appointments from DB :", bookings);
         
       return {appointmentFromDB: bookings, totalDocs}; 
       } catch (error) {

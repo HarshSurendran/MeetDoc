@@ -159,7 +159,7 @@ export class DoctorsService {
 
   async getUpcomingAppointments(doctorId: string, page: number, limit: number) {
     const skip = (page - 1) * limit;
-    const { appointmentFromDB, totalDocs } = (await this.bookingsRepo.getBookings({ key: "doctorId", value: doctorId }, skip, limit));
+    const { appointmentFromDB, totalDocs } = await this.bookingsRepo.getBookings({ key: "doctorId", value: doctorId }, skip, limit);
     
     const appointments: IBookedAppointmentType[] = [];
     
@@ -176,14 +176,15 @@ export class DoctorsService {
           patientName: appointment.patientName,
           doctorName: appointment.doctorName,
           appointmentForName: appointment.appointmentForName,
-          bookingTime: moment(appointment.bookingTime).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mm A'),
-          date: moment(appointment.date).tz('Asia/Kolkata').format('DD-MM-YYYY'),
-          time: moment(appointment.time).tz('Asia/Kolkata').format('hh:mm A'),
+          bookingTime : moment(appointment.bookingTime).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mm A'),
+         date : moment(appointment.date).tz('Asia/Kolkata').format('DD-MM-YYYY'),
+         time : moment(appointment.time).tz('Asia/Kolkata').format('hh:mm A'),
         })
       }
     })
-    console.log(appointments, "appointments")
+    console.log("appointments from doctor", appointments);
     const docs = appointments.length;
+
     return {
       appointments,
       totalDocs : docs
