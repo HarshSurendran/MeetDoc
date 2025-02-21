@@ -186,7 +186,10 @@ export class UsersService {
     const {appointmentFromDB, totalDocs } = await this.BookingsRepo.getBookings({ key: 'patientId', value: userId }, skip, limit);
 
     if(appointmentFromDB.length == 0) {
-      return null;
+      return {
+        appointments: [],
+        totalDocs: 0
+      };
     }
    
     const appointments: IBookedAppointmentType[] = [];    

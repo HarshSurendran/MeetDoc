@@ -19,7 +19,7 @@ export class BookingsRepository {
       }
   }
 
-  async getBookings(queryData: {key: string, value: string}, skip: number, limit: number) : Promise<{  appointmentFromDB: IBookedAppointmentDBReturn[], totalDocs: number} | null> {
+  async getBookings(queryData: { key: string, value: string }, skip: number, limit: number): Promise<{ appointmentFromDB: IBookedAppointmentDBReturn[], totalDocs: number } | null> {
     try {
         const bookings = await this.BookingModel.aggregate([
           {
@@ -97,16 +97,15 @@ export class BookingsRepository {
       ]);
           
       if (!bookings.length) {
-          throw new NotFoundException(`No bookings found for - ${queryData.value}`)
+          throw new NotFoundException(`No bookings found.`)
       }
 
       const totalDocs = await this.BookingModel.countDocuments(queryData.key === 'doctorId' ? { doctorId: queryData.value } : { patientId: queryData.value });
-
-      console.log("Appointments from DB :", bookings);
         
       return {appointmentFromDB: bookings, totalDocs}; 
       } catch (error) {
           console.log(`Unexpected error while fetching booking of : ${queryData.value}`, error);
+          if(error instanceof NotFoundException) throw error;
           throw new InternalServerErrorException("Could not fetch bookings. Please try again later.");        
       }
   } 
