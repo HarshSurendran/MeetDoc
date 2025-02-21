@@ -116,15 +116,15 @@ export class BookingsRepository {
       if (!payments.length) {
           console.log("No bookings for user", patientId);
           throw new NotFoundException(
-              `No bookings found for user - ${patientId}`
+              `No bookings found for user`
           )
       }
       const totalDocs = await this.BookingModel.countDocuments({ patientId });
       return {payments, totalDocs};            
     } catch (error) {
-        console.log(`Unexpected error while fetching booking of doctor: ${patientId}`, error);
-        throw new InternalServerErrorException("Could not fetch bookings. Please try again later.");
-    }
+      if(error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException("Could not fetch bookings. Please try again later.");
+  }
   } 
   
   async getUpcomingBookingsForPatient(patientId: string): Promise<BookingsDocument[] | null> {
