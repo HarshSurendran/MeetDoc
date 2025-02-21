@@ -208,8 +208,8 @@ export class DoctorsService {
         doctorName: appointment.doctorName,
         appointmentForName: appointment.appointmentForName,
         bookingTime: moment(appointment.bookingTime).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mm A'),
-        date: moment(appointment.date).tz('Asia/Kolkata').format('DD-MM-YYYY'),
-        time: moment(appointment.time).tz('Asia/Kolkata').format('hh:mm A'),
+        date: moment.utc(appointment.date).tz('Asia/Kolkata').format('DD-MM-YYYY'),
+        time: moment.utc(appointment.time).tz('Asia/Kolkata').format('hh:mm A'),
       })
     })
     return {
