@@ -15,7 +15,7 @@ export interface IBookedAppointmentType {
     patientId: string,
     doctorName: string,
     bookingTime: string,
-    date: string,
+    date: Date,
     time: string,
     appointmentFor?: string,
     appointmentForName?: string

@@ -205,7 +205,7 @@ export class UsersService {
         appointmentForName: appointment.appointmentForName,
         doctorName: appointment.doctorName,
          bookingTime : moment(appointment.bookingTime).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mm A'),
-         date : moment(appointment.date).tz('Asia/Kolkata').format('DD-MM-YYYY'),
+         date : appointment.date,
          time : moment(appointment.time).tz('Asia/Kolkata').format('hh:mm A'),
       })
     });
