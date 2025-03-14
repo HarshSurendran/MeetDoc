@@ -18,7 +18,7 @@ export class UsersRepository {
         });
     }
 
-    async getMonthlyData() {
+    async getMonthlyData() : Promise<any> {
         // const results = await this.userModel.aggregate([
         //     {
         //       $facet: {
@@ -95,25 +95,25 @@ export class UsersRepository {
         //     },
         // ]);
         
-        const results = await this.userModel.aggregate([
-          {
-            $group: {
-              _id: {
-                year: { $year: "$createdAt" }, // Extract year
-                month: { $month: "$createdAt" } // Extract month
-              },
-              count: { $sum: 1 } // Count the documents
-            }
-          },
-          {
-            $sort: { "_id.year": 1, "_id.month": 1 } // Sort by year and month
+      const results = await this.userModel.aggregate([
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" }, // Extract year
+              month: { $month: "$createdAt" } // Extract month
+            },
+            count: { $sum: 1 }
           }
-        ])
+        },
+        {
+          $sort: { "_id.year": 1, "_id.month": 1 }
+        }
+      ]);
         
-        return results;
-  }
+      return results;
+    }
 
-  async getTotalDocuments() {
+  async getTotalDocuments() : Promise<number> {
     return await this.userModel.countDocuments();
   }
 
@@ -125,7 +125,7 @@ export class UsersRepository {
     return user;
   }
 
-  async convertDate() {
+  async convertDate() : Promise<any> {
     return await this.userModel.updateMany(
       {},
       [{ $set: { createdAt: { $toDate: "$createdAt" } } }]

@@ -312,7 +312,7 @@ export class BookingsRepository {
     )
   }
 
-  async getTotalDocuments() {
+  async getTotalDocuments(): Promise<number> {
     return await this.BookingModel.countDocuments();
   }
 

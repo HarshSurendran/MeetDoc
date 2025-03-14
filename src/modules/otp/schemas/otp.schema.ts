@@ -3,6 +3,12 @@ import { Document } from 'mongoose';
 
 export type OtpDocument = Otp & Document;
 
+export enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
+  DOCTOR = 'doctor',
+}
+
 @Schema({ timestamps: true })
 export class Otp {
   @Prop({ required: true })
@@ -12,7 +18,7 @@ export class Otp {
   otp: string;
   
   @Prop({ required: true })
-  role: string;
+  role: UserRole;
   
 }
 

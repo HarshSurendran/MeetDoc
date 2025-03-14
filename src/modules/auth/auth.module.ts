@@ -8,7 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { MailModule } from '../mail/mail.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Otp, OtpSchema } from '../users/schemas/otp.schema';
+import { Otp, OtpSchema } from '../otp/schemas/otp.schema';
 import { DoctorsModule } from '../doctors/doctors.module';
 import { AdminModule } from '../admin/admin.module';
 import { JwtAccessStrategy } from './jwt stratergy/jwt.access.strategy';
@@ -19,9 +19,11 @@ import { GoogleStrategy } from './google.stratergy';
 import { S3Module } from '../s3/s3.module';
 import { JwtDoctorAccessStrategy } from './jwt stratergy/jwt.doctorAccess.stratergy';
 import { JwtDoctorRefreshStrategy } from './jwt stratergy/jwt.doctorRefresh.stratergy';
+import { OtpModule } from '../otp/otp.module';
 
 @Module({
   imports: [
+    OtpModule,
     S3Module,
     UsersModule,
     AdminModule,
@@ -37,9 +39,18 @@ import { JwtDoctorRefreshStrategy } from './jwt stratergy/jwt.doctorRefresh.stra
     //   }),
     //   inject: [ConfigService],
     // }),
-    JwtModule.register({})
+    JwtModule.register({}),
   ],
-  providers: [AuthService, JwtAccessStrategy, JwtRefreshStrategy, JwtAdminAccessStrategy, JwtAdminRefreshStrategy, JwtDoctorAccessStrategy, JwtDoctorRefreshStrategy, GoogleStrategy ],
+  providers: [
+    AuthService,
+    JwtAccessStrategy,
+    JwtRefreshStrategy,
+    JwtAdminAccessStrategy,
+    JwtAdminRefreshStrategy,
+    JwtDoctorAccessStrategy,
+    JwtDoctorRefreshStrategy,
+    GoogleStrategy,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

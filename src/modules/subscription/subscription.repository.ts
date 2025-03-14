@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Subscription } from "rxjs";
-import { SubscriptionDocument } from "./subscription.entity";
+import { Subscription, SubscriptionDocument } from "./subscription.entity";
 import { Model } from "mongoose";
 import { CreateSubscriptionDto } from "./dto/create-subscription.dto";
 
@@ -12,20 +11,20 @@ export class SubscriptionRepository {
     ) { }
 
 
-    async createSubscription(subscription: CreateSubscriptionDto) {
+    async createSubscription(subscription: CreateSubscriptionDto) : Promise<Subscription> {
         const newSubscription = new this.SubscriptionModel(subscription);
         return await newSubscription.save();
     }
 
-    async deleteSubscription(id: string) {
+    async deleteSubscription(id: string) : Promise<{ acknowledged: boolean, matchedCount: number, modifiedCount: number }> {
         return await this.SubscriptionModel.updateOne({ _id: id }, { isDisabled: true });
     }
 
-    async getSubscriptions() {
+    async getSubscriptions() : Promise<Subscription[]> {
         return await this.SubscriptionModel.find({ isDisabled: false });
     }
 
-    async getDisabledSubscriptions() {
+    async getDisabledSubscriptions() : Promise<Subscription[]> {
         return await this.SubscriptionModel.find({ isDisabled: true });
     }
 

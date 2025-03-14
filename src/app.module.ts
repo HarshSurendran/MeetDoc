@@ -21,6 +21,7 @@ import { RedisModule } from './modules/redis/redis.module';
 import { ReviewModule } from './modules/review/review.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
+import { OtpModule } from './modules/otp/otp.module';
 
 
 @Module({
@@ -44,7 +45,8 @@ import { SubscriptionModule } from './modules/subscription/subscription.module';
     RedisModule,
     ReviewModule,
     NotificationModule,
-    SubscriptionModule
+    SubscriptionModule,
+    OtpModule
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],

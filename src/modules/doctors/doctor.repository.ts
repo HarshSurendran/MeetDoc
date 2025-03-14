@@ -56,7 +56,7 @@ export class DoctorRepository {
         )
     }
 
-    async getTotalDocuments() {
+    async getTotalDocuments() : Promise<number> {
         return await this.DoctorModel.countDocuments();
     }
 

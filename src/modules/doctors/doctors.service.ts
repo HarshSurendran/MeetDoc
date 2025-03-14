@@ -73,7 +73,7 @@ export class DoctorsService {
     return { requests, totalDocs };
   }
 
-  async getVerifiedDoctors(skip: number, limit: number) {
+  async getVerifiedDoctors(skip: number, limit: number) : Promise<{doctors: DocVerification[], totalDocs: number}> {
     const doctors = await this.DoctorVerificationModel.find({ isVerified: true }).skip(skip).limit(limit).exec();
     const totalDocs = await this.DoctorVerificationModel.countDocuments({ isVerified: true });
     return { doctors, totalDocs };
