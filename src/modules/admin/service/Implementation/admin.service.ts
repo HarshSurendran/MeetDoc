@@ -12,7 +12,7 @@ import { DoctorsService } from '../../../doctors/doctors.service';
 import { RedisService } from '../../../redis/redis.service';
 import { UsersRepository } from '../../../users/users.repository';
 import { DoctorRepository } from '../../../doctors/doctor.repository';
-import { BookingsRepository } from '../../../bookings/bookings.repository';
+import { BookingsRepository } from '../../../bookings/repository/Implementation/bookings.repository';
 import { SubscriptionRepository } from '../../../subscription/subscription.repository';
 import { CreateSubscriptionDto } from '../../../subscription/dto/create-subscription.dto';
 import { AdminRepository } from '../../repository/Implementation/admin.repository';
@@ -225,9 +225,7 @@ export class AdminService implements IAdminService {
     };
   }
 
-  async deleteSubscription(
-    id: string,
-  ): Promise<{
+  async deleteSubscription(id: string): Promise<{
     acknowledged: boolean;
     matchedCount: number;
     modifiedCount: number;

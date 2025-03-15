@@ -4,14 +4,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/users.schema';
 import { CreateUserDto } from './interface/usersdto';
 import { S3Service } from '../s3/s3.service';
 import { DoctorRepository } from '../doctors/doctor.repository';
 import { SlotsRepository } from '../slots/slots.repository';
 import { UpdateSlotDto } from '../slots/dto/update-slot.dto';
-import { BookingsRepository } from '../bookings/bookings.repository';
+import { BookingsRepository } from '../bookings/repository/Implementation/bookings.repository';
 import { IBookedAppointmentType } from '../bookings/dto/doctor-booking.dto';
 import * as moment from 'moment-timezone';
 import { PrescriptionRepository } from '../prescription/repository/Implementation/prescription.repository';
@@ -256,7 +256,7 @@ export class UsersService {
   }
 
   async getAppointment(appointmentId: string) {
-    const appointment = await this.BookingsRepo.getBookingById(appointmentId);
+    const appointment = await this.BookingsRepo.getBookingById(new mongoose.Types.ObjectId(appointmentId));
     return {
       appointment,
     };

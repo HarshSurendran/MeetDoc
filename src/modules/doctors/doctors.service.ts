@@ -16,13 +16,14 @@ import { DocVerificationDto } from './interface/docverificationdto';
 import { S3Service } from '../s3/s3.service';
 import { SlotsRepository } from '../slots/slots.repository';
 import { GenerateSlotDto } from '../slots/dto/create-slot.dto';
-import { BookingsRepository } from '../bookings/bookings.repository';
+import { BookingsRepository } from '../bookings/repository/Implementation/bookings.repository';
 import { IBookedAppointmentType } from '../bookings/dto/doctor-booking.dto';
 import * as moment from 'moment-timezone';
 import { PrescriptionRepository } from '../prescription/repository/Implementation/prescription.repository';
 import { CreatePrescriptionDto } from '../prescription/dto/create-prescription.dto';
 import { UsersRepository } from '../users/users.repository';
 import { UpdatePrescriptionDto } from '../prescription/dto/update-prescription.dto';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class DoctorsService {
@@ -304,7 +305,7 @@ export class DoctorsService {
   }
 
   async getAppointmentById(appointmentId: string) {
-    const appointment = await this.bookingsRepo.getBookingById(appointmentId);
+    const appointment = await this.bookingsRepo.getBookingById(new mongoose.Types.ObjectId(appointmentId));
     return {
       appointment,
     };
