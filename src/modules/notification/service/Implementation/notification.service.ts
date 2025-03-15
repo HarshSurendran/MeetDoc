@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { BookingsRepository } from '../bookings/repository/Implementation/bookings.repository';
-import { NotificationGateway } from './notification.gateway';
-import { NotificationRepository } from './notification.repository';
-import mongoose, { Mongoose, ObjectId } from 'mongoose';
-import { Schema } from '@nestjs/mongoose';
+import { BookingsRepository } from '../../../bookings/repository/Implementation/bookings.repository';
+import { NotificationGateway } from '../../notification.gateway';
+import { NotificationRepository } from '../../repository/Implementation/notification.repository';
+import { NotificationDocument } from '../../notification.entity';
+import { INotificationService } from '../Interface/INotification.service';
 
 @Injectable()
-export class NotificationService {
+export class NotificationService implements INotificationService {
   constructor(
     @Inject() private bookingsRepo: BookingsRepository,
     @Inject() private notificationsGateway: NotificationGateway,
@@ -49,20 +49,32 @@ export class NotificationService {
     await this.notificationRepo.deleteExpiredNotification();
   }
 
-  async getNotificationsForUser(userId: string) {
+  async getNotificationsForUser(
+    userId: string,
+  ): Promise<NotificationDocument[]> {
     return await this.notificationRepo.getNotficationsForUser(userId);
   }
 
-  async markAsRead(notificationId: string) {
+  async markAsRead(notificationId: string): Promise<{
+    acknowledged: boolean;
+    matchedCount: number;
+    modifiedCount: number;
+  }> {
     return await this.notificationRepo.markNotificationAsRead(notificationId);
   }
 
-  async markAllAsRead(userId) {
+  async markAllAsRead(userId): Promise<{
+    acknowledged: boolean;
+    matchedCount: number;
+    modifiedCount: number;
+  }> {
     return await this.notificationRepo.markAllAsRead(userId);
   }
 
-  async deleteAllNotification() {
-    console.log('delete all notification');
+  async deleteAllNotification(): Promise<{
+    acknowledged: boolean;
+    deletedCount: number;
+  }> {
     return await this.notificationRepo.deleteAllNotification();
   }
 }

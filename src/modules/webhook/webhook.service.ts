@@ -7,7 +7,7 @@ import { BookingsRepository } from '../bookings/repository/Implementation/bookin
 import { UsersRepository } from '../users/users.repository';
 import { SubscriptionRepository } from '../subscription/subscription.repository';
 import { NotificationGateway } from '../notification/notification.gateway';
-import { NotificationRepository } from '../notification/notification.repository';
+import { NotificationRepository } from '../notification/repository/Implementation/notification.repository';
 
 @Injectable()
 export class WebhookService {
