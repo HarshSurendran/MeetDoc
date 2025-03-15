@@ -12,7 +12,7 @@ export class UsersRepository {
         return await this.userModel.findById(userId);
     }
 
-    async updateUserStatus(userId: string, status: status) {
+    async updateUserStatus(userId: string, status: status) : Promise<UserDocument> {
         return await this.userModel.findByIdAndUpdate(userId, {
             $set: { status, lastSeen: new Date() },
         });

@@ -1,9 +1,10 @@
 import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
-import { ChatService } from './chat.service';
+import { ChatService } from './service/Implementation/chat.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { GetMessagesDto } from './dto/get-message.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { senderType } from './entities/message.entity';
 
 @Controller('chat')
 export class ChatController {
@@ -14,27 +15,31 @@ export class ChatController {
   getDoctorRecentChats(@CurrentUser('doctorId') doctorId: string) {
     return this.chatService.getRecentChats(doctorId);
   }
-  
+
   @Post('message')
-  createMessage(@Body() createMessageDto : {
-    senderId: string;
-    senderType: 'doctor' | 'patient';
-    receiverId: string;
-    content: string;
-  }) {
+  createMessage(
+    @Body()
+    createMessageDto: {
+      senderId: string;
+      senderType: senderType;
+      receiverId: string;
+      content: string;
+    },
+  ) {
     return this.chatService.createMessage(createMessageDto);
   }
 
   @Post('toggleisread')
-  toggleIsRead(@Body() toggleIsReadDto : {
-    senderId: string;
-    receiverId: string;
-  }) {
-    return this.chatService.markMessagesAsRead(toggleIsReadDto.senderId, toggleIsReadDto.receiverId);
+  toggleIsRead(
+    @Body() toggleIsReadDto: { senderId: string; receiverId: string },
+  ) {
+    return this.chatService.markMessagesAsRead(
+      toggleIsReadDto.senderId,
+      toggleIsReadDto.receiverId,
+    );
   }
-  
 
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(AuthGuard('jwt'))
   @Get('patient/recent')
   getPatientRecentChats(@CurrentUser('userId') patientId: string) {
     return this.chatService.getRecentChatsForUsers(patientId);
@@ -46,11 +51,11 @@ export class ChatController {
     @CurrentUser('doctorId') doctorId: string,
     @Param('patientId') patientId: string,
   ) {
-    console.log("This is the doctorId", doctorId)
+    console.log('This is the doctorId', doctorId);
     return this.chatService.getMessages(doctorId, patientId);
   }
 
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(AuthGuard('jwt'))
   @Get('patient/messages/:doctorId')
   getPatientMessages(
     @CurrentUser('userId') patientId: string,
@@ -60,12 +65,18 @@ export class ChatController {
   }
 
   @Get(':userId')
-  getMessages(@CurrentUser() currentUserId: string, @Param() { userId }: GetMessagesDto) {
+  getMessages(
+    @CurrentUser() currentUserId: string,
+    @Param() { userId }: GetMessagesDto,
+  ) {
     return this.chatService.getMessages(currentUserId, userId);
   }
 
   @Post('mark-read/:senderId')
-  markMessagesAsRead(@CurrentUser() userId: string, @Param('senderId') senderId: string) {
+  markMessagesAsRead(
+    @CurrentUser() userId: string,
+    @Param('senderId') senderId: string,
+  ) {
     return this.chatService.markMessagesAsRead(userId, senderId);
   }
 }

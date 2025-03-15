@@ -32,7 +32,6 @@ import { OtpRepository } from '../otp/repository/Implementation/Otp.repository';
 @Injectable()
 export class AuthService {
   constructor(
-    // @InjectModel(Otp.name) private OtpModel: Model<OtpDocument>,
     private OtpRepository: OtpRepository,
     private usersService: UsersService,
     private jwtService: JwtService,
