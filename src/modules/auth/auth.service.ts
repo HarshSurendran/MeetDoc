@@ -14,20 +14,19 @@ import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import { CreateUserDto } from '../users/interface/usersdto';
 import { MailService } from '../mail/mail.service';
-import { InjectModel } from '@nestjs/mongoose';
-import { Otp, OtpDocument, UserRole } from '../otp/schemas/otp.schema';
-import { Model } from 'mongoose';
+import {  UserRole } from '../otp/schemas/otp.schema';
+import mongoose from 'mongoose';
 import {
   CreateDoctorDto,
   DoctorDto,
   UpdateDoctorDto,
 } from '../doctors/interface/doctorsdto';
-import { DoctorsService } from '../doctors/doctors.service';
+import { DoctorsService } from '../doctors/service/Implementation/doctors.service';
 import { AdminService } from '../admin/service/Implementation/admin.service';
 import { OAuth2Client } from 'google-auth-library';
-import { DocVerificationDto } from '../doctors/interface/docverificationdto';
 import { ConfigService } from '@nestjs/config';
 import { OtpRepository } from '../otp/repository/Implementation/Otp.repository';
+import { DocVerificationDocument } from '../doctors/schemas/docdocuments.schema';
 
 @Injectable()
 export class AuthService {
@@ -223,13 +222,11 @@ export class AuthService {
       throw new InternalServerErrorException('Some error while sending mail.');
     }
 
-    const storeOtp = await this.OtpRepository.createOtp(
-      {
-        email: userDto.email,
-        otp,
-        role: UserRole.USER,
-      }
-    )
+    const storeOtp = await this.OtpRepository.createOtp({
+      email: userDto.email,
+      otp,
+      role: UserRole.USER,
+    });
     console.log(storeOtp, 'otp saved');
 
     return {
@@ -293,15 +290,13 @@ export class AuthService {
       throw new InternalServerErrorException('Some error while sending mail.');
     }
 
-    const storeOtp = await this.OtpRepository.createOtp(
-      {
-        email,
-        otp,
-        role
-      }
-    )
+    const storeOtp = await this.OtpRepository.createOtp({
+      email,
+      otp,
+      role,
+    });
 
-    console.log(storeOtp, "this is resend otp");
+    console.log(storeOtp, 'this is resend otp');
 
     return {
       mailSent: true,
@@ -480,13 +475,11 @@ export class AuthService {
       throw new InternalServerErrorException('Some error while sending mail.');
     }
 
-    const storeOtp = await this.OtpRepository.createOtp(
-      {
-        email: doctorDto.email,
-        otp,
-        role: UserRole.DOCTOR,
-      }
-    )
+    const storeOtp = await this.OtpRepository.createOtp({
+      email: doctorDto.email,
+      otp,
+      role: UserRole.DOCTOR,
+    });
 
     console.log('Doctor Otp sent', storeOtp);
 
@@ -497,7 +490,7 @@ export class AuthService {
 
   async doctorVerifyOtp(body: CreateDoctorDto, otp: string, res) {
     const validOtp = await this.OtpRepository.findOne({ email: body.email });
-    
+
     if (!validOtp) {
       throw new BadRequestException('otp expired, Please request new otp.');
     }
@@ -518,7 +511,8 @@ export class AuthService {
       role: UserRole.DOCTOR,
     };
     const doctorObject = doctor.toObject();
-    const { doctorAccessToken, doctorRefreshToken } = this.generateDoctorTokens(payload);
+    const { doctorAccessToken, doctorRefreshToken } =
+      this.generateDoctorTokens(payload);
 
     res.cookie('doctorRefreshToken', doctorRefreshToken, {
       httpOnly: true,
@@ -589,7 +583,7 @@ export class AuthService {
     }
   }
 
-  async createVerificationDoc(data: DocVerificationDto) {
+  async createVerificationDoc(data: DocVerificationDocument) {
     const savedData = await this.doctorService.createDocVerification(data);
     console.log(savedData, 'This is sved data');
     if (!savedData) {
@@ -601,7 +595,7 @@ export class AuthService {
   }
 
   async checkVerification(id: string) {
-    const data = await this.doctorService.getDocVerification(id);
+    const data = await this.doctorService.getDocVerification(new mongoose.Schema.Types.ObjectId(id));
     if (!data) {
       throw new NotFoundException('User is not verified.');
     }

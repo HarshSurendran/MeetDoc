@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { MessageDocument, senderType } from '../../entities/message.entity';
-import { DoctorRepository } from '../../../doctors/doctor.repository';
+import { DoctorRepository } from '../../../doctors/repository/Implementation/doctor.repository';
 import { UsersRepository } from '../../../users/users.repository';
 import { status, UserDocument } from '../../../users/schemas/users.schema';
 import { ChatGateway } from '../../chat.gateway';

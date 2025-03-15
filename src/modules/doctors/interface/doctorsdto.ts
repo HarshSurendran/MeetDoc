@@ -90,6 +90,9 @@ export class UpdateDoctorDto {
   isVerified: Boolean;
 
   @IsOptional()
+  photo: string;
+  
+  @IsOptional()
   @IsString()
   refreshToken: string;
 }
@@ -156,3 +159,11 @@ export class DoctorDto {
   @IsString()
   refreshToken: string;
 }
+
+export type DoctorCountByMonth = {
+  _id: {
+    year: number;
+    month: number;
+  };
+  count: number;
+};

@@ -4,68 +4,74 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Doctor, DoctorDocument } from './schemas/doctors.schema';
-import { Model } from 'mongoose';
-import { CreateDoctorDto, UpdateDoctorDto } from './interface/doctorsdto';
+import { Doctor, DoctorDocument } from '../../schemas/doctors.schema';
+import { Model, ObjectId, Types } from 'mongoose';
+import { CreateDoctorDto, UpdateDoctorDto } from '../../interface/doctorsdto';
 import {
   DocVerification,
   DocVerificationDocument,
-} from './schemas/docdocuments.schema';
-import { DocVerificationDto } from './interface/docverificationdto';
-import { S3Service } from '../s3/s3.service';
-import { SlotsRepository } from '../slots/slots.repository';
-import { GenerateSlotDto } from '../slots/dto/create-slot.dto';
-import { BookingsRepository } from '../bookings/repository/Implementation/bookings.repository';
-import { IBookedAppointmentType } from '../bookings/dto/doctor-booking.dto';
+} from '../../schemas/docdocuments.schema';
+import { S3Service } from '../../../s3/s3.service';
+import { SlotsRepository } from '../../../slots/slots.repository';
+import { GenerateSlotDto } from '../../../slots/dto/create-slot.dto';
+import { BookingsRepository } from '../../../bookings/repository/Implementation/bookings.repository';
+import { IBookedAppointmentType } from '../../../bookings/dto/doctor-booking.dto';
 import * as moment from 'moment-timezone';
-import { PrescriptionRepository } from '../prescription/repository/Implementation/prescription.repository';
-import { CreatePrescriptionDto } from '../prescription/dto/create-prescription.dto';
-import { UsersRepository } from '../users/users.repository';
-import { UpdatePrescriptionDto } from '../prescription/dto/update-prescription.dto';
+import { PrescriptionRepository } from '../../../prescription/repository/Implementation/prescription.repository';
+import { CreatePrescriptionDto } from '../../../prescription/dto/create-prescription.dto';
+import { UpdatePrescriptionDto } from '../../../prescription/dto/update-prescription.dto';
 import mongoose from 'mongoose';
+import { DoctorRepository } from '../../repository/Implementation/doctor.repository';
+import { DocVerificationRepository } from '../../repository/Implementation/doctorVerification.repository';
+import { IDoctorService } from '../Interface/IDoctor.service';
 
 @Injectable()
-export class DoctorsService {
+export class DoctorsService implements IDoctorService {
   constructor(
-    @InjectModel(Doctor.name) private DoctorModel: Model<DoctorDocument>,
-    @InjectModel(DocVerification.name)
-    private DoctorVerificationModel: Model<DocVerificationDocument>,
     private s3Service: S3Service,
     private slotsRepo: SlotsRepository,
     private bookingsRepo: BookingsRepository,
     private prescriptionRepo: PrescriptionRepository,
-    private userRepo: UsersRepository,
+    private doctorRepo: DoctorRepository,
+    private doctorVerificationRepo: DocVerificationRepository,
   ) {}
 
-  async create(body: CreateDoctorDto) {
-    const createdDoctor = new this.DoctorModel(body);
-    return await createdDoctor.save();
+  async create(body: CreateDoctorDto): Promise<DoctorDocument> {
+    return await this.doctorRepo.addDoctor(body);
   }
 
   async findAll(): Promise<Doctor[]> {
-    return this.DoctorModel.find().exec();
+    return await this.doctorRepo.find();
   }
 
   async getUser(email: string): Promise<DoctorDocument | null> {
-    return await this.DoctorModel.findOne({ email });
+    return await this.doctorRepo.findOne({ email });
   }
 
-  async getDoctorById(doctorId: string): Promise<Partial<DoctorDocument>> {
-    return (await this.DoctorModel.findOne({
-      _id: doctorId,
-    })) as Partial<DoctorDocument>;
+  async getDoctorById(doctorId: string): Promise<DoctorDocument> {
+    return await this.doctorRepo.findOne({ _id: doctorId });
   }
 
-  async updateDoctor(email: string, data: Partial<UpdateDoctorDto>) {
-    return await this.DoctorModel.updateOne({ email }, { $set: data });
+  async updateDoctor(
+    email: string,
+    data: Partial<UpdateDoctorDto>,
+  ): Promise<{
+    acknowledged: boolean;
+    matchedCount: number;
+    modifiedCount: number;
+  }> {
+    return await this.doctorRepo.updateDoctorByEmail(email, data);
   }
 
-  async updateDoctorById(doctorId: string, data: Partial<UpdateDoctorDto>) {
-    const updateStat = await this.DoctorModel.updateOne(
-      { _id: doctorId },
-      { $set: data },
-    );
+  async updateDoctorById(
+    doctorId: string,
+    data: Partial<UpdateDoctorDto>,
+  ): Promise<{
+    acknowledged: boolean;
+    matchedCount: number;
+    modifiedCount: number;
+  }> {
+    const updateStat = await this.doctorRepo.updateById(doctorId, data);
     if (updateStat.matchedCount == 0) {
       throw new NotFoundException('Doctor Id is invalid.');
     }
@@ -73,29 +79,36 @@ export class DoctorsService {
   }
 
   async createDocVerification(
-    body: DocVerificationDto,
+    body: DocVerificationDocument,
   ): Promise<DocVerification> {
-    const createdVerification = new this.DoctorVerificationModel(body);
-    return await createdVerification.save();
+    return await this.doctorVerificationRepo.create(body);
   }
 
-  async getDocVerification(doctorId: string): Promise<DocVerification> {
-    return await this.DoctorVerificationModel.findOne({ doctorId });
+  async getDocVerification(doctorId: ObjectId): Promise<DocVerification> {
+    return await this.doctorVerificationRepo.findById(doctorId);
+    // return await this.DoctorVerificationModel.findOne({ doctorId });
   }
 
   async getVerficationsRequests(
     skip: number,
     limit: number,
   ): Promise<{ requests: DocVerification[]; totalDocs: number }> {
-    const requests = await this.DoctorVerificationModel.find({
-      isVerified: false,
-    })
-      .skip(skip)
-      .limit(limit)
-      .exec();
-    const totalDocs = await this.DoctorVerificationModel.countDocuments({
-      isVerified: false,
-    });
+    const requests = await this.doctorVerificationRepo.getVerificationRequests(
+      false,
+      skip,
+      limit,
+    );
+    // const requests = await this.DoctorVerificationModel.find({
+    //   isVerified: false,
+    // })
+    //   .skip(skip)
+    //   .limit(limit)
+    //   .exec();
+    // const totalDocs = await this.DoctorVerificationModel.countDocuments({
+    //   isVerified: false,
+    // });
+    const totalDocs =
+      await this.doctorVerificationRepo.verificationReqCount(false);
     return { requests, totalDocs };
   }
 
@@ -103,28 +116,44 @@ export class DoctorsService {
     skip: number,
     limit: number,
   ): Promise<{ doctors: DocVerification[]; totalDocs: number }> {
-    const doctors = await this.DoctorVerificationModel.find({
-      isVerified: true,
-    })
-      .skip(skip)
-      .limit(limit)
-      .exec();
-    const totalDocs = await this.DoctorVerificationModel.countDocuments({
-      isVerified: true,
-    });
+    const doctors = await this.doctorVerificationRepo.getVerificationRequests(
+      true,
+      skip,
+      limit,
+    );
+    // const doctors = await this.DoctorVerificationModel.find({
+    //   isVerified: true,
+    // })
+    //   .skip(skip)
+    //   .limit(limit)
+    //   .exec();
+    // const totalDocs = await this.DoctorVerificationModel.countDocuments({
+    //   isVerified: true,
+    // });
+    const totalDocs =
+      await this.doctorVerificationRepo.verificationReqCount(true);
     return { doctors, totalDocs };
   }
 
-  async updateDoctorDocuments(doctorId: string, data: {}) {
-    return await this.DoctorVerificationModel.updateOne(
-      { doctorId },
-      { $set: data },
-    );
+  async updateDoctorDocuments(
+    doctorId: string,
+    data: {},
+  ): Promise<{
+    acknowledged: boolean;
+    matchedCount: number;
+    modifiedCount: number;
+  }> {
+    return await this.doctorVerificationRepo.updateOne(doctorId, data);
+    // return await this.DoctorVerificationModel.updateOne(
+    //   { doctorId },
+    //   { $set: data },
+    // );
   }
 
   async changeProfilePhoto(doctorId: string, photo: Express.Multer.File) {
     try {
-      const doctor = await this.DoctorModel.findById(doctorId);
+      const doctor = await this.doctorRepo.getSingleDoctor(doctorId);
+      // const doctor = await this.DoctorModel.findById(doctorId);
       if (!doctor) {
         throw new NotFoundException('Doctor Id is invalid.');
       }
@@ -136,10 +165,16 @@ export class DoctorsService {
         if (doctor.photo) {
           await this.s3Service.deleteFile(doctor.photo);
         }
-        await this.DoctorModel.updateOne(
-          { _id: doctorId },
-          { $set: { photo: response.key } },
-        );
+        const updateStat = await this.doctorRepo.updateById(doctorId, {
+          photo: response.key,
+        });
+        if (updateStat.matchedCount == 0) {
+          throw new NotFoundException('Doctor Id is invalid.');
+        }
+        // await this.DoctorModel.updateOne(
+        //   { _id: doctorId },
+        //   { $set: { photo: response.key } },
+        // );
         return {
           key: response.key,
         };
@@ -305,7 +340,9 @@ export class DoctorsService {
   }
 
   async getAppointmentById(appointmentId: string) {
-    const appointment = await this.bookingsRepo.getBookingById(new mongoose.Types.ObjectId(appointmentId));
+    const appointment = await this.bookingsRepo.getBookingById(
+      new mongoose.Types.ObjectId(appointmentId),
+    );
     return {
       appointment,
     };
@@ -373,11 +410,12 @@ export class DoctorsService {
     };
   }
 
-  async getDoctorByResetToken(resetToken: string) {
-    const doctor = await this.DoctorModel.findOne({
-      resetToken,
-      resetTokenExpiry: { $gt: Date.now() },
-    });
+  async getDoctorByResetToken(resetToken: string): Promise<DoctorDocument> {
+    const doctor = await this.doctorRepo.getDoctorByResetToken(resetToken);
+    // const doctor = await this.DoctorModel.findOne({
+    //   resetToken,
+    //   resetTokenExpiry: { $gt: Date.now() },
+    // });
     if (!doctor) {
       throw new NotFoundException('Doctor not found. Invalid or Expired Token');
     }
