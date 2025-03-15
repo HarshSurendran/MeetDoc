@@ -13,8 +13,8 @@ import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import { CreateUserDto } from '../users/interface/usersdto';
-import { MailService } from '../mail/mail.service';
-import {  UserRole } from '../otp/schemas/otp.schema';
+import { MailService } from '../mail/service/Implementation/mail.service';
+import { UserRole } from '../otp/schemas/otp.schema';
 import mongoose from 'mongoose';
 import {
   CreateDoctorDto,
@@ -595,7 +595,9 @@ export class AuthService {
   }
 
   async checkVerification(id: string) {
-    const data = await this.doctorService.getDocVerification(new mongoose.Schema.Types.ObjectId(id));
+    const data = await this.doctorService.getDocVerification(
+      new mongoose.Schema.Types.ObjectId(id),
+    );
     if (!data) {
       throw new NotFoundException('User is not verified.');
     }
