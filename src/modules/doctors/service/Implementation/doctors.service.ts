@@ -11,7 +11,7 @@ import {
   DocVerification,
   DocVerificationDocument,
 } from '../../schemas/docdocuments.schema';
-import { S3Service } from '../../../s3/s3.service';
+import { S3Service } from '../../../s3/service/Implementation/s3.service';
 import { SlotsRepository } from '../../../slots/slots.repository';
 import { GenerateSlotDto } from '../../../slots/dto/create-slot.dto';
 import { BookingsRepository } from '../../../bookings/repository/Implementation/bookings.repository';

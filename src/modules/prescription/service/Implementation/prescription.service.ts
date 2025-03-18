@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as PDFDocument from 'pdfkit';
-import { S3Service } from '../../../s3/s3.service';
+import { S3Service } from '../../../s3/service/Implementation/s3.service';
 import { IPrescriptionService } from '../Interface/IPrescription.service';
 
 @Injectable()

@@ -7,7 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/users.schema';
 import { CreateUserDto } from './interface/usersdto';
-import { S3Service } from '../s3/s3.service';
+import { S3Service } from '../s3/service/Implementation/s3.service';
 import { DoctorRepository } from '../doctors/repository/Implementation/doctor.repository';
 import { SlotsRepository } from '../slots/slots.repository';
 import { UpdateSlotDto } from '../slots/dto/update-slot.dto';
