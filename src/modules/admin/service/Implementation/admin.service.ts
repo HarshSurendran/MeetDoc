@@ -13,7 +13,7 @@ import { RedisService } from '../../../redis/service/Implementation/redis.servic
 import { UsersRepository } from '../../../users/users.repository';
 import { DoctorRepository } from '../../../doctors/repository/Implementation/doctor.repository';
 import { BookingsRepository } from '../../../bookings/repository/Implementation/bookings.repository';
-import { SubscriptionRepository } from '../../../subscription/subscription.repository';
+import { SubscriptionRepository } from '../../../subscription/repository/Implementation/subscription.repository';
 import { CreateSubscriptionDto } from '../../../subscription/dto/create-subscription.dto';
 import { AdminRepository } from '../../repository/Implementation/admin.repository';
 import { UserDocument } from '../../../users/schemas/users.schema';

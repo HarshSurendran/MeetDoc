@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { SlotsRepository } from '../slots/repository/Implementation/slots.repository';
 import { UsersRepository } from '../users/users.repository';
-import { SubscriptionRepository } from '../subscription/subscription.repository';
+import { SubscriptionRepository } from '../subscription/repository/Implementation/subscription.repository';
 
 @Injectable()
 export class TasksService {
