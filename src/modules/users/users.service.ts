@@ -9,7 +9,7 @@ import { User, UserDocument } from './schemas/users.schema';
 import { CreateUserDto } from './interface/usersdto';
 import { S3Service } from '../s3/service/Implementation/s3.service';
 import { DoctorRepository } from '../doctors/repository/Implementation/doctor.repository';
-import { SlotsRepository } from '../slots/slots.repository';
+import { SlotsRepository } from '../slots/repository/Implementation/slots.repository';
 import { UpdateSlotDto } from '../slots/dto/update-slot.dto';
 import { BookingsRepository } from '../bookings/repository/Implementation/bookings.repository';
 import { IBookedAppointmentType } from '../bookings/dto/doctor-booking.dto';

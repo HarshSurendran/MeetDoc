@@ -12,7 +12,7 @@ import {
   DocVerificationDocument,
 } from '../../schemas/docdocuments.schema';
 import { S3Service } from '../../../s3/service/Implementation/s3.service';
-import { SlotsRepository } from '../../../slots/slots.repository';
+import { SlotsRepository } from '../../../slots/repository/Implementation/slots.repository';
 import { GenerateSlotDto } from '../../../slots/dto/create-slot.dto';
 import { BookingsRepository } from '../../../bookings/repository/Implementation/bookings.repository';
 import { IBookedAppointmentType } from '../../../bookings/dto/doctor-booking.dto';

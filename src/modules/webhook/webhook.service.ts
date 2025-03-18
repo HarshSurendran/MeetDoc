@@ -1,7 +1,7 @@
 import { Injectable, RawBodyRequest } from '@nestjs/common';
 import { Response } from 'express';
 import { PaymentService } from '../payment/service/Implementation/payment.service';
-import { SlotsRepository } from '../slots/slots.repository';
+import { SlotsRepository } from '../slots/repository/Implementation/slots.repository';
 import { SlotStatus } from '../slots/slots.entity';
 import { BookingsRepository } from '../bookings/repository/Implementation/bookings.repository';
 import { UsersRepository } from '../users/users.repository';
