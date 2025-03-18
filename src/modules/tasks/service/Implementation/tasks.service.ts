@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Slot } from '../slots/slots.entity';
-import { Model } from 'mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { SlotsRepository } from '../slots/repository/Implementation/slots.repository';
-import { UsersRepository } from '../users/users.repository';
-import { SubscriptionRepository } from '../subscription/repository/Implementation/subscription.repository';
+import { SlotsRepository } from '../../../slots/repository/Implementation/slots.repository';
+import { UsersRepository } from '../../../users/users.repository';
+import { SubscriptionRepository } from '../../../subscription/repository/Implementation/subscription.repository';
+import { ITasksService } from '../Interface/ITasks.service';
 
 @Injectable()
-export class TasksService {
+export class TasksService implements ITasksService {
   constructor(
     private SlotsRepo: SlotsRepository,
     private UserRepo: UsersRepository,
@@ -16,7 +14,7 @@ export class TasksService {
   ) {}
 
   @Cron(CronExpression.EVERY_5_MINUTES)
-  async handleExpiredSlots() {
+  async handleExpiredSlots(): Promise<void> {
     try {
       const result = await this.SlotsRepo.cronJobFunction();
       console.log(`Released ${result.modifiedCount} expired pending slots.`);
@@ -26,7 +24,7 @@ export class TasksService {
   }
 
   @Cron('0 10 * * 1')
-  async deleteSlots3MonthsOlder() {
+  async deleteSlots3MonthsOlder(): Promise<void> {
     try {
       const now = new Date();
       const threeMonthsAgo = new Date();
@@ -39,7 +37,7 @@ export class TasksService {
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
-  async expiredSubscriptions() {
+  async expiredSubscriptions(): Promise<void> {
     try {
       console.log('Checking expired subscription cronjob task');
       const now = new Date();
@@ -50,7 +48,6 @@ export class TasksService {
         await this.SubscriptionRepo.decreaseActiveUsers(user.subscriptionId);
       });
       const result = await this.UserRepo.deleteExpiredSubscriptions(now);
-
       console.log('Deleted expired subscriptions.', result);
     } catch (error) {
       console.error('Error releasing expired slots:', error);
