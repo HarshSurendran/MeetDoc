@@ -2,14 +2,15 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { config } from 'process';
 import { createClient } from 'redis';
+import { IRedisService } from '../Interface/IRedis.service';
 
 @Injectable()
-export class RedisService implements OnModuleInit, OnModuleDestroy {
+export class RedisService
+  implements OnModuleInit, OnModuleDestroy, IRedisService
+{
   private client;
 
-  constructor(
-      private configService: ConfigService
-  ) {
+  constructor(private configService: ConfigService) {
     this.client = createClient({
       username: configService.get<string>('REDIS_USERNAME'),
       password: configService.get<string>('REDIS_PASSWORD'),
@@ -22,12 +23,12 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     this.client.on('error', (err) => console.error('Redis Client Error:', err));
   }
 
-  async onModuleInit() {
+  async onModuleInit(): Promise<void> {
     await this.client.connect();
     console.log('Connected to Redis');
   }
 
-  async onModuleDestroy() {
+  async onModuleDestroy(): Promise<void> {
     await this.client.disconnect();
     console.log('Disconnected from Redis');
   }

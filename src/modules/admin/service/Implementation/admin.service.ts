@@ -9,7 +9,7 @@ import { CreateUserDto } from '../../../users/interface/usersdto';
 import { UsersService } from '../../../users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { DoctorsService } from '../../../doctors/service/Implementation/doctors.service';
-import { RedisService } from '../../../redis/redis.service';
+import { RedisService } from '../../../redis/service/Implementation/redis.service';
 import { UsersRepository } from '../../../users/users.repository';
 import { DoctorRepository } from '../../../doctors/repository/Implementation/doctor.repository';
 import { BookingsRepository } from '../../../bookings/repository/Implementation/bookings.repository';
