@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
+import { IPaymentService } from '../Interface/IPayment.service';
 
 @Injectable()
-export class PaymentService {
+export class PaymentService implements IPaymentService {
     private stripe: Stripe    
     constructor(private configService: ConfigService) {
         this.stripe = new Stripe(configService.get('STRIPE_SKEY'), {
@@ -11,7 +12,7 @@ export class PaymentService {
         });
     }
 
-    async createPaymentIntent(body: { slotId: string, userId: string, doctorId: string , fee: number, reason:string, appointmentFor: string, appointmentForName: string, date: Date }) {        
+    async createPaymentIntent(body: { slotId: string, userId: string, doctorId: string, fee: number, reason: string, appointmentFor: string, appointmentForName: string, date: Date }): Promise<{ clientSecret: string }>{        
         const paymentIntent = await this.stripe.paymentIntents.create({
             amount: body.fee * 100,
             currency: "usd",
@@ -33,14 +34,12 @@ export class PaymentService {
         };
     }
 
-    constructEvent(payload: Buffer, signature:string) {
+    constructEvent(payload: Buffer, signature: string): Stripe.Event {
         const webhookSecret = this.configService.get('STRIPE_WEBHOOK_KEY');
-        console.log("Reached constructEvent");
-       return this.stripe.webhooks.constructEvent(payload, signature, webhookSecret);
-
+        return this.stripe.webhooks.constructEvent(payload, signature, webhookSecret);
     }
 
-    async createSubscriptionPaymentIntent(body: { subId: string, userId: string, fee: number, duration: number, date: Date }) {                
+    async createSubscriptionPaymentIntent(body: { subId: string, userId: string, fee: number, duration: number, date: Date }): Promise<{ clientSecret: string }> {                
         const paymentIntent = await this.stripe.paymentIntents.create({
             amount: body.fee * 100,
             currency: "usd",
@@ -59,5 +58,4 @@ export class PaymentService {
             clientSecret: paymentIntent.client_secret,
         };
     }
-
 }
