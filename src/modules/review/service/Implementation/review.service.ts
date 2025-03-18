@@ -1,16 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateReviewDto } from './dto/create-review.dto';
-import { ReviewRepository } from './review.repository';
-import { DoctorRepository } from '../doctors/repository/Implementation/doctor.repository';
+import { CreateReviewDto } from '../../dto/create-review.dto';
+import { ReviewRepository } from '../../repository/Implementation/review.repository';
+import { DoctorRepository } from '../../../doctors/repository/Implementation/doctor.repository';
+import { Review } from '../../review.entity';
+import { IReviewService } from '../Interface/IReview.service';
 
 @Injectable()
-export class ReviewService {
+export class ReviewService implements IReviewService {
   constructor(
-    @Inject() private reviewRepo: ReviewRepository,
+    private reviewRepo: ReviewRepository,
     private doctorRepo: DoctorRepository,
   ) {}
 
-  async createReview(userId: string, createReviewDto: CreateReviewDto) {
+  async createReview(
+    userId: string,
+    createReviewDto: CreateReviewDto,
+  ): Promise<{ review: Review }> {
     createReviewDto.from = userId;
     const review = await this.reviewRepo.createReview(createReviewDto);
     const doctor = await this.doctorRepo.getSingleDoctor(createReviewDto.for);
@@ -29,20 +34,27 @@ export class ReviewService {
     };
   }
 
-  async getReviews(doctorId: string, page: number, limit: number) {
+  async getReviews(
+    doctorId: string,
+    page: number,
+    limit: number,
+  ): Promise<{ reviews: Review[]; totalDocs: number }> {
     const skip = (page - 1) * limit;
     return await this.reviewRepo.getReviews(doctorId, skip, limit);
   }
 
-  async getSingleReview(reviewId: string) {
+  async getSingleReview(reviewId: string): Promise<Review> {
     return await this.reviewRepo.getReview(reviewId);
   }
 
-  async updateReview(reviewId: string, createReviewDto: CreateReviewDto) {
+  async updateReview(
+    reviewId: string,
+    createReviewDto: CreateReviewDto,
+  ): Promise<Review> {
     return await this.reviewRepo.updateReview(reviewId, createReviewDto);
   }
 
-  async deleteReview(reviewId: string) {
+  async deleteReview(reviewId: string): Promise<Review> {
     return await this.reviewRepo.deleteReview(reviewId);
   }
 }

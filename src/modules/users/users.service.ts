@@ -15,7 +15,7 @@ import { BookingsRepository } from '../bookings/repository/Implementation/bookin
 import { IBookedAppointmentType } from '../bookings/dto/doctor-booking.dto';
 import * as moment from 'moment-timezone';
 import { PrescriptionRepository } from '../prescription/repository/Implementation/prescription.repository';
-import { ReviewRepository } from '../review/review.repository';
+import { ReviewRepository } from '../review/repository/Implementation/review.repository';
 import { CreatePatientDto } from './interface/createPatientdto';
 import { UpdateUserDto } from './interface/updateUserDto';
 
