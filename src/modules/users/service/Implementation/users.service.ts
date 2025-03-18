@@ -3,63 +3,68 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
-import { User, UserDocument } from './schemas/users.schema';
-import { CreateUserDto } from './interface/usersdto';
-import { S3Service } from '../s3/service/Implementation/s3.service';
-import { DoctorRepository } from '../doctors/repository/Implementation/doctor.repository';
-import { SlotsRepository } from '../slots/repository/Implementation/slots.repository';
-import { UpdateSlotDto } from '../slots/dto/update-slot.dto';
-import { BookingsRepository } from '../bookings/repository/Implementation/bookings.repository';
-import { IBookedAppointmentType } from '../bookings/dto/doctor-booking.dto';
+import mongoose from 'mongoose';
+import { User, UserDocument } from '../../schemas/users.schema';
+import { CreateUserDto } from '../../interface/usersdto';
+import { S3Service } from '../../../s3/service/Implementation/s3.service';
+import { DoctorRepository } from '../../../doctors/repository/Implementation/doctor.repository';
+import { SlotsRepository } from '../../../slots/repository/Implementation/slots.repository';
+import { UpdateSlotDto } from '../../../slots/dto/update-slot.dto';
+import { BookingsRepository } from '../../../bookings/repository/Implementation/bookings.repository';
+import { IBookedAppointmentType } from '../../../bookings/dto/doctor-booking.dto';
 import * as moment from 'moment-timezone';
-import { PrescriptionRepository } from '../prescription/repository/Implementation/prescription.repository';
-import { ReviewRepository } from '../review/repository/Implementation/review.repository';
-import { CreatePatientDto } from './interface/createPatientdto';
-import { UpdateUserDto } from './interface/updateUserDto';
+import { PrescriptionRepository } from '../../../prescription/repository/Implementation/prescription.repository';
+import { ReviewRepository } from '../../../review/repository/Implementation/review.repository';
+import { CreatePatientDto } from '../../interface/createPatientdto';
+import { UpdateUserDto } from '../../interface/updateUserDto';
+import { UsersRepository } from '../../repository/Implementation/users.repository';
+import { DoctorDocument } from '../../../doctors/schemas/doctors.schema';
+import { SlotDocument } from '../../../slots/slots.entity';
+import { BookingsDocument } from '../../../bookings/bookings.entity';
+import { Prescription } from '../../../prescription/prescription.entity';
+import { Review } from '../../../review/review.entity';
+import { Patient } from '../../schemas/patient.schema';
+import { IUsersService } from '../Interface/IUsers.service';
 
 @Injectable()
-export class UsersService {
+export class UsersService implements IUsersService {
   constructor(
-    @InjectModel(User.name) private UserModel: Model<UserDocument>,
     private s3Service: S3Service,
     private DoctorRepo: DoctorRepository,
     private SlotsRepo: SlotsRepository,
     private BookingsRepo: BookingsRepository,
     private PrescriptionRepo: PrescriptionRepository,
     private ReviewRepo: ReviewRepository,
+    private userRepository: UsersRepository,
   ) {}
 
   async create(createUserDto: Partial<CreateUserDto>): Promise<UserDocument> {
-    const createdUser = new this.UserModel(createUserDto);
-    return await createdUser.save();
+    return await this.userRepository.createUser(createUserDto);
   }
 
-  async updateUser(id: string, userDetails: UpdateUserDto) {
-    const user = await this.UserModel.find({ _id: id });
+  async updateUser(
+    id: string,
+    userDetails: UpdateUserDto,
+  ): Promise<UserDocument> {
+    const user = await this.userRepository.getUser(id);
     if (!user) {
       throw new NotFoundException('User not found.');
     }
-    const updatedUser = await this.UserModel.updateOne(
-      { _id: id },
-      userDetails,
-    );
+    const updatedUser = await this.userRepository.updateUser(id, userDetails);
     console.log('Response from update user', updatedUser);
     return updatedUser;
   }
 
   async findAll(): Promise<User[]> {
-    return this.UserModel.find().exec();
+    return this.userRepository.find();
   }
 
   async getUser(email: string): Promise<UserDocument | null> {
-    const user = await this.UserModel.findOne({ email });
-    return user;
+    return await this.userRepository.findByEmail(email);
   }
 
   async getUserById(id: string): Promise<Partial<UserDocument> | null> {
-    const user = await this.UserModel.findOne({ _id: id });
+    const user = await this.userRepository.getUser(id);
     if (!user) {
       throw new NotFoundException('User not found. Invalid ID');
     }
@@ -72,10 +77,7 @@ export class UsersService {
   async getUserByResetToken(
     token: string,
   ): Promise<Partial<UserDocument> | null> {
-    const user = await this.UserModel.findOne({
-      resetToken: token,
-      resetTokenExpiry: { $gt: Date.now() },
-    });
+    const user = await this.userRepository.findByToken(token);
     if (!user) {
       throw new NotFoundException('User not found. Invalid Token');
     }
@@ -86,34 +88,31 @@ export class UsersService {
     skip: number,
     limit: number,
   ): Promise<{ users: UserDocument[]; totalUsers: number }> {
-    console.log(skip, limit, 'This is the skip and limit');
-    const users = await this.UserModel.find()
-      .sort({ name: 1 })
-      .skip(skip)
-      .limit(limit);
-    const totalUsers = await this.UserModel.countDocuments();
+    const users = await this.userRepository.getAllUsers(skip, limit);
+    const totalUsers = await this.userRepository.getTotalDocuments();
     return { users, totalUsers };
   }
 
-  async deleteUser(id: string) {
-    return await this.UserModel.deleteOne({ _id: id });
+  async deleteUser(id: string): Promise<UserDocument | null> {
+    return await this.userRepository.delete(
+      new mongoose.Schema.Types.ObjectId(id),
+    );
   }
 
-  async toggleBlock(id: string) {
-    const updatedUser = await this.UserModel.findByIdAndUpdate(
-      id,
-      [{ $set: { isBlocked: { $not: '$isBlocked' } } }],
-      { new: true },
-    );
+  async toggleBlock(id: string): Promise<UserDocument> {
+    const updatedUser = await this.userRepository.toggleBlock(id);
     if (!updatedUser) {
       throw new NotFoundException();
     }
     return updatedUser;
   }
 
-  async updateProfilePhoto(id: string, file: Express.Multer.File) {
+  async updateProfilePhoto(
+    id: string,
+    file: Express.Multer.File,
+  ): Promise<{ key: string }> {
     try {
-      const user = await this.UserModel.findById(id);
+      const user = await this.userRepository.getUser(id);
       if (user) {
         const response = await this.s3Service.uploadSingleFile({
           file,
@@ -123,10 +122,7 @@ export class UsersService {
           if (user.photo) {
             await this.s3Service.deleteFile(user.photo);
           }
-          await this.UserModel.updateOne(
-            { _id: id },
-            { $set: { photo: response.key } },
-          );
+          await this.userRepository.updateUserPic(id, response.key);
         }
         return { key: response.key };
       } else {
@@ -138,40 +134,51 @@ export class UsersService {
     }
   }
 
-  async getAllDoctors(page: number, limit: number) {
+  async getAllDoctors(
+    page: number,
+    limit: number,
+  ): Promise<{ doctors: DoctorDocument[]; totalDocs: number }> {
     const skip = (page - 1) * limit;
     return await this.DoctorRepo.getAllDoctors(skip, limit);
   }
 
-  async getDoctor(id: string) {
+  async getDoctor(id: string): Promise<{ doctor: DoctorDocument }> {
     const doctor = await this.DoctorRepo.getSingleDoctor(id);
     return {
       doctor,
     };
   }
 
-  async getSlots(doctorId: string) {
+  async getSlots(doctorId: string): Promise<{ slots: SlotDocument[] }> {
     const slots = await this.SlotsRepo.getSlotsByDoctorId(doctorId);
     return {
       slots,
     };
   }
 
-  async updateSlots(slotId: string, body: UpdateSlotDto) {
+  async updateSlots(
+    slotId: string,
+    body: UpdateSlotDto,
+  ): Promise<{
+    updateDetails: {
+      acknowledged: boolean;
+      matchedCount: number;
+      modifiedCount: number;
+    };
+  }> {
     const updateDetails = await this.SlotsRepo.updateSlot(slotId, body);
     return {
       updateDetails,
     };
   }
 
-  async getBookingDetails(paymentId: string) {
+  async getBookingDetails(paymentId: string): Promise<{ bookingDetails: any }> {
     let bookingDetails = {
       doctorName: '',
       specialisation: '',
       appointmentDate: new Date(),
       startTime: new Date(),
       endTime: new Date(),
-
       appointmentId: '',
       fee: 0,
     };
@@ -193,7 +200,7 @@ export class UsersService {
     throw new NotFoundException('No appointment found');
   }
 
-  async getDoctorsForLandingPage() {
+  async getDoctorsForLandingPage(): Promise<{ doctors: DoctorDocument[] }> {
     const doctors = await this.DoctorRepo.getTop4VerifiedDoctors();
     if (doctors) {
       return {
@@ -202,7 +209,11 @@ export class UsersService {
     }
   }
 
-  async getUserAppointments(userId, page: number, limit: number) {
+  async getUserAppointments(
+    userId,
+    page: number,
+    limit: number,
+  ): Promise<{ appointments: IBookedAppointmentType[]; totalDocs: number }> {
     const skip = (page - 1) * limit;
     const { appointmentFromDB, totalDocs } =
       await this.BookingsRepo.getBookings(
@@ -247,7 +258,9 @@ export class UsersService {
     };
   }
 
-  async getUpcomingAppointments(userId: string) {
+  async getUpcomingAppointments(
+    userId: string,
+  ): Promise<{ appointments: BookingsDocument[] }> {
     const appointments =
       await this.BookingsRepo.getUpcomingBookingsForPatient(userId);
     return {
@@ -255,7 +268,9 @@ export class UsersService {
     };
   }
 
-  async getAppointment(appointmentId: string) {
+  async getAppointment(
+    appointmentId: string,
+  ): Promise<{ appointment: BookingsDocument }> {
     const appointment = await this.BookingsRepo.getBookingById(
       new mongoose.Types.ObjectId(appointmentId),
     );
@@ -264,7 +279,11 @@ export class UsersService {
     };
   }
 
-  async getPrescriptions(userId: string, page: number, limit: number) {
+  async getPrescriptions(
+    userId: string,
+    page: number,
+    limit: number,
+  ): Promise<{ prescriptions: Prescription[]; totalDocs: number }> {
     const skip = (page - 1) * limit;
     return await this.PrescriptionRepo.getPrescriptionsByPatientId(
       userId,
@@ -273,13 +292,17 @@ export class UsersService {
     );
   }
 
-  async getYourReviews(userId: string, page: number, limit: number) {
+  async getYourReviews(
+    userId: string,
+    page: number,
+    limit: number,
+  ): Promise<{ reviews: Review[]; totalDocs: number }> {
     const skip = (page - 1) * limit;
     return await this.ReviewRepo.getReviewsByUserId(userId, skip, limit);
   }
 
-  async getAllPatients(userId: string) {
-    const response = await this.UserModel.findById(userId).lean();
+  async getAllPatients(userId: string): Promise<{ patients: Patient[] }> {
+    const response = await this.userRepository.getUser(userId);
     console.log(response, 'this is the response from get all patients');
     if (response?.patients) {
       return {
@@ -290,38 +313,44 @@ export class UsersService {
     }
   }
 
-  async addPatients(userId: string, patientData: CreatePatientDto) {
-    const response = await this.UserModel.findByIdAndUpdate(
-      { _id: userId },
-      { $push: { patients: patientData } },
-    );
-    const patients = await this.UserModel.findById(userId).lean();
+  async addPatients(
+    userId: string,
+    patientData: CreatePatientDto,
+  ): Promise<{ patients: Patient[] }> {
+    const response = await this.userRepository.addPatient(userId, patientData);
+    const patients = await this.userRepository.getUser(userId);
     console.log(response, patients, 'Response after createing patient. ');
     return {
       patients: patients.patients,
     };
   }
 
-  async deletePatient(userId: string, id: string) {
-    const response = await this.UserModel.findByIdAndUpdate(
-      { _id: userId },
-      { $pull: { patients: { _id: id } } },
-    );
-    const patients = await this.UserModel.findById(userId).lean();
+  async deletePatient(
+    userId: string,
+    id: string,
+  ): Promise<{ patients: Patient[] }> {
+    const response = await this.userRepository.deletePatient(userId, id);
+    const patients = await this.userRepository.getUser(userId);
     console.log(response, patients, 'Response after deleting patient. ');
     return {
       patients: patients?.patients,
     };
   }
 
-  async getLastPayment(userId: string) {
+  async getLastPayment(
+    userId: string,
+  ): Promise<{ lastPayment: BookingsDocument }> {
     const lastPayment = await this.BookingsRepo.getLastBooking(userId);
     return {
       lastPayment,
     };
   }
 
-  async getPaymentHistory(userId: string, page: number, limit: number) {
+  async getPaymentHistory(
+    userId: string,
+    page: number,
+    limit: number,
+  ): Promise<{ payments: BookingsDocument[]; totalDocs: number }> {
     const skip = (page - 1) * limit;
     return await this.BookingsRepo.getBookingsforPatient(userId, skip, limit);
   }

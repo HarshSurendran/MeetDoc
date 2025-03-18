@@ -6,7 +6,7 @@ import { CreatePrescriptionDto } from '../../dto/create-prescription.dto';
 import { PrescriptionService } from '../../service/Implementation/prescription.service';
 import * as moment from 'moment';
 import { CreatePrescriptionPdfDto } from '../../dto/create-prescriptionpdf.dto';
-import { UsersRepository } from '../../../users/users.repository';
+import { UsersRepository } from '../../../users/repository/Implementation/users.repository';
 import { UpdatePrescriptionDto } from '../../dto/update-prescription.dto';
 import { IPrescriptionRepository } from '../Interface/IPrescription.repository';
 import { BaseRepository } from '../../../repositories/implementation/base.repository';

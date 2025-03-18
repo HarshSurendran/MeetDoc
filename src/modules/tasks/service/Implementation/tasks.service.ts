@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { SlotsRepository } from '../../../slots/repository/Implementation/slots.repository';
-import { UsersRepository } from '../../../users/users.repository';
+import { UsersRepository } from '../../../users/repository/Implementation/users.repository';
 import { SubscriptionRepository } from '../../../subscription/repository/Implementation/subscription.repository';
 import { ITasksService } from '../Interface/ITasks.service';
 

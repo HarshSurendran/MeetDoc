@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { AdminDocument } from '../../schemas/admin.schema';
 import { CreateUserDto } from '../../../users/interface/usersdto';
-import { UsersService } from '../../../users/users.service';
+import { UsersService } from '../../../users/service/Implementation/users.service';
 import * as bcrypt from 'bcryptjs';
 import { DoctorsService } from '../../../doctors/service/Implementation/doctors.service';
 import { RedisService } from '../../../redis/service/Implementation/redis.service';
-import { UsersRepository } from '../../../users/users.repository';
+import { UsersRepository } from '../../../users/repository/Implementation/users.repository';
 import { DoctorRepository } from '../../../doctors/repository/Implementation/doctor.repository';
 import { BookingsRepository } from '../../../bookings/repository/Implementation/bookings.repository';
 import { SubscriptionRepository } from '../../../subscription/repository/Implementation/subscription.repository';

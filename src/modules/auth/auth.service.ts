@@ -9,7 +9,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../users/service/Implementation/users.service';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import { CreateUserDto } from '../users/interface/usersdto';

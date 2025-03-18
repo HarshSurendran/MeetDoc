@@ -9,7 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../users/service/Implementation/users.service';
 import { CreateUserDto } from '../users/interface/usersdto';
 import { AdminService } from './service/Implementation/admin.service';
 import { AuthGuard } from '@nestjs/passport';

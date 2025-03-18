@@ -5,7 +5,7 @@ import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../users/service/Implementation/users.service';
 import { MailModule } from '../mail/mail.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Otp, OtpSchema } from '../otp/schemas/otp.schema';

@@ -4,7 +4,7 @@ import { PaymentService } from '../payment/service/Implementation/payment.servic
 import { SlotsRepository } from '../slots/repository/Implementation/slots.repository';
 import { SlotStatus } from '../slots/slots.entity';
 import { BookingsRepository } from '../bookings/repository/Implementation/bookings.repository';
-import { UsersRepository } from '../users/users.repository';
+import { UsersRepository } from '../users/repository/Implementation/users.repository';
 import { SubscriptionRepository } from '../subscription/repository/Implementation/subscription.repository';
 import { NotificationGateway } from '../notification/notification.gateway';
 import { NotificationRepository } from '../notification/repository/Implementation/notification.repository';
