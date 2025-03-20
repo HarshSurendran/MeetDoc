@@ -70,6 +70,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Post("logout")
   async logout(@Body() body, @Res({ passthrough: true}) res) {
+    console.log(body, typeof body._id); 
     return this.authService.logout(body._id, res);
   }
 

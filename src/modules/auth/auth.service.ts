@@ -366,10 +366,6 @@ export class AuthService {
   }
 
   async logout(_id: string, res) {
-    // const user = this.usersService.getUser(_id);
-    // if (!user) {
-    //   throw new RequestTimeoutException("Database not responding. Please try again");
-    // }
     try {
       res.cookie('refreshToken', '', {
         httpOnly: true,
