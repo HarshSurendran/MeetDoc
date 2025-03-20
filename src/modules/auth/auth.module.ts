@@ -4,8 +4,6 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersService } from '../users/service/Implementation/users.service';
 import { MailModule } from '../mail/mail.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Otp, OtpSchema } from '../otp/schemas/otp.schema';
@@ -31,14 +29,6 @@ import { OtpModule } from '../otp/otp.module';
     PassportModule,
     MailModule,
     MongooseModule.forFeature([{ name: Otp.name, schema: OtpSchema }]),
-    // JwtModule.registerAsync({
-    //   imports: [ConfigModule],
-    //   useFactory: async (configService: ConfigService) => ({
-    //     secret: configService.get<string>('JWT_SECRET'),
-    //     signOptions: { expiresIn: '60m' },
-    //   }),
-    //   inject: [ConfigService],
-    // }),
     JwtModule.register({}),
   ],
   providers: [
