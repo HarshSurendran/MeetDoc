@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { status, UserDocument } from '../../schemas/users.schema';
 import { CreateUserDto } from '../../interface/usersdto';
-import { BaseRepository } from '../../../repositories/implementation/base.repository';
+import { BaseRepository } from '../../../repositories/Implementation/base.repository';
 import { IUserRepository } from '../Interface/IUser.repository';
 
 @Injectable()
@@ -253,9 +253,7 @@ export class UsersRepository
     return result;
   }
 
-  async deleteExpiredSubscriptions(
-    date,
-  ): Promise<{
+  async deleteExpiredSubscriptions(date): Promise<{
     acknowledged: boolean;
     matchedCount: number;
     modifiedCount: number;

@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Doctor, DoctorDocument } from '../../schemas/doctors.schema';
 import { Model } from 'mongoose';
 import { status } from '../../../users/schemas/users.schema';
-import { BaseRepository } from '../../../repositories/implementation/base.repository';
+import { BaseRepository } from '../../../repositories/Implementation/base.repository';
 import {
   CreateDoctorDto,
   DoctorCountByMonth,

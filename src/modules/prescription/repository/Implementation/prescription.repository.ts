@@ -9,7 +9,7 @@ import { CreatePrescriptionPdfDto } from '../../dto/create-prescriptionpdf.dto';
 import { UsersRepository } from '../../../users/repository/Implementation/users.repository';
 import { UpdatePrescriptionDto } from '../../dto/update-prescription.dto';
 import { IPrescriptionRepository } from '../Interface/IPrescription.repository';
-import { BaseRepository } from '../../../repositories/implementation/base.repository';
+import { BaseRepository } from '../../../repositories/Implementation/base.repository';
 
 @Injectable()
 export class PrescriptionRepository
