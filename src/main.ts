@@ -10,8 +10,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bodyParser: false,
   });
+  const frontendUrl = process.env.FRONTEND_URL;
   app.enableCors({
-    origin: ['https://meetdoc.harshsurendran.online', 'http://localhost:5173'],
+    origin: [frontendUrl, 'http://localhost:5173'],
     credentials: true
   });
   app.use(
@@ -27,6 +28,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new TransformResponseInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
-  await app.listen(3000);
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
 }
 bootstrap();

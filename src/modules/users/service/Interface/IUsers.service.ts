@@ -35,4 +35,5 @@ export interface IUsersService {
     getYourReviews(userId: string, page: number, limit: number): Promise<{ reviews: Review[]; totalDocs: number }>
     getAllPatients(userId: string): Promise<{ patients: Patient[] }>
     addPatients(userId: string, patientData: CreatePatientDto): Promise<{ patients: Patient[] }>
+    checkSlotStatus(slotId): Promise<{ status: string }>
 }

@@ -156,6 +156,11 @@ export class UsersController {
     return await this.userService.updateSlots(slotId, body);
   }
 
+  @Get('slots/status/:slotId')
+  async checkSlotStatus(@Param('slotId') slotId: string) {
+    return await this.userService.checkSlotStatus(slotId);
+  }
+
   @Get('payment/:bookingId')
   async getPaymentDetails(@Param('bookingId') bookingId: string) {
     return await this.userService.getBookingDetails(bookingId);

@@ -172,6 +172,11 @@ export class UsersService implements IUsersService {
     };
   }
 
+  async checkSlotStatus(slotId): Promise<{ status: string }> {
+    const slot = await this.SlotsRepo.getSingleSlot(slotId);    
+    return { status: slot.status };    
+  }
+
   async getBookingDetails(paymentId: string): Promise<{ bookingDetails: any }> {
     let bookingDetails = {
       doctorName: '',
