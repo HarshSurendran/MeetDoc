@@ -1,6 +1,7 @@
+import { IBaseRepository } from "src/modules/repositories/Interface/IBase.repository";
 import { DocVerification } from "../../schemas/docdocuments.schema";
 
-export interface IDoctorVerificationRepository {
+export interface IDoctorVerificationRepository extends IBaseRepository<DocVerification> {
     getVerificationRequests(isVerified: boolean, skip: number, limit: number): Promise<DocVerification[] | null>
     verificationReqCount(isVerified: boolean): Promise<number>
     updateOne(doctorId: string, data: object): Promise<{ acknowledged: boolean; matchedCount: number; modifiedCount: number }>   

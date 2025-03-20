@@ -1,9 +1,10 @@
 import { status } from "src/modules/users/schemas/users.schema";
 import { CreateDoctorDto, DoctorCountByMonth, UpdateDoctorDto } from "../../interface/doctorsdto";
 import { DoctorDocument } from "../../schemas/doctors.schema";
+import { IBaseRepository } from "src/modules/repositories/Interface/IBase.repository";
 
 
-export interface IDoctorRepository {
+export interface IDoctorRepository extends IBaseRepository<DoctorDocument> {
     addDoctor(doctor: CreateDoctorDto): Promise<DoctorDocument>
     updateDoctorByEmail(email: string, data: Partial<UpdateDoctorDto>): Promise<{
             acknowledged: boolean;

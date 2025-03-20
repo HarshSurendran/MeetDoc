@@ -1,7 +1,8 @@
+import { IBaseRepository } from "src/modules/repositories/Interface/IBase.repository";
 import { CreateUserDto } from "../../interface/usersdto";
 import { status, UserDocument } from "../../schemas/users.schema";
 
-export interface IUserRepository {
+export interface IUserRepository extends IBaseRepository<UserDocument> {
     createUser(createUserDto: Partial<CreateUserDto>): Promise<UserDocument>;
     getUser(userId: string): Promise<UserDocument>;
     findByEmail(email: string): Promise<UserDocument>;

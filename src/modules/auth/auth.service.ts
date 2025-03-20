@@ -25,7 +25,7 @@ import { DoctorsService } from '../doctors/service/Implementation/doctors.servic
 import { AdminService } from '../admin/service/Implementation/admin.service';
 import { OAuth2Client } from 'google-auth-library';
 import { ConfigService } from '@nestjs/config';
-import { OtpRepository } from '../otp/repository/Implementation/Otp.repository';
+import { OtpRepository } from '../otp/repository/Implementation/otp.repository';
 import { DocVerificationDocument } from '../doctors/schemas/docdocuments.schema';
 
 @Injectable()

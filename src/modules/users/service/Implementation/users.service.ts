@@ -55,8 +55,8 @@ export class UsersService implements IUsersService {
     return updatedUser;
   }
 
-  async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+  async findAll(): Promise<UserDocument[]> {
+    return this.userRepository.findAll();
   }
 
   async getUser(email: string): Promise<UserDocument | null> {
