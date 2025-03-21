@@ -18,6 +18,10 @@ export class DocVerificationRepository
     super(DocVerificationModel);
   }
 
+  async getSingleDocument(doctorId: string): Promise<DocVerification | null> {
+    return await this.DocVerificationModel.findOne({ doctorId });    
+  }
+
   async getVerificationRequests(
     isVerified: boolean,
     skip: number,
@@ -28,6 +32,8 @@ export class DocVerificationRepository
       .limit(limit)
       .exec();
   }
+
+   
 
   async verificationReqCount(isVerified: boolean): Promise<number> {
     return await this.DocVerificationModel.countDocuments({

@@ -13,7 +13,7 @@ export interface IDoctorService {
     updateDoctor(email: string, data: Partial<UpdateDoctorDto>): Promise<{ acknowledged: boolean; matchedCount: number; modifiedCount: number }>
     updateDoctorById(doctorId: string, data: Partial<UpdateDoctorDto>): Promise<{ acknowledged: boolean; matchedCount: number; modifiedCount: number }>
     createDocVerification(body: DocVerificationDocument): Promise<DocVerification>
-    getDocVerification(doctorId: ObjectId): Promise<DocVerification>
+    getDocVerification(doctorId: string): Promise<DocVerification>
     getVerficationsRequests(skip: number, limit: number): Promise<{ requests: DocVerification[]; totalDocs: number }>
     getVerifiedDoctors(skip: number, limit: number): Promise<{ doctors: DocVerification[]; totalDocs: number }>
     updateDoctorDocuments(doctorId: string, data: {}): Promise<{ acknowledged: boolean; matchedCount: number; modifiedCount: number }>

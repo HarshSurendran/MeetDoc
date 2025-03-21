@@ -84,9 +84,8 @@ export class DoctorsService implements IDoctorService {
     return await this.doctorVerificationRepo.create(body);
   }
 
-  async getDocVerification(doctorId: ObjectId): Promise<DocVerification> {
-    return await this.doctorVerificationRepo.findById(doctorId);
-    // return await this.DoctorVerificationModel.findOne({ doctorId });
+  async getDocVerification(doctorId: string): Promise<DocVerification> {
+    return await this.doctorVerificationRepo.getSingleDocument(doctorId);
   }
 
   async getVerficationsRequests(

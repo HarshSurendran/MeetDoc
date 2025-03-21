@@ -55,11 +55,10 @@ export class AuthController {
   @Post('verify_otp')
   async verify(@Body() body, @Res() res) {    
     const { otp, ...user } = body; 
-    console.log(user,"This is user");
     const { refreshToken, ...data } = await this.authService.verifyOtp(user.data, otp);
     console.log("recieved tokens ", refreshToken, data)
     res.cookie('refreshToken', refreshToken, { httpOnly: true , path: '/auth/refresh'});
-    res.json(data) ;
+    res.json(data);
   }
 
   @Post('resend_otp')
@@ -70,7 +69,6 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Post("logout")
   async logout(@Body() body, @Res({ passthrough: true}) res) {
-    console.log(body, typeof body._id); 
     return this.authService.logout(body._id, res);
   }
 

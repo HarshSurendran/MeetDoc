@@ -25,7 +25,10 @@ import {
           ? exception.getResponse()
           : exception.message;
   
-      response.status(status).json({
+      response.status(status)
+        .setHeader('Access-Control-Allow-Origin', 'http://localhost:5173')
+        .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE, PUT, PATCH')
+        .json({
         statusCode: status,
         status: false,
         message: typeof message === 'string' ? message : message['message'],
