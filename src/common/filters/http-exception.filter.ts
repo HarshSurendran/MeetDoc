@@ -24,9 +24,11 @@ import {
         exception instanceof HttpException
           ? exception.getResponse()
           : exception.message;
+      
+      const frontendUrl = process.env.FRONTEND_URL || 'https://www.meetdoc.site';
   
       response.status(status)
-        .setHeader('Access-Control-Allow-Origin', 'http://localhost:5173')
+        .setHeader('Access-Control-Allow-Origin', frontendUrl)
         .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE, PUT, PATCH')
         .json({
         statusCode: status,

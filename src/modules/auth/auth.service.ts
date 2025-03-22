@@ -591,7 +591,6 @@ export class AuthService {
   }
 
   async checkVerification(id: string) {
-    console.log(id, typeof id, "This is the id", new mongoose.Schema.Types.ObjectId(id));
     const data = await this.doctorService.getDocVerification(
       id
     );
